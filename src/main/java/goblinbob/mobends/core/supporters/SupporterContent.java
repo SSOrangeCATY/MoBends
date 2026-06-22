@@ -9,7 +9,6 @@ import goblinbob.mobends.core.module.IModule;
 import goblinbob.mobends.core.util.Color;
 import goblinbob.mobends.core.util.IColorRead;
 import net.minecraft.world.entity.LivingEntity;
-import org.apache.http.conn.HttpHostConnectException;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -43,10 +42,6 @@ public class SupporterContent
             Map<String, AccessoryDetails> details = Objects.requireNonNull(response).getDetails();
             INSTANCE.accessoryDetailsMap.clear();
             INSTANCE.accessoryDetailsMap.putAll(details);
-        }
-        catch (HttpHostConnectException e)
-        {
-            // No internet, do nothing.
         }
         catch (JsonParseException e)
         {

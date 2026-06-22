@@ -3,7 +3,6 @@ package goblinbob.mobends.core.connection;
 import goblinbob.mobends.core.supporters.SupporterContent;
 import goblinbob.mobends.core.util.ConnectionHelper;
 import goblinbob.mobends.standard.main.MoBends;
-import org.apache.http.conn.HttpHostConnectException;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -39,10 +38,6 @@ public class PlayerSettingsDownloader implements Runnable
                 try
                 {
                     performTask(task);
-                }
-                catch (HttpHostConnectException e)
-                {
-                    // No internet, do nothing.
                 }
                 catch(IOException|URISyntaxException e)
                 {

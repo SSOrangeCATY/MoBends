@@ -1,8 +1,8 @@
 package goblinbob.mobends.core.animation.keyframe;
 
 import goblinbob.mobends.core.util.SerialHelper;
-import org.apache.http.util.ByteArrayBuffer;
 
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,11 +38,11 @@ public class BinaryAnimationLoader
 
         for (int i = 0; i < amountOfBones; ++i)
         {
-            ByteArrayBuffer buffer = new ByteArrayBuffer(16);
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream(16);
             byte character = dataInputStream.readByte();
             while (character != '\0')
             {
-                buffer.append(character);
+                buffer.write(character);
                 character = dataInputStream.readByte();
             }
 

@@ -7,7 +7,6 @@ import goblinbob.mobends.core.env.EnvironmentModule;
 import goblinbob.mobends.core.module.IModule;
 import goblinbob.mobends.core.util.ConnectionHelper;
 import net.neoforged.fml.loading.FMLPaths;
-import org.apache.http.conn.HttpHostConnectException;
 import org.slf4j.Logger;
 
 import java.io.*;
@@ -71,10 +70,6 @@ public class AssetsModule
         try
         {
             return sendGetRequest(new URL(apiUrl + "/api/asset/manifest"), params, AssetManifest.class);
-        }
-        catch (HttpHostConnectException e)
-        {
-            // No internet, do nothing.
         }
         catch(JsonParseException e)
         {
