@@ -3,7 +3,7 @@ package goblinbob.mobends.standard.data;
 import goblinbob.mobends.core.client.model.ModelPartTransform;
 import goblinbob.mobends.core.data.LivingEntityData;
 import goblinbob.mobends.standard.animation.controller.SquidController;
-import net.minecraft.world.entity.animal.Squid;
+import net.minecraft.world.entity.animal.squid.Squid;
 
 public class SquidData extends LivingEntityData<Squid>
 {

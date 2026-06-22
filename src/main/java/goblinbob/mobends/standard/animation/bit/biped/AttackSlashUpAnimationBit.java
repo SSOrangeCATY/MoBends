@@ -5,7 +5,7 @@ import goblinbob.mobends.core.client.model.IModelPart;
 import goblinbob.mobends.core.math.SmoothOrientation;
 import goblinbob.mobends.standard.data.BipedEntityData;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.SwordItem;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.util.Mth;
@@ -47,7 +47,7 @@ public class AttackSlashUpAnimationBit extends AnimationBit<BipedEntityData<?>>
 		SmoothOrientation mainItemRotation = mainHandSwitch ? data.renderRightItemRotation : data.renderLeftItemRotation;
 		
 		if (data.getTicksAfterAttack() < 4F
-				&& living.getItemInHand(InteractionHand.MAIN_HAND).getItem() instanceof SwordItem)
+				&& living.getItemInHand(InteractionHand.MAIN_HAND).is(ItemTags.SWORDS))
 		{
 			data.swordTrail.add(data);
 		}

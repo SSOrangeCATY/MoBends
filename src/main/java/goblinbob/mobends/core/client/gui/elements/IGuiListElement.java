@@ -1,6 +1,6 @@
 package goblinbob.mobends.core.client.gui.elements;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public interface IGuiListElement
 {
@@ -11,7 +11,7 @@ public interface IGuiListElement
 
     void update(int mouseX, int mouseY);
 
-    void draw(GuiGraphics guiGraphics, float partialTicks);
+    void draw(GuiGraphicsExtractor GuiGraphicsExtractor, float partialTicks);
 
     int getX();
 

@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import goblinbob.mobends.core.flux.ObservableMap;
 import goblinbob.mobends.core.util.ErrorReporter;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.io.File;
 import java.io.IOException;
@@ -156,7 +156,7 @@ public class PackManager
         return localPacks.values();
     }
 
-    public ResourceLocation getThumbnailLocation(String packName, String thumbnailUrl)
+    public Identifier getThumbnailLocation(String packName, String thumbnailUrl)
     {
         return this.thumbnailProvider.getThumbnailLocation(packName, thumbnailUrl);
     }

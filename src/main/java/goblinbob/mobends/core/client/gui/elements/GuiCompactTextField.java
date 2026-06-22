@@ -1,8 +1,10 @@
 package goblinbob.mobends.core.client.gui.elements;
 
+import goblinbob.mobends.core.util.GuiHelper;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Component;
 
@@ -22,13 +24,13 @@ public class GuiCompactTextField extends EditBox
     }
 
     @Override
-    public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks)
+    public void extractWidgetRenderState(GuiGraphicsExtractor GuiGraphicsExtractor, int mouseX, int mouseY, float partialTicks)
     {
-        super.renderWidget(guiGraphics, mouseX, mouseY, partialTicks);
+        super.extractWidgetRenderState(GuiGraphicsExtractor, mouseX, mouseY, partialTicks);
         if (!this.isFocused() && this.getValue().isEmpty() && this.placeholderText != null)
         {
             Font font = Minecraft.getInstance().font;
-            guiGraphics.drawString(font, this.placeholderText, this.getX() + 4, this.getY() + (this.getHeight() - 8) / 2, 0x707070, true);
+            GuiHelper.drawString(GuiGraphicsExtractor, font, this.placeholderText, this.getX() + 4, this.getY() + (this.getHeight() - 8) / 2, 0x707070, true);
         }
     }
 

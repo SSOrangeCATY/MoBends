@@ -2,7 +2,9 @@ package goblinbob.mobends.core.client.gui.popup;
 
 import goblinbob.mobends.core.client.gui.elements.GuiCompactTextField;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.client.resources.language.I18n;
 
 public class GuiPopUpCreatePack extends GuiPopUp
@@ -25,10 +27,10 @@ public class GuiPopUpCreatePack extends GuiPopUp
         titleTextField.setPosition(this.x + 5, this.y + 39);
     }
 
-    public void display(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks)
+    public void display(GuiGraphicsExtractor GuiGraphicsExtractor, int mouseX, int mouseY, float partialTicks)
     {
-        super.display(guiGraphics, mouseX, mouseY, partialTicks);
-        titleTextField.renderWidget(guiGraphics, mouseX, mouseY, partialTicks);
+        super.display(GuiGraphicsExtractor, mouseX, mouseY, partialTicks);
+        titleTextField.extractWidgetRenderState(GuiGraphicsExtractor, mouseX, mouseY, partialTicks);
     }
 
     public void update(int mouseX, int mouseY)
@@ -39,7 +41,7 @@ public class GuiPopUpCreatePack extends GuiPopUp
 
     public void mouseClicked(int mouseX, int mouseY, int button)
     {
-        titleTextField.mouseClicked(mouseX, mouseY, button);
+        titleTextField.mouseClicked(new MouseButtonEvent(mouseX, mouseY, new MouseButtonInfo(button, 0)), false);
         super.mouseClicked(mouseX, mouseY, button);
     }
 

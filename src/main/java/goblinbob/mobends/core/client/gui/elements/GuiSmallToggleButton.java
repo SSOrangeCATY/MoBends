@@ -1,15 +1,17 @@
 package goblinbob.mobends.core.client.gui.elements;
 
+import goblinbob.mobends.core.util.GuiHelper;
+
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.resources.Identifier;
 
 public class GuiSmallToggleButton
 {
 
-    protected static final ResourceLocation BUTTON_TEXTURES = ResourceLocation.parse("textures/gui/widgets.png");
+    protected static final Identifier BUTTON_TEXTURES = Identifier.parse("textures/gui/widgets.png");
 
     private static final int WIDTH = 30;
     private static final int HEIGHT = 20;
@@ -41,30 +43,22 @@ public class GuiSmallToggleButton
                 mouseY >= y && mouseY <= y + HEIGHT;
     }
 
-    public void draw(GuiGraphics guiGraphics)
+    public void draw(GuiGraphicsExtractor GuiGraphicsExtractor)
     {
         Minecraft mc = Minecraft.getInstance();
         Font font = mc.font;
-
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
 
         int k = this.hovered ? 1 : 0;
 
         if (this.toggleState)
         {
-            RenderSystem.setShaderColor(0.3F, 1.0F, 0.7F, 1.0F);
         }
         else
         {
-            RenderSystem.setShaderColor(1.0F, 0.3F, 0.4F, 1.0F);
         }
 
-        guiGraphics.blit(BUTTON_TEXTURES, this.x, this.y, 0, 66 + k * 20, WIDTH / 2, HEIGHT);
-        guiGraphics.blit(BUTTON_TEXTURES, this.x + WIDTH / 2, this.y, 200 - WIDTH / 2, 66 + k * 20, WIDTH / 2, HEIGHT);
-
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        GuiHelper.blit(GuiGraphicsExtractor, BUTTON_TEXTURES, this.x, this.y, 0, 66 + k * 20, WIDTH / 2, HEIGHT);
+        GuiHelper.blit(GuiGraphicsExtractor, BUTTON_TEXTURES, this.x + WIDTH / 2, this.y, 200 - WIDTH / 2, 66 + k * 20, WIDTH / 2, HEIGHT);
 
         int l = 14737632;
 
@@ -79,9 +73,7 @@ public class GuiSmallToggleButton
 
         String stateText = this.toggleState ? "ON" : "OFF";
         int textWidth = font.width(stateText);
-        guiGraphics.drawString(font, stateText, this.x - textWidth/2 + WIDTH /2, this.y + (HEIGHT - 8) / 2, l, false);
-
-        RenderSystem.defaultBlendFunc();
+        GuiHelper.drawString(GuiGraphicsExtractor, font, stateText, this.x - textWidth/2 + WIDTH /2, this.y + (HEIGHT - 8) / 2, l, false);
     }
 
     public void setToggleState(boolean state)

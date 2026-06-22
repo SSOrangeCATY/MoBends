@@ -6,6 +6,7 @@ import goblinbob.mobends.standard.client.gui.ArmorDebugScreen;
 import goblinbob.mobends.standard.main.MoBends;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -14,7 +15,7 @@ import org.lwjgl.glfw.GLFW;
 public class KeyboardHandler
 {
 
-    private static final String MAIN_CATEGORY = "Mo' Bends";
+    private static final KeyMapping.Category MAIN_CATEGORY = KeyMapping.Category.register(Identifier.fromNamespaceAndPath("mobends", "main"));
     private static final KeyMapping KEY_MENU = new KeyMapping(
             "key.mobends.menu",
             GLFW.GLFW_KEY_G,
@@ -40,7 +41,7 @@ public class KeyboardHandler
     {
         if (KEY_MENU.consumeClick())
         {
-            Minecraft.getInstance().setScreen(new GuiBendsMenu());
+            Minecraft.getInstance().setScreenAndShow(new GuiBendsMenu());
         }
         else if (KEY_REFRESH.consumeClick())
         {
@@ -48,7 +49,7 @@ public class KeyboardHandler
         }
         else if (KEY_ARMOR_DEBUG.consumeClick())
         {
-            Minecraft.getInstance().setScreen(new ArmorDebugScreen());
+            Minecraft.getInstance().setScreenAndShow(new ArmorDebugScreen());
         }
     }
 

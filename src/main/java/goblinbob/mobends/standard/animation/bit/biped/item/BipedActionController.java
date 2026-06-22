@@ -60,15 +60,15 @@ public class BipedActionController
         {
             if (entity.getUseItemRemainingTicks() > 0)
             {
-                UseAnim useAnim = heldItem.getUseAnimation();
+                ItemUseAnimation ItemUseAnimation = heldItem.getUseAnimation();
 
-                if (useAnim == UseAnim.BLOCK)
+                if (ItemUseAnimation == ItemUseAnimation.BLOCK)
                     return HumanoidModel.ArmPose.BLOCK;
-                else if (useAnim == UseAnim.BOW)
+                else if (ItemUseAnimation == ItemUseAnimation.BOW)
                     return HumanoidModel.ArmPose.BOW_AND_ARROW;
-                else if (useAnim == UseAnim.CROSSBOW)
+                else if (ItemUseAnimation == ItemUseAnimation.CROSSBOW)
                     return HumanoidModel.ArmPose.CROSSBOW_HOLD;
-                else if (useAnim == UseAnim.SPYGLASS)
+                else if (ItemUseAnimation == ItemUseAnimation.SPYGLASS)
                     return HumanoidModel.ArmPose.SPYGLASS;
             }
 
@@ -106,9 +106,6 @@ public class BipedActionController
 
     public static AttackActionType getBuiltInItemAttackAction(Item item)
     {
-        if (item instanceof SwordItem)
-            return AttackActionType.SWORD;
-
         if (item == Items.AIR)
             return AttackActionType.FISTS;
 

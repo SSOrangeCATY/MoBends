@@ -39,7 +39,7 @@ public class DataUpdateHandler
             onTicksRestart();
         }
 
-        if (!(Minecraft.getInstance().level.isClientSide && Minecraft.getInstance().isPaused()))
+        if (!(Minecraft.getInstance().level.isClientSide() && Minecraft.getInstance().isPaused()))
         {
             DataUpdateHandler.ticksPerFrame = Math.min(Math.max(0F, newTicks - DataUpdateHandler.ticks), 1F);
             DataUpdateHandler.ticks = newTicks;

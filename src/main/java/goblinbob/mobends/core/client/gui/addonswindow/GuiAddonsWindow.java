@@ -1,17 +1,19 @@
 package goblinbob.mobends.core.client.gui.addonswindow;
 
+import goblinbob.mobends.core.util.GuiHelper;
+
 import goblinbob.mobends.core.addon.Addons;
 import goblinbob.mobends.core.addon.IAddon;
 import goblinbob.mobends.standard.main.ModStatics;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class GuiAddonsWindow
 {
-    public static final ResourceLocation BACKGROUND_TEXTURE = ResourceLocation.fromNamespaceAndPath(ModStatics.MODID,
+    public static final Identifier BACKGROUND_TEXTURE = Identifier.fromNamespaceAndPath(ModStatics.MODID,
             "textures/gui/addons_window.png");
 
     private static final int WIDTH = 210;
@@ -36,16 +38,16 @@ public class GuiAddonsWindow
     {
     }
 
-    public void display(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks)
+    public void display(GuiGraphicsExtractor GuiGraphicsExtractor, int mouseX, int mouseY, float partialTicks)
     {
-        guiGraphics.blit(BACKGROUND_TEXTURE, this.x, this.y, 0, 0, WIDTH, HEIGHT);
+        GuiHelper.blit(GuiGraphicsExtractor, BACKGROUND_TEXTURE, this.x, this.y, 0, 0, WIDTH, HEIGHT);
 
         String title = I18n.get("mobends.gui.addons");
-        guiGraphics.drawCenteredString(this.font, title, this.x + WIDTH/2, this.y + 4, 0xFFFFFF);
+        GuiHelper.drawCenteredString(GuiGraphicsExtractor, this.font, title, this.x + WIDTH/2, this.y + 4, 0xFFFFFF);
 
         int y = this.y + 50;
         for (IAddon addon : Addons.getRegistered()) {
-            guiGraphics.drawCenteredString(this.font, addon.getDisplayName(), this.x + WIDTH/2, y, 0xFFFFFF);
+            GuiHelper.drawCenteredString(GuiGraphicsExtractor, this.font, addon.getDisplayName(), this.x + WIDTH/2, y, 0xFFFFFF);
             y += 50;
         }
     }

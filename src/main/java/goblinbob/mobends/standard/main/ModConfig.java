@@ -4,7 +4,7 @@ import goblinbob.mobends.core.util.ErrorReporter;
 import goblinbob.mobends.standard.AttackActionType;
 import goblinbob.mobends.core.util.WildcardPattern;
 import goblinbob.mobends.standard.UseActionType;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -16,7 +16,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import java.util.*;
 import java.util.function.Function;
 
-@EventBusSubscriber(modid = ModStatics.MODID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = ModStatics.MODID)
 public class ModConfig
 {
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
@@ -175,33 +175,33 @@ public class ModConfig
         return entries;
     }
 
-    private static boolean doesLocationMatchPattern(ResourceLocation resourceLocation, String pattern)
+    private static boolean doesLocationMatchPattern(Identifier Identifier, String pattern)
     {
-        final ResourceLocation patternLocation = ResourceLocation.parse(pattern);
+        final Identifier patternLocation = Identifier.parse(pattern);
 
-        if (resourceLocation.equals(patternLocation))
+        if (Identifier.equals(patternLocation))
             return true;
 
         WildcardPattern domainPattern = new WildcardPattern(patternLocation.getNamespace());
         WildcardPattern pathPattern = new WildcardPattern(patternLocation.getPath());
 
-        return domainPattern.matches(resourceLocation.getNamespace()) &&
-               pathPattern.matches(resourceLocation.getPath());
+        return domainPattern.matches(Identifier.getNamespace()) &&
+               pathPattern.matches(Identifier.getPath());
     }
 
-    private static boolean checkForPatterns(ResourceLocation resourceLocation, String[] patterns)
+    private static boolean checkForPatterns(Identifier Identifier, String[] patterns)
     {
-        if (resourceLocation == null)
+        if (Identifier == null)
             return false;
 
-        final String resourceNamespace = resourceLocation.getNamespace();
-        final String resourcePath = resourceLocation.getPath();
+        final String resourceNamespace = Identifier.getNamespace();
+        final String resourcePath = Identifier.getPath();
 
         for (String pattern : patterns)
         {
-            final ResourceLocation patternLocation = ResourceLocation.parse(pattern);
+            final Identifier patternLocation = Identifier.parse(pattern);
 
-            if (resourceLocation.equals(patternLocation))
+            if (Identifier.equals(patternLocation))
                 return true;
 
             WildcardPattern domainPattern = new WildcardPattern(patternLocation.getNamespace());
@@ -221,7 +221,7 @@ public class ModConfig
     {
         // If cached before, returning the cached classification.
         return itemUseClassificationCache.computeIfAbsent(item, (i) -> {
-            ResourceLocation location = BuiltInRegistries.ITEM.getKey(item);
+            Identifier location = BuiltInRegistries.ITEM.getKey(item);
 
             if (location != null)
             {
@@ -244,7 +244,7 @@ public class ModConfig
     {
         // If cached before, returning the cached classification.
         return itemAttackClassificationCache.computeIfAbsent(item, (i) -> {
-            ResourceLocation location = BuiltInRegistries.ITEM.getKey(item);
+            Identifier location = BuiltInRegistries.ITEM.getKey(item);
 
             if (location != null)
             {
@@ -273,7 +273,7 @@ public class ModConfig
     {
         // If cached before, returning the cached result.
         return keepEntityAsVanillaCache.computeIfAbsent(entity, (e) -> {
-            ResourceLocation location = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
+            Identifier location = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
 
             // The player, for example, doesn't have a key.
             return location != null && checkForPatterns(location, keepEntityAsVanilla);

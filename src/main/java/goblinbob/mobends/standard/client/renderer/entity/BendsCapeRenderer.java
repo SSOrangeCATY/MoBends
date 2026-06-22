@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import goblinbob.mobends.standard.data.PlayerData;
 import goblinbob.mobends.standard.main.ModStatics;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix3f;
@@ -23,7 +23,7 @@ public class BendsCapeRenderer
     public static final int MODEL_DEPTH = 1;
     public static final int SLAB_AMOUNT = 16;
 
-    public static final ResourceLocation CAPE_TEXTURE = ResourceLocation.fromNamespaceAndPath(ModStatics.MODID, "textures/cape.png");
+    public static final Identifier CAPE_TEXTURE = Identifier.fromNamespaceAndPath(ModStatics.MODID, "textures/cape.png");
 
     public Slab[] slabs;
 
@@ -57,25 +57,6 @@ public class BendsCapeRenderer
     public void render(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay)
     {
         this.slabs[0].render(poseStack, vertexConsumer, packedLight, packedOverlay, 1.0F / 16.0F);
-    }
-
-    /**
-     * Render the cape using MultiBufferSource.
-     * This overload gets a VertexConsumer from the bufferSource for the player's cape texture.
-     */
-    public void render(PoseStack poseStack, net.minecraft.client.renderer.MultiBufferSource bufferSource,
-                       int packedLight, net.minecraft.client.player.AbstractClientPlayer player, float scale)
-    {
-        net.minecraft.resources.ResourceLocation capeTexture = player.getSkin().capeTexture();
-        if (capeTexture != null)
-        {
-            net.minecraft.client.renderer.RenderType renderType =
-                net.minecraft.client.renderer.RenderType.entitySolid(capeTexture);
-            VertexConsumer vertexConsumer = bufferSource.getBuffer(renderType);
-            // Use default overlay coords (no hurt overlay)
-            int packedOverlay = net.minecraft.client.renderer.entity.LivingEntityRenderer.getOverlayCoords(player, 0.0F);
-            this.slabs[0].render(poseStack, vertexConsumer, packedLight, packedOverlay, scale);
-        }
     }
 
     static class Slab

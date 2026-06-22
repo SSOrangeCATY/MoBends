@@ -1,5 +1,7 @@
 package goblinbob.mobends.core.client.gui.popup;
 
+import goblinbob.mobends.core.util.GuiHelper;
+
 import com.mojang.blaze3d.systems.RenderSystem;
 import goblinbob.mobends.core.client.gui.GuiBendsMenu;
 import goblinbob.mobends.core.client.gui.elements.GuiCustomButton;
@@ -7,7 +9,7 @@ import goblinbob.mobends.core.util.Draw;
 import goblinbob.mobends.core.util.GUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,10 +61,8 @@ public class GuiPopUp
         // No default functionality.
     }
 
-    public void display(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks)
+    public void display(GuiGraphicsExtractor GuiGraphicsExtractor, int mouseX, int mouseY, float partialTicks)
     {
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.setShaderTexture(0, GuiBendsMenu.ICONS_TEXTURE);
         /* Top-Left		*/
         Draw.texturedModalRect(x - 4, y - 4, 60, 64, 4, 4);
         /* Top 			*/
@@ -85,13 +85,13 @@ public class GuiPopUp
         int yOffset = 6;
         for (String line : title)
         {
-            guiGraphics.drawString(font, line, x + (width - font.width(line)) / 2, y + yOffset, 0xffffff, true);
+            GuiHelper.drawString(GuiGraphicsExtractor, font, line, x + (width - font.width(line)) / 2, y + yOffset, 0xffffff, true);
             yOffset += 9;
         }
 
         for (Button button : buttons)
         {
-            button.buttonUI.drawButton(guiGraphics, mouseX, mouseY, partialTicks);
+            button.buttonUI.drawButton(GuiGraphicsExtractor, mouseX, mouseY, partialTicks);
         }
     }
 

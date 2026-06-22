@@ -4,7 +4,7 @@ import goblinbob.mobends.standard.main.ModStatics;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -16,7 +16,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 public record ConfigRequestPayload() implements CustomPacketPayload {
 
     public static final Type<ConfigRequestPayload> TYPE =
-        new Type<>(ResourceLocation.fromNamespaceAndPath(ModStatics.MODID, "config_request"));
+        new Type<>(Identifier.fromNamespaceAndPath(ModStatics.MODID, "config_request"));
 
     public static final StreamCodec<FriendlyByteBuf, ConfigRequestPayload> STREAM_CODEC =
         StreamCodec.unit(new ConfigRequestPayload());

@@ -10,14 +10,14 @@ import goblinbob.mobends.core.util.GuiHelper;
 import goblinbob.mobends.core.util.IColorRead;
 import goblinbob.mobends.standard.main.ModStatics;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 
 public class GuiSectionButton
 {
 
-    public static final ResourceLocation BUTTONS_TEXTURE = ResourceLocation.fromNamespaceAndPath(ModStatics.MODID,
+    public static final Identifier BUTTONS_TEXTURE = Identifier.fromNamespaceAndPath(ModStatics.MODID,
             "textures/gui/buttons.png");
 
     // Expressed in ticks
@@ -123,26 +123,15 @@ public class GuiSectionButton
         this.ticksAfterHovered = 0F;
     }
 
-    public void display(GuiGraphics guiGraphics)
+    public void display(GuiGraphicsExtractor GuiGraphicsExtractor)
     {
         this.ticksAfterHovered += DataUpdateHandler.ticksPerFrame;
-
-        if (this.hover)
-            RenderSystem.setShaderColor(this.bgColor.r, this.bgColor.g, this.bgColor.b, this.bgColor.a);
-        else
-            RenderSystem.setShaderColor(this.neutralColor.r, this.neutralColor.g, this.neutralColor.b, this.neutralColor.a);
-        RenderSystem.setShaderTexture(0, BUTTONS_TEXTURE);
 
         int tX = this.bgTextureU;
         int tY = this.bgTextureV;
 
         float uScale = 0.001953125F;
         float vScale = 0.0078125F;
-
-        if (this.hover)
-            RenderSystem.setShaderColor(this.bgColor.r, this.bgColor.g, this.bgColor.b, this.bgColor.a);
-        else
-            RenderSystem.setShaderColor(this.neutralColor.r, this.neutralColor.g, this.neutralColor.b, this.neutralColor.a);
 
         Draw.rectangle(x, y, width, height);
 
@@ -161,8 +150,6 @@ public class GuiSectionButton
         }
 
         int mountainOffsetY = (int) (bgt * 10);
-
-        RenderSystem.setShaderTexture(0, BUTTONS_TEXTURE);
         Draw.texturedRectangle(x, y + mountainOffsetY, width, height - 2 - mountainOffsetY, tX * uScale, tY * vScale, (tX + width) * uScale, (tY + height - 2 - mountainOffsetY) * vScale);
         // Bottom bar
         Draw.texturedRectangle(x, y + height - 2, width, 2, tX * uScale, (tY + height - 2) * vScale, (tX + width) * uScale, (tY + 2) * vScale);
@@ -182,28 +169,15 @@ public class GuiSectionButton
 
             if (leftIcon != null)
             {
-                RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-                guiGraphics.pose().pushPose();
-                guiGraphics.pose().translate(x + iconSpacing, y + height / 2F, 0);
-                guiGraphics.pose().scale(scale, scale, 1);
-                leftIcon.draw(guiGraphics, uScale, vScale);
-                guiGraphics.pose().popPose();
+                leftIcon.draw(GuiGraphicsExtractor, uScale, vScale);
             }
 
             if (rightIcon != null)
             {
-                guiGraphics.pose().pushPose();
-                guiGraphics.pose().translate(x + width - iconSpacing, y + height / 2F, 0);
-                guiGraphics.pose().scale(scale, scale, 1);
-                rightIcon.draw(guiGraphics, uScale, vScale);
-                guiGraphics.pose().popPose();
+                rightIcon.draw(GuiGraphicsExtractor, uScale, vScale);
             }
         }
-
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         this.fontRenderer.drawCenteredText(this.label, x + width / 2, y + height / 2 + 6);
-
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
     }
 
     public void setPosition(int i, int j)
@@ -228,9 +202,8 @@ public class GuiSectionButton
             this.texHeight = height;
         }
 
-        public void draw(GuiGraphics guiGraphics, float uScale, float vScale)
+        public void draw(GuiGraphicsExtractor GuiGraphicsExtractor, float uScale, float vScale)
         {
-            RenderSystem.setShaderTexture(0, BUTTONS_TEXTURE);
             Draw.texturedRectangle(-texWidth / 2, -texHeight / 2,
                     texWidth, texHeight,
                     texU * uScale, texV * vScale,

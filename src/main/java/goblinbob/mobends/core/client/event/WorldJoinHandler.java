@@ -7,7 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.bus.api.SubscribeEvent;
 
 public class WorldJoinHandler
@@ -29,7 +29,7 @@ public class WorldJoinHandler
                 NetworkConfiguration.instance.onWorldJoin();
 
                 // Request server configuration
-                PacketDistributor.sendToServer(new ConfigRequestPayload());
+                ClientPacketDistributor.sendToServer(new ConfigRequestPayload());
                 MoBends.LOG.info("Mo' Bends detected on server, requesting configuration...");
             }
             else

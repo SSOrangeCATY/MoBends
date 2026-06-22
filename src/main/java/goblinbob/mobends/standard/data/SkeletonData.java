@@ -1,7 +1,7 @@
 package goblinbob.mobends.standard.data;
 
 import goblinbob.mobends.standard.animation.controller.SkeletonController;
-import net.minecraft.world.entity.monster.Skeleton;
+import net.minecraft.world.entity.monster.skeleton.Skeleton;
 
 public class SkeletonData extends BipedEntityData<Skeleton>
 {

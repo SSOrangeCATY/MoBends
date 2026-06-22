@@ -1,6 +1,6 @@
 package goblinbob.mobends.core.client.gui.elements;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public class GuiScrollPanelContainer extends GuiScrollPanel
 {
@@ -12,13 +12,13 @@ public class GuiScrollPanelContainer extends GuiScrollPanel
     }
 
     @Override
-    protected void drawContent(GuiGraphics guiGraphics, float partialTicks)
+    protected void drawContent(GuiGraphicsExtractor GuiGraphicsExtractor, float partialTicks)
     {
 
     }
 
     @Override
-    protected void drawBackground(GuiGraphics guiGraphics, float partialTicks)
+    protected void drawBackground(GuiGraphicsExtractor GuiGraphicsExtractor, float partialTicks)
     {
 
     }

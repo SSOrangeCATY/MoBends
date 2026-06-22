@@ -3,11 +3,11 @@ package goblinbob.mobends.standard.mutators;
 import goblinbob.mobends.core.data.IEntityDataFactory;
 import goblinbob.mobends.standard.data.PigZombieData;
 import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.model.ZombieModel;
+import net.minecraft.client.model.monster.zombie.ZombieModel;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
-import net.minecraft.world.entity.monster.ZombifiedPiglin;
+import net.minecraft.world.entity.monster.zombie.ZombifiedPiglin;
 
-public class PigZombieMutator extends BipedMutator<PigZombieData, ZombifiedPiglin, ZombieModel<ZombifiedPiglin>>
+public class PigZombieMutator extends BipedMutator<PigZombieData, ZombifiedPiglin, ZombieModel>
 {
 
 	// Should the height of the texture be 64 or 32(half)?
@@ -19,7 +19,7 @@ public class PigZombieMutator extends BipedMutator<PigZombieData, ZombifiedPigli
 	}
 
 	@Override
-	public void fetchFields(LivingEntityRenderer<ZombifiedPiglin, ZombieModel<ZombifiedPiglin>> renderer)
+	public void fetchFields(LivingEntityRenderer<?, ?, ?> renderer)
 	{
 		super.fetchFields(renderer);
 
@@ -29,7 +29,7 @@ public class PigZombieMutator extends BipedMutator<PigZombieData, ZombifiedPigli
 	}
 
 	@Override
-	public void storeVanillaModel(ZombieModel<ZombifiedPiglin> model)
+	public void storeVanillaModel(ZombieModel model)
 	{
 		// In 1.20.1, models are created differently - using baked model definitions
 		// For now, store a reference to indicate this is vanilla

@@ -5,26 +5,18 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import goblinbob.mobends.core.client.model.BendsModelPart;
 import goblinbob.mobends.core.client.model.IModelPart;
 import goblinbob.mobends.core.data.IEntityDataFactory;
-import goblinbob.mobends.standard.client.renderer.entity.layers.LayerCustomCape;
-import goblinbob.mobends.standard.client.renderer.entity.layers.LayerCustomElytra;
-import goblinbob.mobends.standard.client.renderer.entity.layers.LayerPlayerAccessories;
 import goblinbob.mobends.standard.data.PlayerData;
 import goblinbob.mobends.standard.previewer.PlayerPreviewer;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.model.PlayerModel;
+import net.minecraft.client.model.player.PlayerModel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
-import net.minecraft.client.renderer.entity.layers.CapeLayer;
-import net.minecraft.client.renderer.entity.layers.ElytraLayer;
-import net.minecraft.client.renderer.entity.layers.RenderLayer;
-import net.minecraft.client.renderer.entity.player.PlayerRenderer;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.PlayerModelType;
 
 /**
  * Instantiated once per PlayerRenderer
  */
-public class PlayerMutator extends BipedMutator<PlayerData, AbstractClientPlayer, PlayerModel<AbstractClientPlayer>>
+public class PlayerMutator extends BipedMutator<PlayerData, AbstractClientPlayer, PlayerModel>
 {
     protected BendsModelPart bodywear;
     protected BendsModelPart leftArmwear;
@@ -38,11 +30,11 @@ public class PlayerMutator extends BipedMutator<PlayerData, AbstractClientPlayer
 
     protected boolean smallArms;
 
-    protected LayerCustomCape layerCape;
-    protected CapeLayer layerCapeVanilla;
-    protected LayerCustomElytra layerElytra;
-    protected ElytraLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> layerElytraVanilla;
-    protected LayerPlayerAccessories layerPlayerAccessories;
+    protected Object layerCape;
+    protected Object layerCapeVanilla;
+    protected Object layerElytra;
+    protected Object layerElytraVanilla;
+    protected Object layerPlayerAccessories;
 
     public PlayerMutator(IEntityDataFactory<AbstractClientPlayer> dataFactory)
     {
@@ -55,102 +47,21 @@ public class PlayerMutator extends BipedMutator<PlayerData, AbstractClientPlayer
     }
 
     @Override
-    public boolean mutate(LivingEntityRenderer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> renderer)
+    public boolean mutate(LivingEntityRenderer<?, ?, ?> renderer)
     {
-        if (super.mutate(renderer))
-        {
-            this.layerPlayerAccessories = new LayerPlayerAccessories(renderer);
-            layerRenderers.add(layerPlayerAccessories);
-            return true;
-        }
-
-        return false;
+        return super.mutate(renderer);
     }
 
     @Override
-    public void demutate(LivingEntityRenderer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> renderer)
+    public void demutate(LivingEntityRenderer<?, ?, ?> renderer)
     {
         super.demutate(renderer);
-
-        layerRenderers.remove(layerPlayerAccessories);
     }
 
     @Override
-    public void fetchFields(LivingEntityRenderer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> renderer)
+    public void fetchFields(LivingEntityRenderer<?, ?, ?> renderer)
     {
         super.fetchFields(renderer);
-
-        // Does the renderer have Small Arms?
-        // In 1.20.1, slim is a field in PlayerRenderer that determines arm width.
-        // The access transformer makes f_117788_ (slim) public.
-        if (renderer instanceof PlayerRenderer playerRenderer)
-        {
-            this.smallArms = detectSlimArms(playerRenderer);
-        }
-    }
-
-    /**
-     * Detect slim arms from the PlayerRenderer using multiple approaches.
-     */
-    private boolean detectSlimArms(PlayerRenderer playerRenderer)
-    {
-        // Approach 1: Try direct field access (works if access transformer is applied)
-        // In Mojang mappings the field is 'slim', in SRG it's 'f_117788_'
-        String[] fieldNames = {"slim", "f_117788_"};
-
-        for (String fieldName : fieldNames)
-        {
-            try
-            {
-                java.lang.reflect.Field slimField = PlayerRenderer.class.getDeclaredField(fieldName);
-                slimField.setAccessible(true);
-                boolean result = slimField.getBoolean(playerRenderer);
-                // Log success for debugging
-                goblinbob.mobends.standard.main.MoBends.LOG.debug("Detected slim arms via field '{}': {}", fieldName, result);
-                return result;
-            }
-            catch (NoSuchFieldException | IllegalAccessException ignored)
-            {
-                // Try next field name
-            }
-        }
-
-        // Approach 2: Check the model's arm dimensions
-        // PlayerModel in slim mode has 3-pixel wide arms, standard has 4-pixel wide
-        try
-        {
-            PlayerModel<?> model = playerRenderer.getModel();
-            if (model != null && model.leftArm != null)
-            {
-                // Use mixin accessor to get cubes (private field)
-                // Cast is valid at runtime because mixin applies ModelPartAccessor interface to ModelPart
-                goblinbob.mobends.mixin.armor.ModelPartAccessor accessor =
-                    (goblinbob.mobends.mixin.armor.ModelPartAccessor)(Object) model.leftArm;
-                java.util.List<net.minecraft.client.model.geom.ModelPart.Cube> cubes = accessor.mobends$getCubes();
-                if (cubes != null)
-                {
-                    for (net.minecraft.client.model.geom.ModelPart.Cube cube : cubes)
-                    {
-                        float width = cube.maxX - cube.minX;
-                        if (Math.abs(width - 3.0f) < 0.1f)
-                        {
-                            goblinbob.mobends.standard.main.MoBends.LOG.debug("Detected slim arms via model cube width: true");
-                            return true;
-                        }
-                    }
-                    goblinbob.mobends.standard.main.MoBends.LOG.debug("Detected slim arms via model cube width: false");
-                    return false;
-                }
-            }
-        }
-        catch (Exception e)
-        {
-            goblinbob.mobends.standard.main.MoBends.LOG.warn("Failed to detect slim arms via model: {}", e.getMessage());
-        }
-
-        // Default to standard (wide) arms
-        goblinbob.mobends.standard.main.MoBends.LOG.warn("Could not detect slim arms, defaulting to standard arms");
-        return false;
     }
 
     /**
@@ -161,67 +72,36 @@ public class PlayerMutator extends BipedMutator<PlayerData, AbstractClientPlayer
     {
         if (player != null)
         {
-            this.smallArms = player.getSkin().model().id().equals("slim");
+            this.smallArms = player.getSkin().model() == PlayerModelType.SLIM;
         }
     }
 
     @Override
-    public void storeVanillaModel(PlayerModel<AbstractClientPlayer> model)
+    public void storeVanillaModel(PlayerModel model)
     {
         super.storeVanillaModel(model);
     }
 
     @Override
-    public void applyVanillaModel(PlayerModel<AbstractClientPlayer> model)
+    public void applyVanillaModel(PlayerModel model)
     {
         super.applyVanillaModel(model);
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public void swapLayer(LivingEntityRenderer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> renderer, int index, boolean isModelVanilla)
+    public void swapLayer(LivingEntityRenderer<?, ?, ?> renderer, int index, boolean isModelVanilla)
     {
         super.swapLayer(renderer, index, isModelVanilla);
-
-        final RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> layer = layerRenderers.get(index);
-        if (layer instanceof CapeLayer)
-        {
-            this.layerCape = new LayerCustomCape((PlayerRenderer) renderer);
-            if (isModelVanilla)
-                this.layerCapeVanilla = (CapeLayer) layer;
-            layerRenderers.set(index, this.layerCape);
-        }
-
-        if (layer instanceof ElytraLayer)
-        {
-            this.layerElytra = new LayerCustomElytra((PlayerRenderer) renderer, Minecraft.getInstance().getEntityModels());
-            if (isModelVanilla)
-                this.layerElytraVanilla = (ElytraLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>>) layer;
-            layerRenderers.set(index, this.layerElytra);
-        }
     }
 
     @Override
-    public void deswapLayer(LivingEntityRenderer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> renderer, int index)
+    public void deswapLayer(LivingEntityRenderer<?, ?, ?> renderer, int index)
     {
         super.deswapLayer(renderer, index);
-
-        final RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> layer = layerRenderers.get(index);
-        if (layer instanceof LayerCustomCape)
-        {
-            layerRenderers.set(index, this.layerCapeVanilla);
-        }
-
-        if (layer instanceof LayerCustomElytra)
-        {
-            layerRenderers.set(index, this.layerElytraVanilla);
-        }
-
-        layerRenderers.remove(layerPlayerAccessories);
     }
 
     @Override
-    public boolean createParts(PlayerModel<AbstractClientPlayer> original, float scaleFactor)
+    public boolean createParts(PlayerModel original, float scaleFactor)
     {
         // Arms
         int armWidth = this.smallArms ? 3 : 4;
@@ -378,7 +258,7 @@ public class PlayerMutator extends BipedMutator<PlayerData, AbstractClientPlayer
 
     @Override
     public void performAnimations(PlayerData data, String animatedEntityKey,
-                                   LivingEntityRenderer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> renderer,
+                                   LivingEntityRenderer<?, ?, ?> renderer,
                                    float partialTicks)
     {
         // Sync wear visibility with base parts
@@ -397,8 +277,6 @@ public class PlayerMutator extends BipedMutator<PlayerData, AbstractClientPlayer
     @Override
     public void postRefresh()
     {
-        if (this.layerArmor != null)
-            this.layerArmor.initArmor();
     }
 
     /**
@@ -415,7 +293,7 @@ public class PlayerMutator extends BipedMutator<PlayerData, AbstractClientPlayer
     }
 
     @Override
-    public boolean isModelVanilla(PlayerModel<AbstractClientPlayer> model)
+    public boolean isModelVanilla(PlayerModel model)
     {
         // Check if we've already created custom parts
         return this.body == null;
@@ -434,7 +312,7 @@ public class PlayerMutator extends BipedMutator<PlayerData, AbstractClientPlayer
         // This ensures correct detection even if initial reflection failed
         if (entity != null && !PlayerPreviewer.isPreviewInProgress())
         {
-            boolean playerIsSlim = entity.getSkin().model().id().equals("slim");
+            boolean playerIsSlim = entity.getSkin().model() == PlayerModelType.SLIM;
             if (playerIsSlim != this.smallArms)
             {
                 goblinbob.mobends.standard.main.MoBends.LOG.debug(

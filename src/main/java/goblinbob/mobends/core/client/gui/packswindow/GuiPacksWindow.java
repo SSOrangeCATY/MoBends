@@ -10,17 +10,19 @@ import goblinbob.mobends.core.util.GuiHelper;
 import goblinbob.mobends.core.util.Timer;
 import goblinbob.mobends.standard.main.ModStatics;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class GuiPacksWindow extends Screen
 {
 
-    public static final ResourceLocation BACKGROUND_TEXTURE = ResourceLocation.fromNamespaceAndPath(ModStatics.MODID,
+    public static final Identifier BACKGROUND_TEXTURE = Identifier.fromNamespaceAndPath(ModStatics.MODID,
             "textures/gui/pack_window.png");
     public static final int EDITOR_WIDTH = 280;
     public static final int EDITOR_HEIGHT = 177;
@@ -99,21 +101,21 @@ public class GuiPacksWindow extends Screen
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button)
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubled)
     {
-        if (super.mouseClicked(mouseX, mouseY, button)) return true;
+        if (super.mouseClicked(event, doubled)) return true;
 
-        this.tabNavigation.mouseClicked((int)mouseX, (int)mouseY, button);
-        this.localPacks.mouseClicked((int)mouseX, (int)mouseY, button);
+        this.tabNavigation.mouseClicked((int)event.x(), (int)event.y(), event.button());
+        this.localPacks.mouseClicked((int)event.x(), (int)event.y(), event.button());
         return true;
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int state)
+    public boolean mouseReleased(MouseButtonEvent event)
     {
-        super.mouseReleased(mouseX, mouseY, state);
+        super.mouseReleased(event);
 
-        this.localPacks.mouseReleased((int)mouseX, (int)mouseY, state);
+        this.localPacks.mouseReleased((int)event.x(), (int)event.y(), event.button());
         return true;
     }
 
@@ -128,14 +130,11 @@ public class GuiPacksWindow extends Screen
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks)
+    public void extractRenderState(GuiGraphicsExtractor GuiGraphicsExtractor, int mouseX, int mouseY, float partialTicks)
     {
-        this.renderBackground(guiGraphics, mouseX, mouseY, partialTicks);
+        this.extractBackground(GuiGraphicsExtractor, mouseX, mouseY, partialTicks);
 
         float delta = this.timer.tick();
-
-        RenderSystem.setShaderTexture(0, BACKGROUND_TEXTURE);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         // Container
         Draw.borderBox(x + 4, y + 4, EDITOR_WIDTH, EDITOR_HEIGHT, 4, 36, 126);
         // Title background
@@ -143,36 +142,35 @@ public class GuiPacksWindow extends Screen
         Draw.texturedModalRect(x + 4, y - 13, EDITOR_WIDTH - 16, 16, 105, 0, 1, 16);
         Draw.texturedModalRect(x + EDITOR_WIDTH - 17, y - 13, 106, 0, 19, 16);
 
-        this.tabNavigation.draw(guiGraphics, mouseX, mouseY);
+        this.tabNavigation.draw(GuiGraphicsExtractor, mouseX, mouseY);
         if (this.tabNavigation.getSelectedTab() == this.localPacksTab)
         {
-            this.localPacks.draw(guiGraphics, partialTicks);
+            this.localPacks.draw(GuiGraphicsExtractor, partialTicks);
         }
         else if (this.tabNavigation.getSelectedTab() == this.publicPacksTab)
         {
             String text = "Coming soon...";
-            guiGraphics.drawString(font, text, x + EDITOR_WIDTH / 2 - font.width(text) / 2, y + EDITOR_HEIGHT / 2 - 10,
+            GuiHelper.drawString(GuiGraphicsExtractor, font, text, x + EDITOR_WIDTH / 2 - font.width(text) / 2, y + EDITOR_HEIGHT / 2 - 10,
                     0xffffff, true);
         }
 
-        super.render(guiGraphics, mouseX, mouseY, partialTicks);
+        super.extractRenderState(GuiGraphicsExtractor, mouseX, mouseY, partialTicks);
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers)
+    public boolean keyPressed(KeyEvent event)
     {
-        // ESC key
-        if (keyCode == 256)
+        if (event.key() == 256)
         {
             GuiHelper.closeGui();
             return true;
         }
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(event);
     }
 
     private void goBack()
     {
-        this.minecraft.setScreen(new GuiBendsMenu());
+        this.minecraft.setScreenAndShow(new GuiBendsMenu());
     }
 
     @Override

@@ -4,7 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import goblinbob.mobends.core.client.gui.elements.GuiList;
 import goblinbob.mobends.core.flux.Observable;
 import goblinbob.mobends.core.util.Draw;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -38,22 +38,20 @@ public class GuiPackList extends GuiList<GuiPackEntry>
     }
 
     @Override
-    protected void drawBackground(GuiGraphics guiGraphics, float partialTicks)
+    protected void drawBackground(GuiGraphicsExtractor GuiGraphicsExtractor, float partialTicks)
     {
-        RenderSystem.setShaderTexture(0, GuiPacksWindow.BACKGROUND_TEXTURE);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         Draw.borderBox(0, 0, this.width, this.height, 4, 36, 117);
     }
 
     @Override
-    protected void drawContent(GuiGraphics guiGraphics, float partialTicks)
+    protected void drawContent(GuiGraphicsExtractor GuiGraphicsExtractor, float partialTicks)
     {
         for (GuiPackEntry element : this.getListElements())
         {
             // Dragged elements are drawn separately.
             if (!element.isDragged())
             {
-                element.draw(guiGraphics, partialTicks);
+                element.draw(GuiGraphicsExtractor, partialTicks);
             }
         }
     }

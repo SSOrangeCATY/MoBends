@@ -1,19 +1,15 @@
 package goblinbob.mobends.core.client.gui.elements;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.BufferUploader;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
+import goblinbob.mobends.core.util.GuiHelper;
+
 import net.minecraft.SharedConstants;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.GameRenderer;
-import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.util.StringUtil;
 
@@ -308,18 +304,22 @@ public class GuiTextArea
         {
             return false;
         }
-        else if (Screen.isSelectAll(keyCode))
+
+        boolean controlDown = (modifiers & 2) != 0;
+        boolean shiftDown = (modifiers & 1) != 0;
+
+        if (controlDown && keyCode == 65)
         {
             this.setCursorPositionEnd();
             this.setSelectionPos(0);
             return true;
         }
-        else if (Screen.isCopy(keyCode))
+        else if (controlDown && keyCode == 67)
         {
             Minecraft.getInstance().keyboardHandler.setClipboard(this.getSelectedText());
             return true;
         }
-        else if (Screen.isPaste(keyCode))
+        else if (controlDown && keyCode == 86)
         {
             if (this.isEnabled)
             {
@@ -328,7 +328,7 @@ public class GuiTextArea
 
             return true;
         }
-        else if (Screen.isCut(keyCode))
+        else if (controlDown && keyCode == 88)
         {
             Minecraft.getInstance().keyboardHandler.setClipboard(this.getSelectedText());
 
@@ -345,7 +345,7 @@ public class GuiTextArea
             {
                 case 259: // Backspace
 
-                    if (Screen.hasControlDown())
+                    if (controlDown)
                     {
                         if (this.isEnabled)
                         {
@@ -360,7 +360,7 @@ public class GuiTextArea
                     return true;
                 case 268: // Home
 
-                    if (Screen.hasShiftDown())
+                    if (shiftDown)
                     {
                         this.setSelectionPos(0);
                     }
@@ -372,9 +372,9 @@ public class GuiTextArea
                     return true;
                 case 263: // Left arrow
 
-                    if (Screen.hasShiftDown())
+                    if (shiftDown)
                     {
-                        if (Screen.hasControlDown())
+                        if (controlDown)
                         {
                             this.setSelectionPos(this.getNthWordFromPos(-1, this.getSelectionEnd()));
                         }
@@ -383,7 +383,7 @@ public class GuiTextArea
                             this.setSelectionPos(this.getSelectionEnd() - 1);
                         }
                     }
-                    else if (Screen.hasControlDown())
+                    else if (controlDown)
                     {
                         this.setCursorPosition(this.getNthWordFromCursor(-1));
                     }
@@ -395,9 +395,9 @@ public class GuiTextArea
                     return true;
                 case 262: // Right arrow
 
-                    if (Screen.hasShiftDown())
+                    if (shiftDown)
                     {
-                        if (Screen.hasControlDown())
+                        if (controlDown)
                         {
                             this.setSelectionPos(this.getNthWordFromPos(1, this.getSelectionEnd()));
                         }
@@ -406,7 +406,7 @@ public class GuiTextArea
                             this.setSelectionPos(this.getSelectionEnd() + 1);
                         }
                     }
-                    else if (Screen.hasControlDown())
+                    else if (controlDown)
                     {
                         this.setCursorPosition(this.getNthWordFromCursor(1));
                     }
@@ -418,7 +418,7 @@ public class GuiTextArea
                     return true;
                 case 269: // End
 
-                    if (Screen.hasShiftDown())
+                    if (shiftDown)
                     {
                         this.setSelectionPos(this.text.length());
                     }
@@ -430,7 +430,7 @@ public class GuiTextArea
                     return true;
                 case 261: // Delete
 
-                    if (Screen.hasControlDown())
+                    if (controlDown)
                     {
                         if (this.isEnabled)
                         {
@@ -452,6 +452,26 @@ public class GuiTextArea
     /**
      * Called when a character is typed
      */
+    public boolean charTyped(CharacterEvent event)
+    {
+        if (!this.isFocused)
+        {
+            return false;
+        }
+
+        if (event.isAllowedChatCharacter())
+        {
+            if (this.isEnabled)
+            {
+                this.writeText(event.codepointAsString());
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
     public boolean charTyped(char typedChar, int modifiers)
     {
         if (!this.isFocused)
@@ -501,14 +521,14 @@ public class GuiTextArea
     /**
      * Draws the textbox
      */
-    public void drawTextBox(GuiGraphics guiGraphics)
+    public void drawTextBox(GuiGraphicsExtractor GuiGraphicsExtractor)
     {
         if (this.getVisible())
         {
             if (this.getEnableBackgroundDrawing())
             {
-                guiGraphics.fill(this.xPosition - 1, this.yPosition - 1, this.xPosition + this.width + 1, this.yPosition + this.height + 1, -6250336);
-                guiGraphics.fill(this.xPosition, this.yPosition, this.xPosition + this.width, this.yPosition + this.height, -16777216);
+                GuiGraphicsExtractor.fill(this.xPosition - 1, this.yPosition - 1, this.xPosition + this.width + 1, this.yPosition + this.height + 1, -6250336);
+                GuiGraphicsExtractor.fill(this.xPosition, this.yPosition, this.xPosition + this.width, this.yPosition + this.height, -16777216);
             }
 
             int i = this.isEnabled ? this.enabledColor : this.disabledColor;
@@ -529,7 +549,7 @@ public class GuiTextArea
             if (!s.isEmpty())
             {
                 String s1 = flag ? s.substring(0, j) : s;
-                j1 = guiGraphics.drawString(this.font, s1, l, i1, i, true);
+                j1 = GuiHelper.drawString(GuiGraphicsExtractor, this.font, s1, l, i1, i, true);
             }
 
             boolean flag2 = this.cursorPosition < this.text.length();
@@ -547,25 +567,25 @@ public class GuiTextArea
 
             if (!s.isEmpty() && flag && j < s.length())
             {
-                guiGraphics.drawString(this.font, s.substring(j), j1, i1, i, true);
+                GuiHelper.drawString(GuiGraphicsExtractor, this.font, s.substring(j), j1, i1, i, true);
             }
 
             if (flag1)
             {
                 if (flag2)
                 {
-                    guiGraphics.fill(k1, i1 - 1, k1 + 1, i1 + 1 + this.font.lineHeight, -3092272);
+                    GuiGraphicsExtractor.fill(k1, i1 - 1, k1 + 1, i1 + 1 + this.font.lineHeight, -3092272);
                 }
                 else
                 {
-                    guiGraphics.drawString(this.font, "_", k1, i1, i, true);
+                    GuiHelper.drawString(GuiGraphicsExtractor, this.font, "_", k1, i1, i, true);
                 }
             }
 
             if (k != j)
             {
                 int l1 = l + this.font.width(s.substring(0, k));
-                this.drawSelectionBox(guiGraphics, k1, i1 - 1, l1 - 1, i1 + 1 + this.font.lineHeight);
+                this.drawSelectionBox(GuiGraphicsExtractor, k1, i1 - 1, l1 - 1, i1 + 1 + this.font.lineHeight);
             }
         }
     }
@@ -573,50 +593,9 @@ public class GuiTextArea
     /**
      * Draws the blue selection box.
      */
-    private void drawSelectionBox(GuiGraphics guiGraphics, int _startX, int _startY, int _endX, int _endY)
+    private void drawSelectionBox(GuiGraphicsExtractor GuiGraphicsExtractor, int _startX, int _startY, int _endX, int _endY)
     {
-        int startX = _startX;
-        int startY = _startY;
-        int endX = _endX;
-        int endY = _endY;
-
-        if (startX < endX)
-        {
-            int temp = startX;
-            startX = endX;
-            endX = temp;
-        }
-
-        if (startY < endY)
-        {
-            int j = startY;
-            startY = endY;
-            endY = j;
-        }
-
-        if (endX > this.xPosition + this.width)
-        {
-            endX = this.xPosition + this.width;
-        }
-
-        if (startX > this.xPosition + this.width)
-        {
-            startX = this.xPosition + this.width;
-        }
-
-        Tesselator tesselator = Tesselator.getInstance();
-        RenderSystem.setShader(GameRenderer::getPositionShader);
-        RenderSystem.setShaderColor(0.0F, 0.0F, 1.0F, 1.0F);
-        RenderSystem.enableColorLogicOp();
-        RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE);
-        BufferBuilder bufferBuilder = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
-        bufferBuilder.addVertex((float)startX, (float)endY, 0.0F);
-        bufferBuilder.addVertex((float)endX, (float)endY, 0.0F);
-        bufferBuilder.addVertex((float)endX, (float)startY, 0.0F);
-        bufferBuilder.addVertex((float)startX, (float)startY, 0.0F);
-        BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.disableColorLogicOp();
+        GuiGraphicsExtractor.fill(_startX, _startY, _endX, _endY, -16776961);
     }
 
     /**

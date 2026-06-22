@@ -10,12 +10,12 @@ import goblinbob.mobends.core.mutators.Mutator;
 import goblinbob.mobends.core.util.GlHelper;
 import goblinbob.mobends.standard.data.SpiderData;
 import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.model.SpiderModel;
+import net.minecraft.client.model.monster.spider.SpiderModel;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.monster.Spider;
+import net.minecraft.world.entity.monster.spider.Spider;
 
-public class SpiderMutator extends Mutator<SpiderData, Spider, SpiderModel<Spider>>
+public class SpiderMutator extends Mutator<SpiderData, Spider, SpiderModel>
 {
 
     public BendsModelPart spiderHead;
@@ -36,31 +36,31 @@ public class SpiderMutator extends Mutator<SpiderData, Spider, SpiderModel<Spide
     }
 
     @Override
-    public void storeVanillaModel(SpiderModel<Spider> model)
+    public void storeVanillaModel(SpiderModel model)
     {
         // In 1.20.1, we use composition pattern - no need to store vanilla parts
     }
 
     @Override
-    public void applyVanillaModel(SpiderModel<Spider> model)
+    public void applyVanillaModel(SpiderModel model)
     {
         // In 1.20.1, demutation handled differently
     }
 
     @Override
-    public void swapLayer(LivingEntityRenderer<Spider, SpiderModel<Spider>> renderer, int index, boolean isModelVanilla)
+    public void swapLayer(LivingEntityRenderer<?, ?, ?> renderer, int index, boolean isModelVanilla)
     {
         // No custom layers for spider
     }
 
     @Override
-    public void deswapLayer(LivingEntityRenderer<Spider, SpiderModel<Spider>> renderer, int index)
+    public void deswapLayer(LivingEntityRenderer<?, ?, ?> renderer, int index)
     {
         // No custom layers for spider
     }
 
     @Override
-    public boolean createParts(SpiderModel<Spider> original, float scaleFactor)
+    public boolean createParts(SpiderModel original, float scaleFactor)
     {
         float legLength = 12F;
         float foreLegLength = 12F;
@@ -131,7 +131,7 @@ public class SpiderMutator extends Mutator<SpiderData, Spider, SpiderModel<Spide
     }
 
     @Override
-    public boolean isModelVanilla(SpiderModel<Spider> model)
+    public boolean isModelVanilla(SpiderModel model)
     {
         // Check if we've already created custom parts
         return this.spiderHead == null;

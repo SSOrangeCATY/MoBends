@@ -1,7 +1,7 @@
 package goblinbob.mobends.standard.data;
 
 import goblinbob.mobends.standard.animation.controller.ZombieVillagerController;
-import net.minecraft.world.entity.monster.ZombieVillager;
+import net.minecraft.world.entity.monster.zombie.ZombieVillager;
 
 public class ZombieVillagerData extends ZombieDataBase<ZombieVillager>
 {

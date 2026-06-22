@@ -6,7 +6,7 @@ import goblinbob.mobends.core.animation.layer.HardAnimationLayer;
 import goblinbob.mobends.core.math.SmoothOrientation;
 import goblinbob.mobends.standard.animation.bit.spider.*;
 import goblinbob.mobends.standard.data.SpiderData;
-import net.minecraft.world.entity.monster.Spider;
+import net.minecraft.world.entity.monster.spider.Spider;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -9,7 +9,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.slf4j.Logger;
 
@@ -22,7 +22,7 @@ public record ConfigResponsePayload(CompoundTag configData) implements CustomPac
     private static final Logger LOGGER = LogUtils.getLogger();
 
     public static final Type<ConfigResponsePayload> TYPE =
-        new Type<>(ResourceLocation.fromNamespaceAndPath(ModStatics.MODID, "config_response"));
+        new Type<>(Identifier.fromNamespaceAndPath(ModStatics.MODID, "config_response"));
 
     public static final StreamCodec<FriendlyByteBuf, ConfigResponsePayload> STREAM_CODEC = StreamCodec.composite(
         ByteBufCodecs.COMPOUND_TAG,

@@ -2,10 +2,9 @@ package goblinbob.mobends.standard.mutators;
 
 import goblinbob.mobends.core.data.IEntityDataFactory;
 import goblinbob.mobends.standard.data.ZombieDataBase;
-import net.minecraft.client.model.HumanoidModel;
-import net.minecraft.client.model.ZombieModel;
+import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
-import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.entity.monster.zombie.Zombie;
 
 /**
  * This base is used both by ZombieMutator and ZombieVillagerMutator, but since
@@ -20,7 +19,7 @@ import net.minecraft.world.entity.monster.Zombie;
  */
 public abstract class ZombieMutatorBase<D extends ZombieDataBase<E>,
                                         E extends Zombie,
-                                        M extends HumanoidModel<E>>
+                                        M extends EntityModel>
                                        extends BipedMutator<D, E, M>
 {
 
@@ -33,7 +32,7 @@ public abstract class ZombieMutatorBase<D extends ZombieDataBase<E>,
     }
 
     @Override
-    public void fetchFields(LivingEntityRenderer<E, M> renderer)
+    public void fetchFields(LivingEntityRenderer<?, ?, ?> renderer)
     {
         super.fetchFields(renderer);
 

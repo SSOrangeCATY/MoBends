@@ -3,7 +3,7 @@ package goblinbob.mobends.core.animation.keyframe;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
 
 import java.io.*;
@@ -22,7 +22,7 @@ public class AnimationLoader
     /**
      * This holds animations that are loaded from mod resources.
      */
-    private static Map<ResourceLocation, KeyframeAnimation> cachedAnimations = new HashMap<>();
+    private static Map<Identifier, KeyframeAnimation> cachedAnimations = new HashMap<>();
 
     public static void clearCache()
     {
@@ -48,7 +48,7 @@ public class AnimationLoader
         return (new Gson()).fromJson(animationJson, KeyframeAnimation.class);
     }
 
-    public static KeyframeAnimation loadFromResource(ResourceLocation location) throws IOException
+    public static KeyframeAnimation loadFromResource(Identifier location) throws IOException
     {
         if (cachedAnimations.containsKey(location))
         {
@@ -95,7 +95,7 @@ public class AnimationLoader
             final String domain = key.substring(0, colonIndex);
             final String path = key.substring(colonIndex + 1);
 
-            return loadFromResource(ResourceLocation.fromNamespaceAndPath(domain, path));
+            return loadFromResource(Identifier.fromNamespaceAndPath(domain, path));
         }
 
         return internalRegistry.get(key);

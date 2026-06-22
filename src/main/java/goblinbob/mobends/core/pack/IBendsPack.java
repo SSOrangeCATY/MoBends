@@ -1,6 +1,6 @@
 package goblinbob.mobends.core.pack;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public interface IBendsPack
 {
@@ -13,7 +13,7 @@ public interface IBendsPack
 
     String getDescription();
 
-    ResourceLocation getThumbnail();
+    Identifier getThumbnail();
 
     boolean canPackBeEdited();
 

@@ -10,17 +10,20 @@ import goblinbob.mobends.core.client.gui.elements.GuiCompactTextField;
 import goblinbob.mobends.core.util.Draw;
 import goblinbob.mobends.core.util.GuiHelper;
 import goblinbob.mobends.standard.main.ModStatics;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class GuiSettingsWindow extends Screen
 {
 
-    public static final ResourceLocation BACKGROUND_TEXTURE = ResourceLocation.fromNamespaceAndPath(ModStatics.MODID,
+    public static final Identifier BACKGROUND_TEXTURE = Identifier.fromNamespaceAndPath(ModStatics.MODID,
             "textures/gui/pack_window.png");
     public static final int EDITOR_WIDTH = 280;
     public static final int EDITOR_HEIGHT = 177;
@@ -59,12 +62,9 @@ public class GuiSettingsWindow extends Screen
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks)
+    public void extractRenderState(GuiGraphicsExtractor GuiGraphicsExtractor, int mouseX, int mouseY, float partialTicks)
     {
-        this.renderBackground(guiGraphics, mouseX, mouseY, partialTicks);
-
-        RenderSystem.setShaderTexture(0, BACKGROUND_TEXTURE);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        this.extractBackground(GuiGraphicsExtractor, mouseX, mouseY, partialTicks);
         // Container
         Draw.borderBox(x + 4, y + 4, EDITOR_WIDTH, EDITOR_HEIGHT, 4, 36, 126);
         // Title background
@@ -72,11 +72,11 @@ public class GuiSettingsWindow extends Screen
         Draw.texturedModalRect(x + 4, y - 13, EDITOR_WIDTH - 16, 16, 105, 0, 1, 16);
         Draw.texturedModalRect(x + EDITOR_WIDTH - 17, y - 13, 106, 0, 19, 16);
 
-        bendsSettingsListUI.draw(guiGraphics, DataUpdateHandler.partialTicks);
+        bendsSettingsListUI.draw(GuiGraphicsExtractor, DataUpdateHandler.partialTicks);
 
-        guiGraphics.drawString(font, I18n.get("mobends.gui.settings"), this.x + 6, this.y - 9, 0xffffff, true);
+        GuiHelper.drawString(GuiGraphicsExtractor, font, I18n.get("mobends.gui.settings"), this.x + 6, this.y - 9, 0xffffff, true);
 
-        super.render(guiGraphics, mouseX, mouseY, partialTicks);
+        super.extractRenderState(GuiGraphicsExtractor, mouseX, mouseY, partialTicks);
     }
 
     @Override
@@ -93,20 +93,20 @@ public class GuiSettingsWindow extends Screen
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int mouseButton)
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubled)
     {
-        if (super.mouseClicked(mouseX, mouseY, mouseButton)) return true;
+        if (super.mouseClicked(event, doubled)) return true;
 
-        bendsSettingsListUI.handleMouseClicked((int)mouseX, (int)mouseY, mouseButton);
+        bendsSettingsListUI.handleMouseClicked((int)event.x(), (int)event.y(), event.button());
         return true;
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int mouseButton)
+    public boolean mouseReleased(MouseButtonEvent event)
     {
-        super.mouseReleased(mouseX, mouseY, mouseButton);
+        super.mouseReleased(event);
 
-        bendsSettingsListUI.handleMouseReleased((int)mouseX, (int)mouseY, mouseButton);
+        bendsSettingsListUI.handleMouseReleased((int)event.x(), (int)event.y(), event.button());
         return true;
     }
 
@@ -121,35 +121,33 @@ public class GuiSettingsWindow extends Screen
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers)
+    public boolean keyPressed(KeyEvent event)
     {
-        // Let the text field handle key presses first
-        if (filterQueryInput.isFocused() && filterQueryInput.keyPressed(keyCode, scanCode, modifiers))
+        if (filterQueryInput.isFocused() && filterQueryInput.keyPressed(event))
         {
             checkFilterChanged();
             return true;
         }
 
-        // ESC key
-        if (keyCode == 256)
+        if (event.key() == 256)
         {
             Core.saveConfiguration();
             GuiHelper.closeGui();
             return true;
         }
 
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(event);
     }
 
     @Override
-    public boolean charTyped(char chr, int modifiers)
+    public boolean charTyped(CharacterEvent event)
     {
-        if (filterQueryInput.isFocused() && filterQueryInput.charTyped(chr, modifiers))
+        if (filterQueryInput.isFocused() && filterQueryInput.charTyped(event))
         {
             checkFilterChanged();
             return true;
         }
-        return super.charTyped(chr, modifiers);
+        return super.charTyped(event);
     }
 
     private void checkFilterChanged()
@@ -164,7 +162,7 @@ public class GuiSettingsWindow extends Screen
     private void goBack()
     {
         Core.saveConfiguration();
-        this.minecraft.setScreen(new GuiBendsMenu());
+        this.minecraft.setScreenAndShow(new GuiBendsMenu());
     }
 
     @Override

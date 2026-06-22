@@ -4,11 +4,9 @@ import goblinbob.mobends.core.client.event.DataUpdateHandler;
 import goblinbob.mobends.core.client.model.ModelPartTransform;
 import goblinbob.mobends.standard.animation.controller.PlayerController;
 import goblinbob.mobends.standard.main.ModConfig;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.client.renderer.entity.EntityRenderer;
-import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.PlayerModelType;
 import net.minecraft.world.item.Items;
 
 public class PlayerData extends BipedEntityData<AbstractClientPlayer>
@@ -68,9 +66,6 @@ public class PlayerData extends BipedEntityData<AbstractClientPlayer>
     {
         super.initModelPose();
 
-        EntityRenderer<? super AbstractClientPlayer> render = Minecraft.getInstance()
-                .getEntityRenderDispatcher().getRenderer(this.entity);
-
         cape = new ModelPartTransform(body);
         nameToPartMap.put("cape", cape);
         cape.position.set(0F, 0F, 0F);
@@ -80,7 +75,7 @@ public class PlayerData extends BipedEntityData<AbstractClientPlayer>
         leftLeg.position.set(1.9F, 12.0F, 0.0F);
 
         // Check if player has slim arms by checking the skin model name
-        if (this.entity.getSkin().model().id().equals("slim"))
+        if (this.entity.getSkin().model() == PlayerModelType.SLIM)
         {
             rightArm.position.set(-5F, -9.5F, 0F);
             leftArm.position.set(5F, -9.5F, 0F);

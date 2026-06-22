@@ -1,6 +1,6 @@
 package goblinbob.mobends.core.client.gui.elements;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public abstract class GuiPanel extends GuiElement
 {
@@ -20,7 +20,7 @@ public abstract class GuiPanel extends GuiElement
     }
 
     @Override
-    public void drawChildren(GuiGraphics guiGraphics, float partialTicks)
+    public void drawChildren(GuiGraphicsExtractor GuiGraphicsExtractor, float partialTicks)
     {
         float t = this.shown ? 0F : 1F;
 //        float xOffset = 0F;
@@ -36,7 +36,7 @@ public abstract class GuiPanel extends GuiElement
 //            xOffset = t * width;
 
         if (t != 1F)
-            super.drawChildren(guiGraphics, partialTicks);
+            super.drawChildren(GuiGraphicsExtractor, partialTicks);
     }
 
     public void setShown(boolean shown)

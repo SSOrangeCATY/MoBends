@@ -4,11 +4,10 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import goblinbob.mobends.standard.client.model.armor.tier.RenderTier;
 import goblinbob.mobends.standard.data.BipedEntityData;
 import net.minecraft.client.model.HumanoidModel;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.PlayerModelType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.DyedItemColor;
 import net.neoforged.api.distmarker.Dist;
@@ -16,20 +15,17 @@ import net.neoforged.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 
-/**
- * Context object passed through the armor render pipeline.
- * Contains all information needed to render armor with Mo'Bends transforms.
- * Immutable - created once per render call.
- */
 @OnlyIn(Dist.CLIENT)
 public class ArmorRenderContext<E extends LivingEntity>
 {
+    private static final int DEFAULT_LEATHER_COLOR = 0xFFA06540;
+
     private final E entity;
     private final BipedEntityData<?> entityData;
     private final EquipmentSlot slot;
     private final ItemStack armorStack;
     private final PoseStack poseStack;
-    private final MultiBufferSource bufferSource;
+    private final Object bufferSource;
     private final int packedLight;
     private final int packedOverlay;
     private final float partialTicks;
@@ -37,8 +33,6 @@ public class ArmorRenderContext<E extends LivingEntity>
     private final HumanoidModel<?> armorModel;
     @Nullable
     private RenderTier determinedTier;
-
-    // Cached entity properties
     private final boolean isBaby;
     private final boolean isSlimArms;
 
@@ -55,21 +49,15 @@ public class ArmorRenderContext<E extends LivingEntity>
         this.partialTicks = builder.partialTicks;
         this.armorModel = builder.armorModel;
         this.determinedTier = builder.determinedTier;
-
-        // Cache entity properties for efficient access
         this.isBaby = builder.entity != null && builder.entity.isBaby();
         this.isSlimArms = detectSlimArms(builder.entity);
     }
 
-    /**
-     * Detect if the entity uses slim arm model.
-     * For players, this is determined by the skin model name.
-     */
     private static <E extends LivingEntity> boolean detectSlimArms(E entity)
     {
         if (entity instanceof net.minecraft.client.player.AbstractClientPlayer player)
         {
-            return "slim".equals(player.getSkin().model().id());
+            return player.getSkin().model() == PlayerModelType.SLIM;
         }
         return false;
     }
@@ -99,7 +87,7 @@ public class ArmorRenderContext<E extends LivingEntity>
         return poseStack;
     }
 
-    public MultiBufferSource getBufferSource()
+    public Object getBufferSource()
     {
         return bufferSource;
     }
@@ -131,61 +119,31 @@ public class ArmorRenderContext<E extends LivingEntity>
         return determinedTier;
     }
 
-    /**
-     * Returns true if the entity is a baby (uses 0.5 scale).
-     */
     public boolean isBaby()
     {
         return isBaby;
     }
 
-    /**
-     * Returns true if the entity uses slim arm model.
-     */
     public boolean isSlimArms()
     {
         return isSlimArms;
     }
 
-    /**
-     * Returns the scale factor for baby entities.
-     * @return 0.5 for babies, 1.0 for adults
-     */
     public float getEntityScale()
     {
         return isBaby ? 0.5f : 1.0f;
     }
 
-    /**
-     * Returns true if this is rendering a limb slot (arms or legs).
-     * Limb slots require special handling for joint splitting.
-     */
     public boolean isLimbSlot()
     {
         return slot == EquipmentSlot.LEGS || slot == EquipmentSlot.FEET;
     }
 
-    /**
-     * Returns true if this is rendering an arm slot.
-     * Arms need elbow joint handling.
-     */
     public boolean isArmSlot()
     {
-        return slot == EquipmentSlot.CHEST; // Chest slot includes arms
+        return slot == EquipmentSlot.CHEST;
     }
 
-    /**
-     * Default leather armor color (brownish/tan) - used when no dye is applied.
-     * RGB: (160, 101, 64) = 0xA06540 = 10511680
-     */
-    private static final int DEFAULT_LEATHER_COLOR = 0xFFA06540;
-
-    /**
-     * Get the armor color as an ARGB int for rendering.
-     * Returns the dyed color for leather armor, the default leather color for undyed leather,
-     * or 0xFFFFFFFF (white) for other armor types.
-     * The returned value has alpha in the high byte (ARGB format).
-     */
     public int getArmorColor()
     {
         if (armorStack == null || armorStack.isEmpty())
@@ -196,23 +154,12 @@ public class ArmorRenderContext<E extends LivingEntity>
         DyedItemColor dyedColor = armorStack.get(DataComponents.DYED_COLOR);
         if (dyedColor != null)
         {
-            // DyedItemColor.rgb() returns RGB, we need to add full alpha
             return 0xFF000000 | dyedColor.rgb();
-        }
-
-        // Check if this is a dyeable item (leather armor) without a dye applied
-        // Return the default leather color instead of white
-        if (armorStack.is(ItemTags.DYEABLE))
-        {
-            return DEFAULT_LEATHER_COLOR;
         }
 
         return 0xFFFFFFFF;
     }
 
-    /**
-     * Returns true if this armor has a custom dye color (leather armor).
-     */
     public boolean hasDyedColor()
     {
         return armorStack != null && armorStack.has(DataComponents.DYED_COLOR);
@@ -230,7 +177,7 @@ public class ArmorRenderContext<E extends LivingEntity>
         private EquipmentSlot slot;
         private ItemStack armorStack;
         private PoseStack poseStack;
-        private MultiBufferSource bufferSource;
+        private Object bufferSource;
         private int packedLight;
         private int packedOverlay;
         private float partialTicks;
@@ -267,7 +214,7 @@ public class ArmorRenderContext<E extends LivingEntity>
             return this;
         }
 
-        public Builder<E> bufferSource(MultiBufferSource bufferSource)
+        public Builder<E> bufferSource(Object bufferSource)
         {
             this.bufferSource = bufferSource;
             return this;

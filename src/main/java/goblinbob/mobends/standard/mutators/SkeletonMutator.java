@@ -4,16 +4,16 @@ import goblinbob.mobends.core.client.model.BendsModelPart;
 import goblinbob.mobends.core.data.IEntityDataFactory;
 import goblinbob.mobends.standard.data.SkeletonData;
 import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.model.SkeletonModel;
+import net.minecraft.client.model.monster.skeleton.SkeletonModel;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
-import net.minecraft.world.entity.monster.Skeleton;
+import net.minecraft.world.entity.monster.skeleton.Skeleton;
 
 /**
  * Instantiated once per SkeletonRenderer
  *
  * @author Iwo Plaza
  */
-public class SkeletonMutator extends BipedMutator<SkeletonData, Skeleton, SkeletonModel<Skeleton>>
+public class SkeletonMutator extends BipedMutator<SkeletonData, Skeleton, SkeletonModel>
 {
 
     protected boolean boneLimbs = false;
@@ -24,7 +24,7 @@ public class SkeletonMutator extends BipedMutator<SkeletonData, Skeleton, Skelet
     }
 
     @Override
-    public void fetchFields(LivingEntityRenderer<Skeleton, SkeletonModel<Skeleton>> renderer)
+    public void fetchFields(LivingEntityRenderer<?, ?, ?> renderer)
     {
         super.fetchFields(renderer);
 
@@ -33,13 +33,13 @@ public class SkeletonMutator extends BipedMutator<SkeletonData, Skeleton, Skelet
     }
 
     @Override
-    public void storeVanillaModel(SkeletonModel<Skeleton> model)
+    public void storeVanillaModel(SkeletonModel model)
     {
         super.storeVanillaModel(model);
     }
 
     @Override
-    public boolean createParts(SkeletonModel<Skeleton> original, float scaleFactor)
+    public boolean createParts(SkeletonModel original, float scaleFactor)
     {
         // Create custom bendable parts using BendsModelPart
         // Body - root of upper body hierarchy

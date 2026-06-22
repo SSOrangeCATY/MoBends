@@ -3,7 +3,7 @@ package goblinbob.mobends.core.client.gui.packswindow;
 import com.mojang.blaze3d.systems.RenderSystem;
 import goblinbob.mobends.core.client.gui.elements.GuiElement;
 import goblinbob.mobends.core.util.Draw;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public class GuiAddPackButton extends GuiElement
 {
@@ -38,19 +38,16 @@ public class GuiAddPackButton extends GuiElement
     }
 
     @Override
-    protected void drawBackground(GuiGraphics guiGraphics, float partialTicks)
+    protected void drawBackground(GuiGraphicsExtractor GuiGraphicsExtractor, float partialTicks)
     {
         if (!this.enabled)
             return;
-
-        RenderSystem.setShaderTexture(0, GuiPacksWindow.BACKGROUND_TEXTURE);
-        RenderSystem.setShaderColor(1, 1, 1, 1);
         int textureY = hover ? 105 : 93;
         Draw.texturedModalRect(0, 0, 0, textureY, WIDTH, HEIGHT);
     }
 
     @Override
-    protected void drawForeground(GuiGraphics guiGraphics, float partialTicks) {}
+    protected void drawForeground(GuiGraphicsExtractor GuiGraphicsExtractor, float partialTicks) {}
 
     public boolean mouseClicked(int mouseX, int mouseY, int button)
     {

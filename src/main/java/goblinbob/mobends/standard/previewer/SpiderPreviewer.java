@@ -4,7 +4,7 @@ import goblinbob.mobends.core.bender.BoneMetadata;
 import goblinbob.mobends.core.bender.IPreviewer;
 import goblinbob.mobends.core.client.event.DataUpdateHandler;
 import goblinbob.mobends.standard.data.SpiderData;
-import net.minecraft.world.entity.monster.Spider;
+import net.minecraft.world.entity.monster.spider.Spider;
 
 import java.util.Map;
 

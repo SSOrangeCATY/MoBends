@@ -1,8 +1,10 @@
 package goblinbob.mobends.core.client.gui.elements;
 
+import goblinbob.mobends.core.util.GuiHelper;
+
 import com.mojang.blaze3d.systems.RenderSystem;
 import goblinbob.mobends.core.client.gui.GuiBendsMenu;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public class GuiIconButton
 {
@@ -41,15 +43,11 @@ public class GuiIconButton
                   mouseY >= y && mouseY <= y + HEIGHT;
     }
 
-    public void display(GuiGraphics guiGraphics)
+    public void display(GuiGraphicsExtractor GuiGraphicsExtractor)
     {
         int bgTextureY = hovered ? 64 : 44;
-
-        RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        guiGraphics.blit(GuiBendsMenu.ICONS_TEXTURE, x, y, 88, bgTextureY, WIDTH, HEIGHT);
-        guiGraphics.blit(GuiBendsMenu.ICONS_TEXTURE, x + WIDTH/2 - this.iconWidth / 2, y + HEIGHT/2 - this.iconHeight / 2, this.iconU, this.iconV, this.iconWidth, this.iconHeight);
+        GuiHelper.blit(GuiGraphicsExtractor, GuiBendsMenu.ICONS_TEXTURE, x, y, 88, bgTextureY, WIDTH, HEIGHT);
+        GuiHelper.blit(GuiGraphicsExtractor, GuiBendsMenu.ICONS_TEXTURE, x + WIDTH/2 - this.iconWidth / 2, y + HEIGHT/2 - this.iconHeight / 2, this.iconU, this.iconV, this.iconWidth, this.iconHeight);
     }
 
     public boolean mouseClicked(int mouseX, int mouseY, int state)

@@ -65,7 +65,6 @@ public class GuiRadio implements IObservable
         if (!isEnabled())
             return;
 
-        com.mojang.blaze3d.systems.RenderSystem.setShaderTexture(0, GuiBendsMenu.ICONS_TEXTURE);
         Draw.texturedModalRect(x, y, bgX, bgY, bgWidth, bgHeight);
 
         for (int i = 0; i < numberOfElements; i++)

@@ -1,11 +1,13 @@
 package goblinbob.mobends.core.client.gui.settingswindow;
 
+import goblinbob.mobends.core.util.GuiHelper;
+
 import com.mojang.blaze3d.systems.RenderSystem;
 import goblinbob.mobends.core.bender.EntityBender;
 import goblinbob.mobends.core.client.gui.elements.GuiSmallToggleButton;
 import goblinbob.mobends.core.client.gui.elements.IGuiListElement;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public class GuiBenderSettings implements IGuiListElement
 {
@@ -49,13 +51,12 @@ public class GuiBenderSettings implements IGuiListElement
         toggleButton.update(mouseX, mouseY);
     }
 
-    public void draw(GuiGraphics guiGraphics, float partialTicks)
+    public void draw(GuiGraphicsExtractor GuiGraphicsExtractor, float partialTicks)
     {
-        RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
 
-        guiGraphics.drawString(mc.font, bender.getLocalizedName(), this.x + 38, this.y + 10, 0xffffff, true);
+        GuiHelper.drawString(GuiGraphicsExtractor, mc.font, bender.getLocalizedName(), this.x + 38, this.y + 10, 0xffffff, true);
 
-        toggleButton.draw(guiGraphics);
+        toggleButton.draw(GuiGraphicsExtractor);
     }
 
     @Override

@@ -39,9 +39,10 @@ public class NetworkConfiguration
      */
 	public void onWorldJoin()
     {
-        this.modelScalingAllowed.setValue(Minecraft.getInstance().isSingleplayer());
+        boolean singleplayer = Minecraft.getInstance().hasSingleplayerServer();
+        this.modelScalingAllowed.setValue(singleplayer);
         this.bendsPacksAllowed.setValue(true);
-        this.movementLimited.setValue(!Minecraft.getInstance().isSingleplayer());
+        this.movementLimited.setValue(!singleplayer);
     }
 
     /**

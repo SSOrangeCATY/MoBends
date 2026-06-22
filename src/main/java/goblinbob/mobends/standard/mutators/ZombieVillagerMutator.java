@@ -4,10 +4,10 @@ import goblinbob.mobends.core.client.model.BendsModelPart;
 import goblinbob.mobends.core.data.IEntityDataFactory;
 import goblinbob.mobends.standard.data.ZombieVillagerData;
 import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.model.ZombieVillagerModel;
-import net.minecraft.world.entity.monster.ZombieVillager;
+import net.minecraft.client.model.monster.zombie.ZombieVillagerModel;
+import net.minecraft.world.entity.monster.zombie.ZombieVillager;
 
-public class ZombieVillagerMutator extends ZombieMutatorBase<ZombieVillagerData, ZombieVillager, ZombieVillagerModel<ZombieVillager>>
+public class ZombieVillagerMutator extends ZombieMutatorBase<ZombieVillagerData, ZombieVillager, ZombieVillagerModel>
 {
 
 	public ZombieVillagerMutator(IEntityDataFactory<ZombieVillager> dataFactory)
@@ -16,7 +16,7 @@ public class ZombieVillagerMutator extends ZombieMutatorBase<ZombieVillagerData,
 	}
 
 	@Override
-	public void storeVanillaModel(ZombieVillagerModel<ZombieVillager> model)
+	public void storeVanillaModel(ZombieVillagerModel model)
 	{
 		// In 1.20.1, models are created from LayerDefinitions
 		// Store reference to indicate this is vanilla
@@ -29,7 +29,7 @@ public class ZombieVillagerMutator extends ZombieMutatorBase<ZombieVillagerData,
 	}
 
 	@Override
-	public boolean createParts(ZombieVillagerModel<ZombieVillager> original, float scaleFactor)
+	public boolean createParts(ZombieVillagerModel original, float scaleFactor)
 	{
 		boolean success = super.createParts(original, scaleFactor);
 

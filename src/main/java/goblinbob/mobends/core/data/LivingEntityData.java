@@ -6,7 +6,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.ItemUseAnimation;
 import net.minecraft.world.level.block.LadderBlock;
 import net.minecraft.world.level.block.VineBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -250,8 +250,8 @@ public abstract class LivingEntityData<E extends LivingEntity> extends EntityDat
         {
             ItemStack mainItemStack = entity.getMainHandItem();
             ItemStack offItemStack = entity.getOffhandItem();
-            if ((!mainItemStack.isEmpty() && mainItemStack.getUseAnimation() == UseAnim.BOW)
-                    || (!offItemStack.isEmpty() && offItemStack.getUseAnimation() == UseAnim.BOW))
+            if ((!mainItemStack.isEmpty() && mainItemStack.getUseAnimation() == ItemUseAnimation.BOW)
+                    || (!offItemStack.isEmpty() && offItemStack.getUseAnimation() == ItemUseAnimation.BOW))
             {
                 return true;
             }

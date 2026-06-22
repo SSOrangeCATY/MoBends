@@ -10,8 +10,8 @@ import goblinbob.mobends.core.util.GUtil;
 import goblinbob.mobends.core.util.GsonResources;
 import goblinbob.mobends.standard.data.WolfData;
 import goblinbob.mobends.standard.main.ModStatics;
-import net.minecraft.world.entity.animal.Wolf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.animal.wolf.Wolf;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 
 import java.io.IOException;
@@ -25,7 +25,7 @@ import java.util.Collection;
  */
 public class WolfController implements IAnimationController<WolfData>
 {
-    protected static final ResourceLocation WOLF_ANIMATOR = ResourceLocation.fromNamespaceAndPath(ModStatics.MODID, "bends/animators/wolf.json");
+    protected static final Identifier WOLF_ANIMATOR = Identifier.fromNamespaceAndPath(ModStatics.MODID, "bends/animators/wolf.json");
     protected AnimatorTemplate animatorTemplate;
     protected KumoAnimatorState<WolfData> kumoAnimatorState;
 
@@ -83,10 +83,9 @@ public class WolfController implements IAnimationController<WolfData>
         data.head.rotation.localRotateY(data.headYaw.get()).finish();
         data.head.rotation.localRotateX(data.headPitch.get()).finish();
 
-        data.head.rotation.localRotateZ((wolf.getHeadRollAngle(DataUpdateHandler.partialTicks)
-                + wolf.getBodyRollAngle(DataUpdateHandler.partialTicks, 0.0F)) * GUtil.RAD_TO_DEG).finish();
-        data.mane.rotation.localRotateZ(wolf.getBodyRollAngle(DataUpdateHandler.partialTicks, -0.08F) * GUtil.RAD_TO_DEG).finish();
-        data.tail.rotation.localRotateZ(wolf.getBodyRollAngle(DataUpdateHandler.partialTicks, -0.2F) * GUtil.RAD_TO_DEG).finish();
+        data.head.rotation.localRotateZ(wolf.getHeadRollAngle(DataUpdateHandler.partialTicks) * GUtil.RAD_TO_DEG).finish();
+        data.mane.rotation.localRotateZ(0.0F).finish();
+        data.tail.rotation.localRotateZ(0.0F).finish();
 
         // Tail wagging on interest
         data.tail.rotation.localRotateZ(wolf.getHeadRollAngle(DataUpdateHandler.partialTicks) * Mth.sin(ticks) * 20.0F).finish();

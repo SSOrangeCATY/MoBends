@@ -1,10 +1,12 @@
 package goblinbob.mobends.core.client.gui.elements;
 
+import goblinbob.mobends.core.util.GuiHelper;
+
 import com.mojang.blaze3d.systems.RenderSystem;
 import goblinbob.mobends.core.client.gui.GuiBendsMenu;
 import goblinbob.mobends.core.util.Draw;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public class GuiHelpButton
 {
@@ -34,11 +36,10 @@ public class GuiHelpButton
                 mouseY >= y && mouseY <= y + HEIGHT;
     }
 
-    public void display(GuiGraphics guiGraphics)
+    public void display(GuiGraphicsExtractor GuiGraphicsExtractor)
     {
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         int textureY = hovered ? 64 : 44;
-        guiGraphics.blit(GuiBendsMenu.ICONS_TEXTURE, x, y, 88, textureY, WIDTH, HEIGHT);
+        GuiHelper.blit(GuiGraphicsExtractor, GuiBendsMenu.ICONS_TEXTURE, x, y, 88, textureY, WIDTH, HEIGHT);
     }
 
     public boolean mouseClicked(int mouseX, int mouseY, int state)

@@ -1,45 +1,19 @@
 package goblinbob.mobends.core.pack;
 
 import goblinbob.mobends.standard.main.ModStatics;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.AbstractTexture;
-import net.minecraft.client.renderer.texture.HttpTexture;
-import net.minecraft.resources.ResourceLocation;
-
-import javax.annotation.Nullable;
+import net.minecraft.resources.Identifier;
 
 public class ThumbnailProvider
 {
-    public static final ResourceLocation DEFAULT_THUMBNAIL_LOCATION = ResourceLocation.fromNamespaceAndPath(ModStatics.MODID,
-            "textures/gui/default_pack_thumbnail.png");
-
-    private final PackCache packCache;
+    public static final Identifier DEFAULT_THUMBNAIL_LOCATION = Identifier.fromNamespaceAndPath(ModStatics.MODID,
+            "textures/gui/thumbnail.png");
 
     public ThumbnailProvider(PackCache packCache)
     {
-        this.packCache = packCache;
     }
 
-    public ResourceLocation getThumbnailLocation(String packName, String thumbnailUrl)
+    public Identifier getThumbnailLocation(String packName, String thumbnailUrl)
     {
-        final ResourceLocation resourceLocation = ResourceLocation.fromNamespaceAndPath(ModStatics.MODID,
-                "bendspackthumbnails/" + packName);
-        @Nullable AbstractTexture texture = Minecraft.getInstance().getTextureManager().getTexture(resourceLocation, null);
-
-        if (texture == null)
-        {
-            HttpTexture httpTexture = new HttpTexture(
-                    packCache.getThumbnailFile(packName),
-                    thumbnailUrl,
-                    DEFAULT_THUMBNAIL_LOCATION,
-                    false,  // legacySkin
-                    null    // callback
-            );
-
-            Minecraft.getInstance().getTextureManager().register(resourceLocation, httpTexture);
-            return resourceLocation;
-        }
-
-        return resourceLocation;
+        return DEFAULT_THUMBNAIL_LOCATION;
     }
 }

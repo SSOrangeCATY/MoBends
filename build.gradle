@@ -13,7 +13,7 @@ base {
     archivesName = "MoBends_${minecraft_version}"
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+java.toolchain.languageVersion = JavaLanguageVersion.of(25)
 
 neoForge {
     version = "${neoforge_version}"
@@ -54,13 +54,18 @@ neoForge {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
+    maven { url = 'https://mirrors.cloud.tencent.com/nexus/repository/maven-public/' }
+    maven { url = 'https://mirrors.cloud.tencent.com/nexus/repository/gradle-plugins/' }
     mavenCentral()
     maven { url = 'https://maven.neoforged.net/releases' }
 }
 
 dependencies {
+    implementation 'org.apache.httpcomponents:httpclient:4.5.14'
+
     // Testing
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.named('processResources', ProcessResources).configure {
@@ -129,3 +134,4 @@ tasks.withType(JavaCompile).configureEach {
 tasks.named('test', Test) {
     useJUnitPlatform()
 }
+

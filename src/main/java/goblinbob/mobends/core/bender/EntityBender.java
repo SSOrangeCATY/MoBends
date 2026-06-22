@@ -8,11 +8,10 @@ import goblinbob.mobends.core.data.LivingEntityData;
 import goblinbob.mobends.core.mutators.IMutatorFactory;
 import goblinbob.mobends.core.mutators.Mutator;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -32,7 +31,7 @@ public abstract class EntityBender<T extends LivingEntity>
     private final MutatedRenderer<T> renderer;
     public final Class<T> entityClass;
 
-    private final Map<LivingEntityRenderer<? extends T, ?>, Mutator<LivingEntityData<T>, T, ?>> mutatorMap = new HashMap<>();
+    private final Map<LivingEntityRenderer<?, ?, ?>, Mutator<LivingEntityData<T>, T, ?>> mutatorMap = new HashMap<>();
 
     private boolean animate;
     protected Map<String, BoneMetadata> boneMetadataMap;
@@ -54,12 +53,12 @@ public abstract class EntityBender<T extends LivingEntity>
             if (entityType == null)
                 throw new RuntimeException("Unable to find an EntityType for " + entityClass.getName());
 
-            ResourceLocation resourceLocation = BuiltInRegistries.ENTITY_TYPE.getKey(entityType);
-            if (resourceLocation == null)
+            Identifier Identifier = BuiltInRegistries.ENTITY_TYPE.getKey(entityType);
+            if (Identifier == null)
                 throw new RuntimeException("Unable to find a key for " + entityClass.getName());
 
-            key = resourceLocation.toString();
-            unlocalizedName = "entity." + resourceLocation.getNamespace() + "." + resourceLocation.getPath();
+            key = Identifier.toString();
+            unlocalizedName = "entity." + Identifier.getNamespace() + "." + Identifier.getPath();
         }
 
         this.key = modId + "-" + key;
@@ -142,18 +141,18 @@ public abstract class EntityBender<T extends LivingEntity>
      * Called from EntityBender.
      */
     @SuppressWarnings("unchecked")
-    public <M extends EntityModel<T>> boolean applyMutation(LivingEntityRenderer<T, M> renderer, T entity, float partialTicks)
+    public boolean applyMutation(LivingEntityRenderer<?, ?, ?> renderer, T entity, float partialTicks)
     {
-        Mutator<LivingEntityData<T>, T, M> mutator = (Mutator<LivingEntityData<T>, T, M>) mutatorMap.get(renderer);
+        Mutator<LivingEntityData<T>, T, ?> mutator = (Mutator<LivingEntityData<T>, T, ?>) mutatorMap.get(renderer);
         if (mutator == null)
         {
-            mutator = (Mutator<LivingEntityData<T>, T, M>) this.getMutatorFactory().createMutator(this.getDataFactory());
+            mutator = (Mutator<LivingEntityData<T>, T, ?>) this.getMutatorFactory().createMutator(this.getDataFactory());
             if (!mutator.mutate(renderer))
             {
                 return false;
             }
 
-            mutatorMap.put(renderer, (Mutator<LivingEntityData<T>, T, ?>) mutator);
+            mutatorMap.put(renderer, mutator);
         }
 
         mutator.updateModel(entity, renderer, partialTicks);
@@ -169,11 +168,11 @@ public abstract class EntityBender<T extends LivingEntity>
      * Called from EntityBender.
      */
     @SuppressWarnings("unchecked")
-    public <M extends EntityModel<T>> void deapplyMutation(LivingEntityRenderer<T, M> renderer, LivingEntity entity)
+    public void deapplyMutation(LivingEntityRenderer<?, ?, ?> renderer, LivingEntity entity)
     {
         if (mutatorMap.containsKey(renderer))
         {
-            Mutator<LivingEntityData<T>, T, M> mutator = (Mutator<LivingEntityData<T>, T, M>) mutatorMap.get(renderer);
+            Mutator<LivingEntityData<T>, T, ?> mutator = (Mutator<LivingEntityData<T>, T, ?>) mutatorMap.get(renderer);
             mutator.demutate(renderer);
             mutatorMap.remove(renderer);
         }
@@ -185,10 +184,10 @@ public abstract class EntityBender<T extends LivingEntity>
     @SuppressWarnings("unchecked")
     public void refreshMutation()
     {
-        for (Entry<LivingEntityRenderer<? extends T, ?>, Mutator<LivingEntityData<T>, T, ?>> entry : mutatorMap.entrySet())
+        for (Entry<LivingEntityRenderer<?, ?, ?>, Mutator<LivingEntityData<T>, T, ?>> entry : mutatorMap.entrySet())
         {
-            LivingEntityRenderer<T, EntityModel<T>> renderer = (LivingEntityRenderer<T, EntityModel<T>>) entry.getKey();
-            Mutator<LivingEntityData<T>, T, EntityModel<T>> mutator = (Mutator<LivingEntityData<T>, T, EntityModel<T>>) entry.getValue();
+            LivingEntityRenderer<?, ?, ?> renderer = entry.getKey();
+            Mutator<LivingEntityData<T>, T, ?> mutator = entry.getValue();
             mutator.demutate(renderer);
             mutator.mutate(renderer);
             mutator.postRefresh();
@@ -205,15 +204,7 @@ public abstract class EntityBender<T extends LivingEntity>
 
             Mob entity = (Mob) this.entityClass.getConstructor(EntityType.class, Level.class)
                 .newInstance(getEntityTypeForClass(entityClass), level);
-            entity.moveTo(0, 0, 0, 0, 0);
-            entity.finalizeSpawn(
-                Minecraft.getInstance().getSingleplayerServer() != null
-                    ? Minecraft.getInstance().getSingleplayerServer().overworld()
-                    : null,
-                level.getCurrentDifficultyAt(entity.blockPosition()),
-                net.minecraft.world.entity.MobSpawnType.COMMAND,
-                null
-            );
+            entity.setPos(0, 0, 0);
             PreviewHelper.registerPreviewEntity(entity);
 
             return (T) entity;
@@ -226,7 +217,7 @@ public abstract class EntityBender<T extends LivingEntity>
         return null;
     }
 
-    public Mutator<?, ?, ?> getMutator(LivingEntityRenderer<? extends LivingEntity, ?> renderer)
+    public Mutator<?, ?, ?> getMutator(LivingEntityRenderer<? extends LivingEntity, ?, ?> renderer)
     {
         return this.mutatorMap.get(renderer);
     }

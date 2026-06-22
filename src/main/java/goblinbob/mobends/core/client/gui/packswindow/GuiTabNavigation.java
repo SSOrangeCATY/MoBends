@@ -1,7 +1,9 @@
 package goblinbob.mobends.core.client.gui.packswindow;
 
+import goblinbob.mobends.core.util.GuiHelper;
+
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.resources.language.I18n;
 
 import java.util.ArrayList;
@@ -39,7 +41,7 @@ public class GuiTabNavigation
         return tab;
     }
 
-    public void draw(GuiGraphics guiGraphics, int mouseX, int mouseY)
+    public void draw(GuiGraphicsExtractor GuiGraphicsExtractor, int mouseX, int mouseY)
     {
         Minecraft mc = Minecraft.getInstance();
 
@@ -47,7 +49,7 @@ public class GuiTabNavigation
         {
             if (selectedTab != tab)
             {
-                tab.draw(guiGraphics, mouseX, mouseY);
+                tab.draw(GuiGraphicsExtractor, mouseX, mouseY);
             }
         }
 
@@ -55,9 +57,9 @@ public class GuiTabNavigation
         if (selectedTab != null)
         {
             // Drawing the selected tab after others, so it's on top.
-            selectedTab.draw(guiGraphics, mouseX, mouseY);
+            selectedTab.draw(GuiGraphicsExtractor, mouseX, mouseY);
 
-            guiGraphics.drawString(mc.font, I18n.get(selectedTab.titleKey), x + (GuiPackTab.WIDTH - 2) * this.tabs.size() + 10, y - 10, 0xffffff, true);
+            GuiHelper.drawString(GuiGraphicsExtractor, mc.font, I18n.get(selectedTab.titleKey), x + (GuiPackTab.WIDTH - 2) * this.tabs.size() + 10, y - 10, 0xffffff, true);
         }
 
     }

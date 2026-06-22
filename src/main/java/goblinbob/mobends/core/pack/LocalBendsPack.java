@@ -3,7 +3,7 @@ package goblinbob.mobends.core.pack;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import goblinbob.mobends.core.util.BendsPackHelper;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -14,7 +14,7 @@ public class LocalBendsPack implements IBendsPack
 {
 
     private BendsPackMeta metadata;
-    private ResourceLocation thumbnailLocation = ThumbnailProvider.DEFAULT_THUMBNAIL_LOCATION;
+    private Identifier thumbnailLocation = ThumbnailProvider.DEFAULT_THUMBNAIL_LOCATION;
 
     public LocalBendsPack(String displayName, String author, String description)
     {
@@ -70,7 +70,7 @@ public class LocalBendsPack implements IBendsPack
 
     @Override
     @Nullable
-    public ResourceLocation getThumbnail()
+    public Identifier getThumbnail()
     {
         return thumbnailLocation;
     }

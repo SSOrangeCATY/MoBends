@@ -1,9 +1,8 @@
 package goblinbob.mobends.core.client.gui.packswindow;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import goblinbob.mobends.core.util.Draw;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public class GuiPackTab
 {
@@ -49,12 +48,9 @@ public class GuiPackTab
         }
     }
 
-    public void draw(GuiGraphics guiGraphics, int mouseX, int mouseY)
+    public void draw(GuiGraphicsExtractor GuiGraphicsExtractor, int mouseX, int mouseY)
     {
         update(mouseX, mouseY);
-
-        RenderSystem.setShaderTexture(0, GuiPacksWindow.BACKGROUND_TEXTURE);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
         final int yOffset = y - HEIGHT + (selected ? -1 : 0);
         final int SELECTED_TEXTURE_Y = 147;
@@ -66,14 +62,8 @@ public class GuiPackTab
 
         if (this.selectedTransitionTween > 0)
         {
-            RenderSystem.enableBlend();
-            RenderSystem.defaultBlendFunc();
-
-            RenderSystem.setShaderColor(1F, 1F, 1F, this.selectedTransitionTween);
             Draw.texturedModalRect(x, yOffset, textureIndex * WIDTH, SELECTED_TEXTURE_Y, WIDTH, HEIGHT);
-            RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
-
-            RenderSystem.disableBlend();
+
         }
     }
 

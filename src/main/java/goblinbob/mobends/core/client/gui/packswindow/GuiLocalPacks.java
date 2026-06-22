@@ -1,5 +1,7 @@
 package goblinbob.mobends.core.client.gui.packswindow;
 
+import goblinbob.mobends.core.util.GuiHelper;
+
 import goblinbob.mobends.core.client.gui.GuiDragger;
 import goblinbob.mobends.core.flux.ISubscriber;
 import goblinbob.mobends.core.flux.Subscription;
@@ -11,7 +13,7 @@ import goblinbob.mobends.core.util.ErrorReporter;
 import goblinbob.mobends.core.util.IDisposable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.resources.language.I18n;
 
 import java.util.ArrayList;
@@ -127,20 +129,20 @@ public class GuiLocalPacks implements ISubscriber, IDisposable
         }
     }
 
-    public void draw(GuiGraphics guiGraphics, float partialTicks)
+    public void draw(GuiGraphicsExtractor GuiGraphicsExtractor, float partialTicks)
     {
-        availablePacksList.draw(guiGraphics, partialTicks);
-        appliedPacksList.draw(guiGraphics, partialTicks);
+        availablePacksList.draw(GuiGraphicsExtractor, partialTicks);
+        appliedPacksList.draw(GuiGraphicsExtractor, partialTicks);
 
         String unusedText = I18n.get("mobends.gui.unusedpacks");
         String appliedText = I18n.get("mobends.gui.appliedpacks");
-        guiGraphics.drawCenteredString(font, unusedText, x + GuiPacksWindow.EDITOR_WIDTH / 4, y + 8, 0xffffff);
-        guiGraphics.drawCenteredString(font, appliedText, x + GuiPacksWindow.EDITOR_WIDTH * 3 / 4 + 6, y + 8, 0xffffff);
+        GuiHelper.drawCenteredString(GuiGraphicsExtractor, font, unusedText, x + GuiPacksWindow.EDITOR_WIDTH / 4, y + 8, 0xffffff);
+        GuiHelper.drawCenteredString(GuiGraphicsExtractor, font, appliedText, x + GuiPacksWindow.EDITOR_WIDTH * 3 / 4 + 6, y + 8, 0xffffff);
 
         final GuiPackEntry element = dragger.getDraggedElement();
         if (element != null)
         {
-            element.draw(guiGraphics, partialTicks);
+            element.draw(GuiGraphicsExtractor, partialTicks);
         }
     }
 

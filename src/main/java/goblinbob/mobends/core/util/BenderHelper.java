@@ -21,13 +21,13 @@ public class BenderHelper
         return bender != null && bender.isAnimated();
     }
 
-    public static <T extends LivingEntity> Mutator<?, ?, ?> getMutatorForRenderer(Class<T> entityClass, LivingEntityRenderer<T, ?> renderer)
+    public static <T extends LivingEntity> Mutator<?, ?, ?> getMutatorForRenderer(Class<T> entityClass, LivingEntityRenderer<T, ?, ?> renderer)
     {
         final EntityBender<?> bender = EntityBenderRegistry.instance.getForEntityClass(entityClass);
         return bender != null ? bender.getMutator(renderer) : null;
     }
 
-    public static <D extends LivingEntityData<E>, E extends LivingEntity> D getData(E entity, LivingEntityRenderer<? extends LivingEntity, ?> renderer)
+    public static <D extends LivingEntityData<E>, E extends LivingEntity> D getData(E entity, LivingEntityRenderer<? extends LivingEntity, ?, ?> renderer)
     {
         final EntityBender<LivingEntity> entityBender = EntityBenderRegistry.instance.getForEntity(entity);
 

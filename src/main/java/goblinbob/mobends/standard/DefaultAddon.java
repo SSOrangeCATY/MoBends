@@ -13,12 +13,12 @@ import goblinbob.mobends.standard.previewer.BipedPreviewer;
 import goblinbob.mobends.standard.previewer.PlayerPreviewer;
 import goblinbob.mobends.standard.previewer.SpiderPreviewer;
 import goblinbob.mobends.standard.previewer.ZombiePreviewer;
-import net.minecraft.world.entity.monster.Skeleton;
-import net.minecraft.world.entity.monster.Spider;
-import net.minecraft.world.entity.monster.Zombie;
-import net.minecraft.world.entity.monster.ZombifiedPiglin;
-import net.minecraft.world.entity.animal.Squid;
-import net.minecraft.world.entity.animal.Wolf;
+import net.minecraft.world.entity.monster.skeleton.Skeleton;
+import net.minecraft.world.entity.monster.spider.Spider;
+import net.minecraft.world.entity.monster.zombie.Zombie;
+import net.minecraft.world.entity.monster.zombie.ZombifiedPiglin;
+import net.minecraft.world.entity.animal.squid.Squid;
+import net.minecraft.world.entity.animal.wolf.Wolf;
 
 public class DefaultAddon implements IAddon
 {

@@ -176,8 +176,13 @@ public class CapturingVertexConsumer implements VertexConsumer
     @Override
     public VertexConsumer setUv2(int u, int v)
     {
-        // This is the lightmap UV (alternative UV coordinates)
         this.lightmapUV = (v << 16) | (u & 0xFFFF);
+        return this;
+    }
+
+    @Override
+    public VertexConsumer setLineWidth(float lineWidth)
+    {
         return this;
     }
 }

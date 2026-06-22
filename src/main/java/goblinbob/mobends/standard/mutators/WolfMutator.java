@@ -7,11 +7,11 @@ import goblinbob.mobends.core.data.IEntityDataFactory;
 import goblinbob.mobends.core.mutators.Mutator;
 import goblinbob.mobends.standard.data.WolfData;
 import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.model.WolfModel;
+import net.minecraft.client.model.animal.wolf.WolfModel;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
-import net.minecraft.world.entity.animal.Wolf;
+import net.minecraft.world.entity.animal.wolf.Wolf;
 
-public class WolfMutator extends Mutator<WolfData, Wolf, WolfModel<Wolf>>
+public class WolfMutator extends Mutator<WolfData, Wolf, WolfModel>
 {
 
     public BendsModelPart wolfHeadMain;
@@ -41,31 +41,31 @@ public class WolfMutator extends Mutator<WolfData, Wolf, WolfModel<Wolf>>
     }
 
     @Override
-    public void storeVanillaModel(WolfModel<Wolf> model)
+    public void storeVanillaModel(WolfModel model)
     {
         // In 1.20.1, we use composition pattern - no need to store vanilla parts
     }
 
     @Override
-    public void applyVanillaModel(WolfModel<Wolf> model)
+    public void applyVanillaModel(WolfModel model)
     {
         // In 1.20.1, demutation handled differently
     }
 
     @Override
-    public void swapLayer(LivingEntityRenderer<Wolf, WolfModel<Wolf>> renderer, int index, boolean isModelVanilla)
+    public void swapLayer(LivingEntityRenderer<?, ?, ?> renderer, int index, boolean isModelVanilla)
     {
         // No custom layers for wolf yet
     }
 
     @Override
-    public void deswapLayer(LivingEntityRenderer<Wolf, WolfModel<Wolf>> renderer, int index)
+    public void deswapLayer(LivingEntityRenderer<?, ?, ?> renderer, int index)
     {
         // No custom layers for wolf yet
     }
 
     @Override
-    public boolean createParts(WolfModel<Wolf> original, float scaleFactor)
+    public boolean createParts(WolfModel original, float scaleFactor)
     {
         // Body - main part that other parts are relative to
         // Wolf body position: (0, 14, 2), box: (-3, -2, -3, 6, 9, 6)
@@ -203,7 +203,7 @@ public class WolfMutator extends Mutator<WolfData, Wolf, WolfModel<Wolf>>
     }
 
     @Override
-    public boolean isModelVanilla(WolfModel<Wolf> model)
+    public boolean isModelVanilla(WolfModel model)
     {
         // Check if we've already created custom parts
         return this.wolfHeadMain == null;

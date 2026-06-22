@@ -223,11 +223,12 @@ public class BendsCube
                     float ty = matrix.m01() * x + matrix.m11() * y + matrix.m21() * z + matrix.m31();
                     float tz = matrix.m02() * x + matrix.m12() * y + matrix.m22() * z + matrix.m32();
 
-                    vertexConsumer.addVertex(tx, ty, tz,
-                            color,
-                            vertex.u, vertex.v,
-                            packedOverlay, packedLight,
-                            normal.x(), normal.y(), normal.z());
+                    vertexConsumer.addVertex(tx, ty, tz)
+                            .setColor(color)
+                            .setUv(vertex.u, vertex.v)
+                            .setOverlay(packedOverlay)
+                            .setLight(packedLight)
+                            .setNormal(normal.x(), normal.y(), normal.z());
                 }
             }
             tempFlag >>= 1;

@@ -2,7 +2,7 @@ package goblinbob.mobends.standard.animation.bit.spider;
 
 import goblinbob.mobends.core.client.event.DataUpdateHandler;
 import goblinbob.mobends.standard.data.SpiderData;
-import net.minecraft.world.entity.monster.Spider;
+import net.minecraft.world.entity.monster.spider.Spider;
 import net.minecraft.util.Mth;
 
 public class SpiderCrawlAnimationBit extends SpiderAnimationBitBase

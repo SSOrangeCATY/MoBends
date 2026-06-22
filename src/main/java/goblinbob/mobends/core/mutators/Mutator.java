@@ -29,7 +29,7 @@ import java.util.List;
  * @param <E> The entity type
  * @param <M> The model type
  */
-public abstract class Mutator<D extends LivingEntityData<E>, E extends LivingEntity, M extends EntityModel<E>>
+public abstract class Mutator<D extends LivingEntityData<E>, E extends LivingEntity, M extends EntityModel>
 {
     protected M vanillaModel;
     protected float headYaw;
@@ -39,7 +39,7 @@ public abstract class Mutator<D extends LivingEntityData<E>, E extends LivingEnt
     protected float swingProgress;
 
     private final IEntityDataFactory<E> dataFactory;
-    protected List<RenderLayer<E, M>> layerRenderers;
+    protected List<RenderLayer<?, ?>> layerRenderers;
 
     public Mutator(IEntityDataFactory<E> dataFactory)
     {
@@ -50,12 +50,11 @@ public abstract class Mutator<D extends LivingEntityData<E>, E extends LivingEnt
      * Used to fetch private data from the original renderer.
      */
     @SuppressWarnings("unchecked")
-    public void fetchFields(LivingEntityRenderer<E, M> renderer)
+    public void fetchFields(LivingEntityRenderer<?, ?, ?> renderer)
     {
-        // Getting the layer renderers using the accessor mixin
         if (renderer instanceof LivingEntityRendererAccessor)
         {
-            this.layerRenderers = (List<RenderLayer<E, M>>) ((LivingEntityRendererAccessor) renderer).getLayers();
+            this.layerRenderers = (List<RenderLayer<?, ?>>) ((LivingEntityRendererAccessor) renderer).getLayers();
         }
     }
 
@@ -72,13 +71,13 @@ public abstract class Mutator<D extends LivingEntityData<E>, E extends LivingEnt
      * and if it's a vanilla model, it stores the vanilla layers
      * for future mutation reversal.
      */
-    public abstract void swapLayer(LivingEntityRenderer<E, M> renderer, int index, boolean isModelVanilla);
+    public abstract void swapLayer(LivingEntityRenderer<?, ?, ?> renderer, int index, boolean isModelVanilla);
 
     /**
      * Swaps the custom layers back with the vanilla layers.
      * Used to demutate the model.
      */
-    public abstract void deswapLayer(LivingEntityRenderer<E, M> renderer, int index);
+    public abstract void deswapLayer(LivingEntityRenderer<?, ?, ?> renderer, int index);
 
     /**
      * Creates all the custom parts you need! It swaps all the
@@ -89,9 +88,10 @@ public abstract class Mutator<D extends LivingEntityData<E>, E extends LivingEnt
     /**
      * Mutate the renderer's model.
      */
-    public boolean mutate(LivingEntityRenderer<E, M> renderer)
+    @SuppressWarnings("unchecked")
+    public boolean mutate(LivingEntityRenderer<?, ?, ?> renderer)
     {
-        M model = renderer.getModel();
+        M model = (M) renderer.getModel();
         if (model == null || this.shouldModelBeSkipped(model))
             return false;
 
@@ -123,9 +123,10 @@ public abstract class Mutator<D extends LivingEntityData<E>, E extends LivingEnt
     /**
      * Performs the steps needed to demutate the model.
      */
-    public void demutate(LivingEntityRenderer<E, M> renderer)
+    @SuppressWarnings("unchecked")
+    public void demutate(LivingEntityRenderer<?, ?, ?> renderer)
     {
-        M model = renderer.getModel();
+        M model = (M) renderer.getModel();
         if (this.shouldModelBeSkipped(model))
             return;
 
@@ -143,7 +144,7 @@ public abstract class Mutator<D extends LivingEntityData<E>, E extends LivingEnt
     /**
      * Update the model parameters from the entity state.
      */
-    public void updateModel(E entity, LivingEntityRenderer<E, M> renderer, float partialTicks)
+    public void updateModel(E entity, LivingEntityRenderer<?, ?, ?> renderer, float partialTicks)
     {
         boolean shouldSit = entity.isPassenger()
                 && (entity.getVehicle() != null && entity.getVehicle().shouldRiderSit());
@@ -199,7 +200,7 @@ public abstract class Mutator<D extends LivingEntityData<E>, E extends LivingEnt
     /**
      * Perform animations on the entity data.
      */
-    public void performAnimations(D data, String animatedEntityKey, LivingEntityRenderer<E, M> renderer, float partialTicks)
+    public void performAnimations(D data, String animatedEntityKey, LivingEntityRenderer<?, ?, ?> renderer, float partialTicks)
     {
         data.headYaw.set(Mth.wrapDegrees(this.headYaw));
         data.headPitch.set(Mth.wrapDegrees(this.headPitch));

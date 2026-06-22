@@ -1,6 +1,6 @@
 package goblinbob.mobends.standard.client.renderer.entity;
 
-import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 
 import java.util.HashMap;
 

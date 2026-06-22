@@ -4,7 +4,7 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import goblinbob.mobends.standard.main.ModStatics;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.io.IOException;
 
@@ -12,13 +12,13 @@ public class AssetLocation
 {
     private static final String PREFIX = "assets/";
 
-    private final ResourceLocation resourceLocation;
+    private final Identifier identifier;
     private final AssetType assetType;
     private final String assetPath;
 
     public AssetLocation(String assetPath)
     {
-        this.resourceLocation = ResourceLocation.fromNamespaceAndPath(ModStatics.MODID, PREFIX + assetPath);
+        this.identifier = Identifier.fromNamespaceAndPath(ModStatics.MODID, PREFIX + assetPath);
         this.assetPath = assetPath;
 
         if (assetPath.startsWith("models/"))
@@ -41,24 +41,24 @@ public class AssetLocation
 
     public AssetLocation(String assetPath, AssetType assetType)
     {
-        this.resourceLocation = ResourceLocation.fromNamespaceAndPath(ModStatics.MODID, PREFIX + assetPath);
+        this.identifier = Identifier.fromNamespaceAndPath(ModStatics.MODID, PREFIX + assetPath);
         this.assetPath = assetPath;
         this.assetType = assetType;
     }
 
-    public ResourceLocation getResourceLocation()
+    public Identifier getResourceLocation()
     {
-        return resourceLocation;
+        return identifier;
     }
 
     public String getNamespace()
     {
-        return resourceLocation.getNamespace();
+        return identifier.getNamespace();
     }
 
     public String getPath()
     {
-        return resourceLocation.getPath();
+        return identifier.getPath();
     }
 
     public String getAssetPath()
@@ -74,7 +74,7 @@ public class AssetLocation
     @Override
     public String toString()
     {
-        return resourceLocation.toString();
+        return identifier.toString();
     }
 
     public static class Adapter extends TypeAdapter<AssetLocation>

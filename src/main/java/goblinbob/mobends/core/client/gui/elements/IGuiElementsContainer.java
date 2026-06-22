@@ -1,6 +1,6 @@
 package goblinbob.mobends.core.client.gui.elements;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -16,11 +16,11 @@ public interface IGuiElementsContainer extends IGuiPositioned
         element.initGui();
     }
 
-    default void drawChildren(GuiGraphics guiGraphics, float partialTicks)
+    default void drawChildren(GuiGraphicsExtractor GuiGraphicsExtractor, float partialTicks)
     {
         for (IGuiElement element : getElements())
         {
-            element.draw(guiGraphics, partialTicks);
+            element.draw(GuiGraphicsExtractor, partialTicks);
         }
     }
 

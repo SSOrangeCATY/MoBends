@@ -10,7 +10,7 @@ import goblinbob.mobends.standard.animation.bit.skeleton.WalkAnimationBit;
 import goblinbob.mobends.standard.data.BipedEntityData;
 import goblinbob.mobends.standard.data.SkeletonData;
 import net.minecraft.world.entity.HumanoidArm;
-import net.minecraft.world.entity.monster.Skeleton;
+import net.minecraft.world.entity.monster.skeleton.Skeleton;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 

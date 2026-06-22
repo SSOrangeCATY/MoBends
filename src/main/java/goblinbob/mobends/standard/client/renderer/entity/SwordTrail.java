@@ -1,24 +1,14 @@
 package goblinbob.mobends.standard.client.renderer.entity;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.BufferUploader;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.MeshData;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import goblinbob.mobends.core.client.model.ModelPartTransform;
 import goblinbob.mobends.core.math.Quaternion;
 import goblinbob.mobends.core.math.vector.Vec3f;
 import goblinbob.mobends.core.util.GUtil;
 import goblinbob.mobends.core.util.IColorRead;
 import goblinbob.mobends.standard.data.BipedEntityData;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
-import org.joml.Matrix4f;
-import org.joml.Vector4f;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -117,91 +107,8 @@ public class SwordTrail
 
     public void render(PoseStack poseStack)
     {
-        if (trailPartList.isEmpty())
-        {
-            return;
-        }
-
-        RenderSystem.depthFunc(515); // GL_LEQUAL
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.disableCull();
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-
-        // Get the transformation matrix from the PoseStack
-        // This includes the scale and any other transforms applied before render
-        Matrix4f matrix = poseStack.last().pose();
-
-        Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder bufferBuilder = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-
-        Iterator<TrailPart> it = trailPartList.iterator();
-        TrailPart prevPart = null;
-        Vec3f[] prevTransformedPoints = null;
-        float prevAlpha = 0;
-
-        while (it.hasNext())
-        {
-            final TrailPart part = it.next();
-            final Vec3f[] points = part.getPoints();
-            final float alpha = part.getAlpha();
-            final IColorRead color = part.baseColor;
-
-            // Transform points by the PoseStack matrix (includes scale)
-            Vec3f[] transformedPoints = transformPoints(points, matrix);
-
-            if (prevPart != null && prevTransformedPoints != null)
-            {
-                // Draw quad connecting previous part to current
-                // Convert RGBA float to packed int for 1.21.1
-                int prevColor = ((int)(prevAlpha * 255.0F) << 24) |
-                               ((int)(color.getR() * 255.0F) << 16) |
-                               ((int)(color.getG() * 255.0F) << 8) |
-                               (int)(color.getB() * 255.0F);
-                int currColor = ((int)(alpha * 255.0F) << 24) |
-                               ((int)(color.getR() * 255.0F) << 16) |
-                               ((int)(color.getG() * 255.0F) << 8) |
-                               (int)(color.getB() * 255.0F);
-
-                bufferBuilder.addVertex(prevTransformedPoints[0].x, prevTransformedPoints[0].y, prevTransformedPoints[0].z)
-                        .setColor(prevColor);
-                bufferBuilder.addVertex(prevTransformedPoints[1].x, prevTransformedPoints[1].y, prevTransformedPoints[1].z)
-                        .setColor(prevColor);
-                bufferBuilder.addVertex(transformedPoints[1].x, transformedPoints[1].y, transformedPoints[1].z)
-                        .setColor(currColor);
-                bufferBuilder.addVertex(transformedPoints[0].x, transformedPoints[0].y, transformedPoints[0].z)
-                        .setColor(currColor);
-            }
-
-            prevPart = part;
-            prevTransformedPoints = transformedPoints;
-            prevAlpha = alpha;
-        }
-
-        // Only draw if we actually added vertices (need at least 2 trail parts to draw quads)
-        MeshData meshData = bufferBuilder.build();
-        if (meshData != null)
-        {
-            BufferUploader.drawWithShader(meshData);
-        }
-
-        RenderSystem.enableCull();
     }
 
-    /**
-     * Transform points by the given matrix.
-     */
-    private Vec3f[] transformPoints(Vec3f[] points, Matrix4f matrix)
-    {
-        Vec3f[] result = new Vec3f[points.length];
-        for (int i = 0; i < points.length; i++)
-        {
-            Vector4f vec = new Vector4f(points[i].x, points[i].y, points[i].z, 1.0f);
-            vec.mul(matrix);
-            result[i] = new Vec3f(vec.x(), vec.y(), vec.z());
-        }
-        return result;
-    }
 
     public void add(BipedEntityData<?> entityData, float velocityX, float velocityY, float velocityZ)
     {

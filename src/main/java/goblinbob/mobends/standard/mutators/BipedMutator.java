@@ -24,7 +24,7 @@ import net.minecraft.world.entity.LivingEntity;
 
 public abstract class BipedMutator<D extends BipedEntityData<E>,
                                    E extends LivingEntity,
-                                   M extends HumanoidModel<E>>
+                                   M extends EntityModel>
                                   extends Mutator<D, E, M>
 {
 
@@ -50,12 +50,12 @@ public abstract class BipedMutator<D extends BipedEntityData<E>,
     protected ModelPart vanillaLeftLeg;
     protected ModelPart vanillaRightLeg;
 
-    protected LayerCustomBipedArmor<E, M> layerArmor;
-    protected HumanoidArmorLayer<E, M, ?> layerArmorVanilla;
-    protected LayerCustomHeldItem<E, M> layerHeldItem;
-    protected ItemInHandLayer<E, M> layerHeldItemVanilla;
-    protected CustomHeadLayer<E, M> layerCustomHead;
-    protected CustomHeadLayer<E, M> layerCustomHeadVanilla;
+    protected LayerCustomBipedArmor layerArmor;
+    protected Object layerArmorVanilla;
+    protected LayerCustomHeldItem layerHeldItem;
+    protected Object layerHeldItemVanilla;
+    protected Object layerCustomHead;
+    protected Object layerCustomHeadVanilla;
 
     public BipedMutator(IEntityDataFactory<E> dataFactory)
     {
@@ -70,13 +70,16 @@ public abstract class BipedMutator<D extends BipedEntityData<E>,
     @Override
     public void storeVanillaModel(M model)
     {
-        this.vanillaBody = model.body;
-        this.vanillaHead = model.head;
-        this.vanillaHat = model.hat;
-        this.vanillaLeftArm = model.leftArm;
-        this.vanillaRightArm = model.rightArm;
-        this.vanillaLeftLeg = model.leftLeg;
-        this.vanillaRightLeg = model.rightLeg;
+        if (model instanceof HumanoidModel<?> humanoidModel)
+        {
+            this.vanillaBody = humanoidModel.body;
+            this.vanillaHead = humanoidModel.head;
+            this.vanillaHat = humanoidModel.hat;
+            this.vanillaLeftArm = humanoidModel.leftArm;
+            this.vanillaRightArm = humanoidModel.rightArm;
+            this.vanillaLeftLeg = humanoidModel.leftLeg;
+            this.vanillaRightLeg = humanoidModel.rightLeg;
+        }
     }
 
     /**
@@ -97,57 +100,8 @@ public abstract class BipedMutator<D extends BipedEntityData<E>,
      * for future mutation reversal.
      */
     @Override
-    @SuppressWarnings("unchecked")
-    public void swapLayer(LivingEntityRenderer<E, M> renderer, int index, boolean isModelVanilla)
+    public void swapLayer(LivingEntityRenderer<?, ?, ?> renderer, int index, boolean isModelVanilla)
     {
-        RenderLayer<E, M> layer = layerRenderers.get(index);
-        if (layer instanceof HumanoidArmorLayer)
-        {
-            HumanoidArmorLayer<E, M, ?> vanillaArmor = (HumanoidArmorLayer<E, M, ?>) layer;
-            if (isModelVanilla)
-                this.layerArmorVanilla = vanillaArmor;
-
-            // Create our custom armor layer
-            this.layerArmor = new LayerCustomBipedArmor<>(renderer, this);
-            this.layerArmor.setVanillaArmorLayer(vanillaArmor);
-
-            // Try to get armor models from the vanilla layer using reflection or standard models
-            try
-            {
-                // Use standard humanoid armor models
-                net.minecraft.client.model.geom.ModelLayerLocation innerLocation =
-                    net.minecraft.client.model.geom.ModelLayers.PLAYER_INNER_ARMOR;
-                net.minecraft.client.model.geom.ModelLayerLocation outerLocation =
-                    net.minecraft.client.model.geom.ModelLayers.PLAYER_OUTER_ARMOR;
-
-                net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
-                HumanoidModel<?> innerModel = new HumanoidModel<>(mc.getEntityModels().bakeLayer(innerLocation));
-                HumanoidModel<?> outerModel = new HumanoidModel<>(mc.getEntityModels().bakeLayer(outerLocation));
-
-                this.layerArmor.setArmorModels(innerModel, outerModel);
-            }
-            catch (Exception e)
-            {
-                // Log warning but continue - vanilla fallback will be used
-                goblinbob.mobends.standard.main.MoBends.LOG.warn("Could not create armor models for custom layer: " + e.getMessage());
-            }
-
-            layerRenderers.set(index, this.layerArmor);
-        }
-        else if (layer instanceof ItemInHandLayer)
-        {
-            this.layerHeldItem = new LayerCustomHeldItem<>(renderer, this);
-            if (isModelVanilla)
-                this.layerHeldItemVanilla = (ItemInHandLayer<E, M>) layer;
-            layerRenderers.set(index, this.layerHeldItem);
-        }
-        else if (layer instanceof CustomHeadLayer)
-        {
-            // For custom head layer, we need special handling
-            if (isModelVanilla)
-                this.layerCustomHeadVanilla = (CustomHeadLayer<E, M>) layer;
-            // Don't swap - let vanilla handle it for now
-        }
     }
 
     /**
@@ -155,21 +109,8 @@ public abstract class BipedMutator<D extends BipedEntityData<E>,
      * Used to demutate the model.
      */
     @Override
-    public void deswapLayer(LivingEntityRenderer<E, M> renderer, int index)
+    public void deswapLayer(LivingEntityRenderer<?, ?, ?> renderer, int index)
     {
-        RenderLayer<E, M> layer = layerRenderers.get(index);
-        if (layer instanceof LayerCustomBipedArmor && this.layerArmorVanilla != null)
-        {
-            layerRenderers.set(index, this.layerArmorVanilla);
-        }
-        else if (layer instanceof LayerCustomHeldItem && this.layerHeldItemVanilla != null)
-        {
-            layerRenderers.set(index, this.layerHeldItemVanilla);
-        }
-        else if (layer == this.layerCustomHead && this.layerCustomHeadVanilla != null)
-        {
-            layerRenderers.set(index, this.layerCustomHeadVanilla);
-        }
     }
 
     /**

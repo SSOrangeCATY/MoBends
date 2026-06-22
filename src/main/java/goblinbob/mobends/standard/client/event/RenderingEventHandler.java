@@ -4,7 +4,7 @@ import goblinbob.mobends.core.util.BenderHelper;
 import goblinbob.mobends.standard.mutators.PlayerMutator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.client.renderer.entity.player.PlayerRenderer;
+import net.minecraft.client.renderer.entity.player.AvatarRenderer;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.neoforge.client.event.RenderHandEvent;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -26,7 +26,7 @@ public class RenderingEventHandler
         if (!BenderHelper.isEntityAnimated(player))
         	return;
 
-        PlayerRenderer renderPlayer = (PlayerRenderer) mc.getEntityRenderDispatcher().getRenderer(player);
+        AvatarRenderer renderPlayer = (AvatarRenderer) mc.getEntityRenderDispatcher().getRenderer(player);
         PlayerMutator mutator = (PlayerMutator) BenderHelper.getMutatorForRenderer(AbstractClientPlayer.class, renderPlayer);
         if (mutator != null)
             mutator.poseForFirstPersonView();

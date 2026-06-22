@@ -2,7 +2,7 @@ package goblinbob.mobends.core.util;
 
 import goblinbob.mobends.core.kumo.KumoSerializer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
 
 import java.io.IOException;
@@ -15,14 +15,14 @@ import java.util.Optional;
 public class GsonResources
 {
 
-    private static Map<ResourceLocation, Object> cache = new HashMap<>();
+    private static Map<Identifier, Object> cache = new HashMap<>();
 
     public static void clearCache()
     {
         cache.clear();
     }
 
-    public static <T> T get(ResourceLocation location, Class<T> classOfT) throws IOException
+    public static <T> T get(Identifier location, Class<T> classOfT) throws IOException
     {
         if (cache.containsKey(location))
         {

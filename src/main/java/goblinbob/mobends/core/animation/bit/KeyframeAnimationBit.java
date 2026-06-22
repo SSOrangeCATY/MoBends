@@ -4,7 +4,7 @@ import goblinbob.mobends.core.animation.keyframe.*;
 import goblinbob.mobends.core.client.event.DataUpdateHandler;
 import goblinbob.mobends.core.client.model.IModelPart;
 import goblinbob.mobends.core.data.EntityData;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.io.IOException;
 import java.util.Map;
@@ -17,7 +17,7 @@ public class KeyframeAnimationBit<T extends EntityData<?>> extends AnimationBit<
 	private float keyframeIndex = 0;
 	private float animationSpeed;
 	
-	public KeyframeAnimationBit(ResourceLocation animationResource, float animationSpeed)
+	public KeyframeAnimationBit(Identifier animationResource, float animationSpeed)
 	{
 		this.animationSpeed = animationSpeed;
 

@@ -41,7 +41,7 @@ public class MoBends
 
         // Register configurations
         CoreServerConfig.register(container);
-        if (FMLEnvironment.dist == Dist.CLIENT) {
+        if (FMLEnvironment.getDist() == Dist.CLIENT) {
             CoreClientConfig.register(container);
             modEventBus.addListener(this::clientSetup);
             modEventBus.addListener(KeyboardHandler::registerKeyMappings);

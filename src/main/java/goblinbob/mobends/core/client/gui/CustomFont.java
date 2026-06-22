@@ -1,7 +1,7 @@
 package goblinbob.mobends.core.client.gui;
 
 import goblinbob.mobends.standard.main.ModStatics;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.HashMap;
 
@@ -43,14 +43,14 @@ public class CustomFont
 
     public final int atlasWidth;
     public final int atlasHeight;
-    protected final ResourceLocation resourceLocation;
+    protected final Identifier identifier;
     protected final HashMap<Character, Symbol> symbolMap;
 
     public CustomFont(String textureName, int atlasWidth, int atlasHeight, HashMap<Character, Symbol> symbolMap)
     {
         this.atlasWidth = atlasWidth;
         this.atlasHeight = atlasHeight;
-        this.resourceLocation = ResourceLocation.fromNamespaceAndPath(ModStatics.MODID,
+        this.identifier = Identifier.fromNamespaceAndPath(ModStatics.MODID,
                 "textures/gui/fonts/" + textureName + ".png");
         this.symbolMap = symbolMap;
     }

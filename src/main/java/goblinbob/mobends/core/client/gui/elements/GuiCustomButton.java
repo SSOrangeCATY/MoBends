@@ -1,7 +1,7 @@
 package goblinbob.mobends.core.client.gui.elements;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 
@@ -23,9 +23,15 @@ public class GuiCustomButton extends Button
         return this;
     }
 
-    public void drawButton(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks)
+    public void drawButton(GuiGraphicsExtractor GuiGraphicsExtractor, int mouseX, int mouseY, float partialTicks)
     {
-        this.render(guiGraphics, mouseX, mouseY, partialTicks);
+        this.extractRenderState(GuiGraphicsExtractor, mouseX, mouseY, partialTicks);
+    }
+
+    @Override
+    protected void extractContents(GuiGraphicsExtractor GuiGraphicsExtractor, int mouseX, int mouseY, float partialTicks)
+    {
+        this.extractDefaultLabel(GuiGraphicsExtractor.textRenderer());
     }
 
     public boolean mousePressed(int mouseX, int mouseY)
