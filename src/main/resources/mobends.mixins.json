@@ -9,6 +9,7 @@
         "LivingEntityRendererMixin",
         "LivingEntityRendererAccessor",
         "ModelMixin",
+        "HumanoidModelMixin",
         "armor.ModelPartAccessor"
     ],
     "injectors": {
