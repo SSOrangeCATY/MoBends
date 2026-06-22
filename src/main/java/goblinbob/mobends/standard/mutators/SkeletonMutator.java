@@ -6,19 +6,19 @@ import goblinbob.mobends.standard.data.SkeletonData;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.monster.skeleton.SkeletonModel;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
-import net.minecraft.world.entity.monster.skeleton.Skeleton;
+import net.minecraft.world.entity.monster.skeleton.AbstractSkeleton;
 
 /**
  * Instantiated once per SkeletonRenderer
  *
  * @author Iwo Plaza
  */
-public class SkeletonMutator extends BipedMutator<SkeletonData, Skeleton, SkeletonModel>
+public class SkeletonMutator<E extends AbstractSkeleton> extends BipedMutator<SkeletonData<E>, E, SkeletonModel>
 {
 
     protected boolean boneLimbs = false;
 
-    public SkeletonMutator(IEntityDataFactory<Skeleton> dataCreationFunction)
+    public SkeletonMutator(IEntityDataFactory<E> dataCreationFunction)
     {
         super(dataCreationFunction);
     }

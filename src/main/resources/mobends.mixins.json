@@ -6,7 +6,9 @@
     "mixins": [
     ],
     "client": [
+        "LivingEntityRendererMixin",
         "LivingEntityRendererAccessor",
+        "ModelMixin",
         "armor.ModelPartAccessor"
     ],
     "injectors": {

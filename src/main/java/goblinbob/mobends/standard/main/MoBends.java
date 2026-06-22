@@ -5,6 +5,7 @@ import goblinbob.mobends.core.Core;
 import goblinbob.mobends.core.addon.AddonHelper;
 import goblinbob.mobends.core.addon.Addons;
 import goblinbob.mobends.core.animation.keyframe.AnimationLoader;
+import goblinbob.mobends.core.asset.AssetReloadListener;
 import goblinbob.mobends.core.bender.EntityBenderRegistry;
 import goblinbob.mobends.core.client.event.KeyboardHandler;
 import goblinbob.mobends.core.compat.PlayerAnimationLibCompat;
@@ -15,6 +16,7 @@ import goblinbob.mobends.core.network.NetworkHandler;
 import goblinbob.mobends.core.pack.PackDataProvider;
 import goblinbob.mobends.core.util.GsonResources;
 import goblinbob.mobends.standard.DefaultAddon;
+import goblinbob.mobends.standard.client.event.RenderingEventHandler;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -22,6 +24,8 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
+import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
 
 /**
@@ -44,6 +48,7 @@ public class MoBends
         if (FMLEnvironment.getDist() == Dist.CLIENT) {
             CoreClientConfig.register(container);
             modEventBus.addListener(this::clientSetup);
+            modEventBus.addListener(this::onAddClientReloadListeners);
             modEventBus.addListener(KeyboardHandler::registerKeyMappings);
         }
 
@@ -65,6 +70,14 @@ public class MoBends
     }
 
     /**
+     * Register client resource reload listeners.
+     */
+    private void onAddClientReloadListeners(AddClientReloadListenersEvent event)
+    {
+        event.addListener(Identifier.fromNamespaceAndPath(ModStatics.MODID, "assets"), new AssetReloadListener());
+    }
+
+    /**
      * Client-specific setup.
      */
     private void clientSetup(final FMLClientSetupEvent event)
@@ -83,6 +96,8 @@ public class MoBends
 
         // Initialize mod compatibility layers
         PlayerAnimationLibCompat.init();
+
+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.register(new RenderingEventHandler());
 
         LOGGER.info("Mo' Bends client setup complete");
     }

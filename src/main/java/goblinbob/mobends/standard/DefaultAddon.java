@@ -14,8 +14,11 @@ import goblinbob.mobends.standard.previewer.PlayerPreviewer;
 import goblinbob.mobends.standard.previewer.SpiderPreviewer;
 import goblinbob.mobends.standard.previewer.ZombiePreviewer;
 import net.minecraft.world.entity.monster.skeleton.Skeleton;
+import net.minecraft.world.entity.monster.skeleton.Stray;
+import net.minecraft.world.entity.monster.skeleton.WitherSkeleton;
 import net.minecraft.world.entity.monster.spider.Spider;
 import net.minecraft.world.entity.monster.zombie.Zombie;
+import net.minecraft.world.entity.monster.zombie.ZombieVillager;
 import net.minecraft.world.entity.monster.zombie.ZombifiedPiglin;
 import net.minecraft.world.entity.animal.squid.Squid;
 import net.minecraft.world.entity.animal.wolf.Wolf;
@@ -36,11 +39,19 @@ public class DefaultAddon implements IAddon
 				"head", "body", "leftArm", "rightArm", "leftForeArm", "rightForeArm", "leftLeg",
 						"rightLeg", "leftForeLeg", "rightForeLeg");
 
-//		registry.registerNewEntity(ZombieVillager.class, ZombieVillagerData::new, ZombieVillagerMutator::new, new ZombieRenderer<>(),
-//				new BipedPreviewer<>(),
-//				"head", "body", "leftArm", "rightArm", "leftForeArm", "rightForeArm",
-//				"leftLeg", "rightLeg", "leftForeLeg", "rightForeLeg");
-//
+		registry.registerNewEntity(Stray.class, SkeletonData::new, SkeletonMutator::new, new BipedRenderer<>(),
+				"head", "body", "leftArm", "rightArm", "leftForeArm", "rightForeArm", "leftLeg",
+						"rightLeg", "leftForeLeg", "rightForeLeg");
+
+		registry.registerNewEntity(WitherSkeleton.class, SkeletonData::new, SkeletonMutator::new, new BipedRenderer<>(),
+				"head", "body", "leftArm", "rightArm", "leftForeArm", "rightForeArm", "leftLeg",
+						"rightLeg", "leftForeLeg", "rightForeLeg");
+
+		registry.registerNewEntity(ZombieVillager.class, ZombieVillagerData::new, ZombieVillagerMutator::new, new ZombieRenderer<>(),
+				new BipedPreviewer<>(),
+				"head", "body", "leftArm", "rightArm", "leftForeArm", "rightForeArm",
+				"leftLeg", "rightLeg", "leftForeLeg", "rightForeLeg");
+
 		registry.registerNewEntity(ZombifiedPiglin.class, PigZombieData::new, PigZombieMutator::new, new ZombieRenderer<>(),
 				new BipedPreviewer<>(),
 				"head", "body", "leftArm", "rightArm", "leftForeArm", "rightForeArm",
