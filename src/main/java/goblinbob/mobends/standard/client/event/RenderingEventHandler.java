@@ -3,6 +3,7 @@ package goblinbob.mobends.standard.client.event;
 import goblinbob.mobends.core.util.BenderHelper;
 import goblinbob.mobends.standard.mutators.PlayerMutator;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.player.PlayerModel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.entity.player.AvatarRenderer;
 import net.minecraft.world.entity.Entity;
@@ -24,12 +25,16 @@ public class RenderingEventHandler
         AbstractClientPlayer player = (AbstractClientPlayer) viewEntity;
 
         if (!BenderHelper.isEntityAnimated(player))
-        	return;
+            return;
 
         AvatarRenderer renderPlayer = (AvatarRenderer) mc.getEntityRenderDispatcher().getRenderer(player);
         PlayerMutator mutator = (PlayerMutator) BenderHelper.getMutatorForRenderer(AbstractClientPlayer.class, renderPlayer);
         if (mutator != null)
+        {
             mutator.poseForFirstPersonView();
+            if (renderPlayer.getModel() instanceof PlayerModel model)
+                mutator.syncFirstPersonPoseToVanillaModel(model);
+        }
     }
 
 }

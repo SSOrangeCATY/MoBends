@@ -4,10 +4,12 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import goblinbob.mobends.core.client.model.BendsModelPart;
 import goblinbob.mobends.core.client.model.IModelPart;
+import goblinbob.mobends.core.math.Quaternion;
 import goblinbob.mobends.core.data.IEntityDataFactory;
 import goblinbob.mobends.standard.data.PlayerData;
 import goblinbob.mobends.standard.previewer.PlayerPreviewer;
 import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.player.PlayerModel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
@@ -290,6 +292,82 @@ public class PlayerMutator extends BipedMutator<PlayerData, AbstractClientPlayer
         if (this.rightForeArm != null) this.rightForeArm.getRotation().identity();
         if (this.leftArm != null) this.leftArm.getRotation().identity();
         if (this.leftForeArm != null) this.leftForeArm.getRotation().identity();
+
+        setFirstPersonPartVisible(this.rightArm);
+        setFirstPersonPartVisible(this.rightForeArm);
+        setFirstPersonPartVisible(this.leftArm);
+        setFirstPersonPartVisible(this.leftForeArm);
+        setFirstPersonPartVisible(this.rightArmwear);
+        setFirstPersonPartVisible(this.rightForeArmwear);
+        setFirstPersonPartVisible(this.leftArmwear);
+        setFirstPersonPartVisible(this.leftForeArmwear);
+    }
+
+    public void syncFirstPersonPoseToVanillaModel(PlayerModel model)
+    {
+        if (model == null) return;
+
+        applyFirstPersonPoseToVanillaArm(model, model.rightArm);
+        applyFirstPersonPoseToVanillaArm(model, model.leftArm);
+    }
+
+    public void applyFirstPersonPoseToVanillaArm(PlayerModel model, ModelPart arm)
+    {
+        if (model == null || arm == null) return;
+
+        if (arm == model.rightArm)
+        {
+            syncFirstPersonPartToVanilla(this.rightArm, model.rightArm);
+        }
+        else if (arm == model.leftArm)
+        {
+            syncFirstPersonPartToVanilla(this.leftArm, model.leftArm);
+        }
+    }
+
+    private static void setFirstPersonPartVisible(BendsModelPart part)
+    {
+        if (part != null)
+        {
+            part.setVisible(true);
+            part.hidden = false;
+        }
+    }
+
+    private static void syncFirstPersonPartToVanilla(BendsModelPart bendsPart, ModelPart modelPart)
+    {
+        if (bendsPart == null || modelPart == null) return;
+
+        float[] euler = quaternionToEulerXYZ(bendsPart.getRotation().getSmooth());
+        modelPart.xRot = euler[0];
+        modelPart.yRot = euler[1];
+        modelPart.zRot = euler[2];
+        modelPart.visible = bendsPart.isShowing();
+    }
+
+    private static float[] quaternionToEulerXYZ(Quaternion q)
+    {
+        float[] euler = new float[3];
+
+        float sinX = 2.0f * (q.w * q.x + q.y * q.z);
+        float cosX = 1.0f - 2.0f * (q.x * q.x + q.y * q.y);
+        euler[0] = (float) Math.atan2(sinX, cosX);
+
+        float sinY = 2.0f * (q.w * q.y - q.z * q.x);
+        if (Math.abs(sinY) >= 1.0f)
+        {
+            euler[1] = (float) Math.copySign(Math.PI / 2, sinY);
+        }
+        else
+        {
+            euler[1] = (float) Math.asin(sinY);
+        }
+
+        float sinZ = 2.0f * (q.w * q.z + q.x * q.y);
+        float cosZ = 1.0f - 2.0f * (q.y * q.y + q.z * q.z);
+        euler[2] = (float) Math.atan2(sinZ, cosZ);
+
+        return euler;
     }
 
     @Override
