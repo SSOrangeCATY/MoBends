@@ -17,6 +17,7 @@ import net.minecraft.world.entity.monster.skeleton.Skeleton;
 import net.minecraft.world.entity.monster.skeleton.Stray;
 import net.minecraft.world.entity.monster.skeleton.WitherSkeleton;
 import net.minecraft.world.entity.monster.spider.Spider;
+import net.minecraft.world.entity.monster.zombie.Drowned;
 import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.entity.monster.zombie.ZombieVillager;
 import net.minecraft.world.entity.monster.zombie.ZombifiedPiglin;
@@ -32,6 +33,11 @@ public class DefaultAddon implements IAddon
 
 		registry.registerNewEntity(Zombie.class, ZombieData::new, ZombieMutator::new, new ZombieRenderer<>(),
 				new ZombiePreviewer(),
+				"head", "body", "leftArm", "rightArm", "leftForeArm", "rightForeArm",
+				"leftLeg", "rightLeg", "leftForeLeg", "rightForeLeg");
+
+		registry.registerNewEntity(Drowned.class, DrownedData::new, DrownedMutator::new, new ZombieRenderer<>(),
+				new BipedPreviewer<>(),
 				"head", "body", "leftArm", "rightArm", "leftForeArm", "rightForeArm",
 				"leftLeg", "rightLeg", "leftForeLeg", "rightForeLeg");
 

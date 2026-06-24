@@ -9,6 +9,7 @@ import goblinbob.mobends.standard.mutators.BipedMutator;
 import goblinbob.mobends.standard.mutators.SpiderMutator;
 import goblinbob.mobends.standard.mutators.WolfMutator;
 import net.minecraft.client.model.Model;
+import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.api.distmarker.Dist;
@@ -28,6 +29,8 @@ public class MoBendsRenderContext
             Collections.synchronizedMap(new IdentityHashMap<>());
     private static final Map<LivingEntity, Mutator<?, ?, ?>> entityMutators =
             Collections.synchronizedMap(new WeakHashMap<>());
+    private static final Map<LivingEntity, Model<?>> submittedModels =
+            Collections.synchronizedMap(new WeakHashMap<>());
 
     public static void setCurrentMutation(Model<?> model, Mutator<?, ?, ?> mutator)
     {
@@ -42,7 +45,10 @@ public class MoBendsRenderContext
         setCurrentMutation(model, mutator);
 
         if (entity != null && mutator != null)
+        {
             entityMutators.put(entity, mutator);
+            submittedModels.put(entity, model);
+        }
     }
 
     public static boolean renderCurrentModel(Model<?> model, PoseStack poseStack, VertexConsumer vertexConsumer,
@@ -84,7 +90,7 @@ public class MoBendsRenderContext
 
         LivingEntity entity = livingState.getRenderData(MoBendsRenderState.LIVING_ENTITY);
         Mutator<?, ?, ?> mutator = entity == null ? null : entityMutators.get(entity);
-        if (mutator == null || !submittedMutators.containsKey(model) || !syncMutator(mutator, entity))
+        if (mutator == null || !isSubmittedOrCompatibleLayerModel(model, entity, mutator) || !syncMutator(mutator, entity))
         {
             renderingMutators.remove(model);
             return;
@@ -101,6 +107,7 @@ public class MoBendsRenderContext
     public static void clearEntity(LivingEntity entity)
     {
         entityMutators.remove(entity);
+        submittedModels.remove(entity);
     }
 
     public static void clear()
@@ -114,6 +121,18 @@ public class MoBendsRenderContext
         {
             return renderingMutators.values().stream().findFirst().orElse(null);
         }
+    }
+
+    private static boolean isSubmittedOrCompatibleLayerModel(Model<?> model, LivingEntity entity, Mutator<?, ?, ?> mutator)
+    {
+        if (submittedMutators.containsKey(model))
+            return true;
+
+        Model<?> submittedModel = submittedModels.get(entity);
+        if (submittedModel == null || !submittedModel.getClass().equals(model.getClass()))
+            return false;
+
+        return model instanceof EntityModel<?> entityModel && !mutator.shouldModelBeSkipped(entityModel);
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
