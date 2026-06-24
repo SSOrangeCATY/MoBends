@@ -43,7 +43,8 @@ public class DrownedMutatorMigrationTest
                 "src/main/java/goblinbob/mobends/core/client/MoBendsRenderContext.java"));
 
         assertTrue(source.contains("submittedModels.put(entity, model);"));
-        assertTrue(source.contains("submittedModel.getClass().equals(model.getClass())"));
+        assertTrue(source.contains("isCompatibleMutatedModel(submittedModel, mutator)"));
+        assertTrue(source.contains("isCompatibleMutatedModel(model, mutator)"));
         assertTrue(source.contains("mutator.shouldModelBeSkipped(entityModel)"));
     }
 }

@@ -27,7 +27,6 @@ public abstract class BipedMutator<D extends BipedEntityData<E>,
                                    M extends EntityModel>
                                   extends Mutator<D, E, M>
 {
-
     // Custom bendable parts
     protected BendsModelPart body;
     protected BendsModelPart head;
@@ -40,6 +39,13 @@ public abstract class BipedMutator<D extends BipedEntityData<E>,
     protected BendsModelPart rightLeg;
     protected BendsModelPart leftForeLeg;
     protected BendsModelPart rightForeLeg;
+    protected BendsModelPart babyBody;
+    protected BendsModelPart babyHead;
+    protected BendsModelPart babyHeadwear;
+    protected BendsModelPart babyLeftArm;
+    protected BendsModelPart babyRightArm;
+    protected BendsModelPart babyLeftLeg;
+    protected BendsModelPart babyRightLeg;
 
     // Store vanilla model parts for demutation
     protected ModelPart vanillaBody;
@@ -56,6 +62,7 @@ public abstract class BipedMutator<D extends BipedEntityData<E>,
     protected Object layerHeldItemVanilla;
     protected Object layerCustomHead;
     protected Object layerCustomHeadVanilla;
+    protected D currentData;
 
     public BipedMutator(IEntityDataFactory<E> dataFactory)
     {
@@ -201,12 +208,58 @@ public abstract class BipedMutator<D extends BipedEntityData<E>,
         rightForeLeg.addCube(-3.9F, 0.0F, 0.0F, 4, 6, 4, scaleFactor);
         rightLeg.addChild(rightForeLeg);
 
+        createBabyParts(scaleFactor);
+
         return true;
+    }
+
+    protected void createBabyParts(float scaleFactor)
+    {
+        babyBody = new BendsModelPart(16, 16)
+                .setTextureSize(64, 64)
+                .setPosition(0.0F, 17.5F, 0.0F);
+        babyBody.addCube(-2.0F, -2.5F, -1.0F, 4, 5, 2, scaleFactor);
+
+        babyHead = new BendsModelPart(3, 3)
+                .setTextureSize(64, 64)
+                .setPosition(0.0F, -2.25F, 0.0F);
+        babyHead.addCube(-3.0F, -6.25F, -3.0F, 6, 6, 6, scaleFactor);
+        babyBody.addChild(babyHead);
+
+        babyHeadwear = new BendsModelPart(35, 3)
+                .setTextureSize(64, 64);
+        babyHeadwear.addCube(-3.0F, -6.15F, -3.0F, 6, 6, 6, scaleFactor + 0.25F);
+        babyHead.addChild(babyHeadwear);
+
+        babyRightArm = new BendsModelPart(36, 16)
+                .setTextureSize(64, 64)
+                .setPosition(-3.0F, -2.0F, 0.0F);
+        babyRightArm.addCube(-1.0F, -0.5F, -1.0F, 2, 5, 2, scaleFactor);
+        babyBody.addChild(babyRightArm);
+
+        babyLeftArm = new BendsModelPart(28, 16)
+                .setTextureSize(64, 64)
+                .setPosition(3.0F, -2.0F, 0.0F)
+                .setMirror(true);
+        babyLeftArm.addCube(-1.0F, -0.5F, -1.0F, 2, 5, 2, scaleFactor);
+        babyBody.addChild(babyLeftArm);
+
+        babyRightLeg = new BendsModelPart(8, 16)
+                .setTextureSize(64, 64)
+                .setPosition(-1.0F, 20.0F, 0.0F);
+        babyRightLeg.addCube(-1.0F, 0.0F, -1.0F, 2, 4, 2, scaleFactor);
+
+        babyLeftLeg = new BendsModelPart(0, 16)
+                .setTextureSize(64, 64)
+                .setPosition(1.0F, 20.0F, 0.0F)
+                .setMirror(true);
+        babyLeftLeg.addCube(-1.0F, 0.0F, -1.0F, 2, 4, 2, scaleFactor);
     }
 
     @Override
     public void syncUpWithData(D data)
     {
+        this.currentData = data;
         head.syncUp(data.head);
         body.syncUp(data.body);
         leftArm.syncUp(data.leftArm);
@@ -217,6 +270,30 @@ public abstract class BipedMutator<D extends BipedEntityData<E>,
         rightForeArm.syncUp(data.rightForeArm);
         leftForeLeg.syncUp(data.leftForeLeg);
         rightForeLeg.syncUp(data.rightForeLeg);
+        syncBabyParts(data);
+    }
+
+    protected void syncBabyParts(D data)
+    {
+        syncBabyPart(babyBody, data.body);
+        syncBabyPart(babyHead, data.head);
+        syncBabyPart(babyLeftArm, data.leftArm);
+        syncBabyPart(babyRightArm, data.rightArm);
+        syncBabyPart(babyLeftLeg, data.leftLeg);
+        syncBabyPart(babyRightLeg, data.rightLeg);
+    }
+
+    protected void syncBabyPart(BendsModelPart target, IModelPart source)
+    {
+        if (target == null || source == null)
+            return;
+
+        target.offset.set(source.getOffset());
+        target.rotation.set(source.getRotation());
+        target.scale.set(source.getScale());
+        target.offsetScale = source.getOffsetScale();
+        target.globalOffset.set(source.getGlobalOffset());
+        target.setVisible(source.isShowing());
     }
 
     /**
@@ -245,6 +322,17 @@ public abstract class BipedMutator<D extends BipedEntityData<E>,
     public void renderMutated(PoseStack poseStack, VertexConsumer vertexConsumer,
                               int packedLight, int packedOverlay, int color)
     {
+        poseStack.pushPose();
+        if (isRenderingBaby())
+            renderBabyBipedParts(poseStack, vertexConsumer, packedLight, packedOverlay, color);
+        else
+            renderBipedParts(poseStack, vertexConsumer, packedLight, packedOverlay, color);
+        poseStack.popPose();
+    }
+
+    protected void renderBipedParts(PoseStack poseStack, VertexConsumer vertexConsumer,
+                                    int packedLight, int packedOverlay, int color)
+    {
         // Render body and attached parts
         if (body != null)
         {
@@ -260,6 +348,29 @@ public abstract class BipedMutator<D extends BipedEntityData<E>,
         {
             rightLeg.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
         }
+    }
+
+    protected void renderBabyBipedParts(PoseStack poseStack, VertexConsumer vertexConsumer,
+                                        int packedLight, int packedOverlay, int color)
+    {
+        if (babyBody != null)
+        {
+            babyBody.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
+        }
+
+        if (babyLeftLeg != null)
+        {
+            babyLeftLeg.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
+        }
+        if (babyRightLeg != null)
+        {
+            babyRightLeg.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
+        }
+    }
+
+    protected boolean isRenderingBaby()
+    {
+        return babyBody != null && currentData != null && currentData.getEntity() != null && currentData.getEntity().isBaby();
     }
 
     // Getters for layers to access parts

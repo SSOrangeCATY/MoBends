@@ -129,9 +129,14 @@ public class MoBendsRenderContext
             return true;
 
         Model<?> submittedModel = submittedModels.get(entity);
-        if (submittedModel == null || !submittedModel.getClass().equals(model.getClass()))
+        if (submittedModel == null || !isCompatibleMutatedModel(submittedModel, mutator))
             return false;
 
+        return isCompatibleMutatedModel(model, mutator);
+    }
+
+    private static boolean isCompatibleMutatedModel(Model<?> model, Mutator<?, ?, ?> mutator)
+    {
         return model instanceof EntityModel<?> entityModel && !mutator.shouldModelBeSkipped(entityModel);
     }
 
