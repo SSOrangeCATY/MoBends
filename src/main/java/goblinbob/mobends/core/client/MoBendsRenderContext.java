@@ -2,41 +2,54 @@ package goblinbob.mobends.core.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import goblinbob.mobends.core.client.event.MoBendsRenderState;
+import goblinbob.mobends.core.data.LivingEntityData;
 import goblinbob.mobends.core.mutators.Mutator;
 import goblinbob.mobends.standard.mutators.BipedMutator;
 import goblinbob.mobends.standard.mutators.SpiderMutator;
 import goblinbob.mobends.standard.mutators.WolfMutator;
 import net.minecraft.client.model.Model;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
+import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+
+import java.util.Collections;
+import java.util.IdentityHashMap;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 @OnlyIn(Dist.CLIENT)
 public class MoBendsRenderContext
 {
-    private static final ThreadLocal<Model<?>> currentModel = new ThreadLocal<>();
-    private static final ThreadLocal<Mutator<?, ?, ?>> currentMutator = new ThreadLocal<>();
-    private static final ThreadLocal<BipedMutator<?, ?, ?>> currentBipedMutator = new ThreadLocal<>();
-    private static final ThreadLocal<SpiderMutator> currentSpiderMutator = new ThreadLocal<>();
-    private static final ThreadLocal<WolfMutator> currentWolfMutator = new ThreadLocal<>();
+    private static final Map<Model<?>, Mutator<?, ?, ?>> submittedMutators =
+            Collections.synchronizedMap(new IdentityHashMap<>());
+    private static final Map<Model<?>, Mutator<?, ?, ?>> renderingMutators =
+            Collections.synchronizedMap(new IdentityHashMap<>());
+    private static final Map<LivingEntity, Mutator<?, ?, ?>> entityMutators =
+            Collections.synchronizedMap(new WeakHashMap<>());
 
     public static void setCurrentMutation(Model<?> model, Mutator<?, ?, ?> mutator)
     {
-        currentModel.set(model);
-        currentMutator.set(mutator);
+        if (mutator == null)
+            submittedMutators.remove(model);
+        else
+            submittedMutators.put(model, mutator);
+    }
 
-        if (mutator instanceof BipedMutator<?, ?, ?> bipedMutator)
-            currentBipedMutator.set(bipedMutator);
-        else if (mutator instanceof SpiderMutator spiderMutator)
-            currentSpiderMutator.set(spiderMutator);
-        else if (mutator instanceof WolfMutator wolfMutator)
-            currentWolfMutator.set(wolfMutator);
+    public static void setCurrentMutation(Model<?> model, LivingEntity entity, Mutator<?, ?, ?> mutator)
+    {
+        setCurrentMutation(model, mutator);
+
+        if (entity != null && mutator != null)
+            entityMutators.put(entity, mutator);
     }
 
     public static boolean renderCurrentModel(Model<?> model, PoseStack poseStack, VertexConsumer vertexConsumer,
                                              int packedLight, int packedOverlay, int color)
     {
-        Mutator<?, ?, ?> mutator = currentMutator.get();
-        if (currentModel.get() != model || mutator == null || !mutator.shouldRenderCustom())
+        Mutator<?, ?, ?> mutator = renderingMutators.get(model);
+        if (mutator == null || !mutator.shouldRenderCustom())
             return false;
 
         mutator.renderMutated(poseStack, vertexConsumer, packedLight, packedOverlay, color);
@@ -45,25 +58,72 @@ public class MoBendsRenderContext
 
     public static BipedMutator<?, ?, ?> getCurrentBipedMutator()
     {
-        return currentBipedMutator.get();
+        Mutator<?, ?, ?> mutator = firstRenderingMutator();
+        return mutator instanceof BipedMutator<?, ?, ?> bipedMutator ? bipedMutator : null;
     }
 
     public static SpiderMutator getCurrentSpiderMutator()
     {
-        return currentSpiderMutator.get();
+        Mutator<?, ?, ?> mutator = firstRenderingMutator();
+        return mutator instanceof SpiderMutator spiderMutator ? spiderMutator : null;
     }
 
     public static WolfMutator getCurrentWolfMutator()
     {
-        return currentWolfMutator.get();
+        Mutator<?, ?, ?> mutator = firstRenderingMutator();
+        return mutator instanceof WolfMutator wolfMutator ? wolfMutator : null;
+    }
+
+    public static void beginModelRender(Model<?> model, Object state)
+    {
+        if (!(state instanceof LivingEntityRenderState livingState))
+        {
+            renderingMutators.remove(model);
+            return;
+        }
+
+        LivingEntity entity = livingState.getRenderData(MoBendsRenderState.LIVING_ENTITY);
+        Mutator<?, ?, ?> mutator = entity == null ? null : entityMutators.get(entity);
+        if (mutator == null || !submittedMutators.containsKey(model) || !syncMutator(mutator, entity))
+        {
+            renderingMutators.remove(model);
+            return;
+        }
+
+        renderingMutators.put(model, mutator);
+    }
+
+    public static void endModelRender(Model<?> model)
+    {
+        renderingMutators.remove(model);
+    }
+
+    public static void clearEntity(LivingEntity entity)
+    {
+        entityMutators.remove(entity);
     }
 
     public static void clear()
     {
-        currentModel.remove();
-        currentMutator.remove();
-        currentBipedMutator.remove();
-        currentSpiderMutator.remove();
-        currentWolfMutator.remove();
+        renderingMutators.clear();
+    }
+
+    private static Mutator<?, ?, ?> firstRenderingMutator()
+    {
+        synchronized (renderingMutators)
+        {
+            return renderingMutators.values().stream().findFirst().orElse(null);
+        }
+    }
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private static boolean syncMutator(Mutator mutator, LivingEntity entity)
+    {
+        LivingEntityData data = (LivingEntityData) mutator.getData(entity);
+        if (data == null)
+            return false;
+
+        mutator.syncUpWithData(data);
+        return true;
     }
 }

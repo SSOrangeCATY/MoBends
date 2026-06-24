@@ -19,13 +19,18 @@ public class EntityRenderHandler
     {
         MoBendsRenderContext.clear();
 
-        // 如果 PlayerAnimationLib 正在播放动画，跳过 Mo' Bends 变形以避免冲突
         if (PlayerAnimationLibCompat.hasActiveAnimation(entity))
+        {
+            MoBendsRenderContext.clearEntity(entity);
             return;
+        }
 
         EntityBender<LivingEntity> bender = EntityBenderRegistry.instance.getForEntity(entity);
         if (bender == null || !bender.isAnimated())
+        {
+            MoBendsRenderContext.clearEntity(entity);
             return;
+        }
 
         if (bender.applyMutation(renderer, entity, partialTicks))
         {
@@ -34,7 +39,7 @@ public class EntityRenderHandler
             if (model instanceof HumanoidModel<?> humanoidModel && mutator instanceof BipedMutator<?, ?, ?> bipedMutator)
                 bipedMutator.syncPosesToVanillaModel(humanoidModel);
 
-            MoBendsRenderContext.setCurrentMutation(model, mutator);
+            MoBendsRenderContext.setCurrentMutation(model, entity, mutator);
         }
     }
 

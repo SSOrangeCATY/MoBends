@@ -9,6 +9,7 @@
         "LivingEntityRendererMixin",
         "LivingEntityRendererAccessor",
         "ModelMixin",
+        "ModelFeatureRendererMixin",
         "HumanoidModelMixin",
         "armor.ModelPartAccessor"
     ],

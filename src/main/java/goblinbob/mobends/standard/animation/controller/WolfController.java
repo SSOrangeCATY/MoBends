@@ -79,13 +79,17 @@ public class WolfController implements IAnimationController<WolfData>
         }
         // Position is set in initModelPose(), don't overwrite here
 
+        data.body.rotation.localRotateX(90.0F).finish();
+        data.mane.rotation.localRotateX(90.0F).finish();
+
         // Head rotation
         data.head.rotation.localRotateY(data.headYaw.get()).finish();
         data.head.rotation.localRotateX(data.headPitch.get()).finish();
 
-        data.head.rotation.localRotateZ(wolf.getHeadRollAngle(DataUpdateHandler.partialTicks) * GUtil.RAD_TO_DEG).finish();
-        data.mane.rotation.localRotateZ(0.0F).finish();
-        data.tail.rotation.localRotateZ(0.0F).finish();
+        data.head.rotation.localRotateZ((wolf.getHeadRollAngle(DataUpdateHandler.partialTicks)
+                + getBodyRollAngle(wolf, DataUpdateHandler.partialTicks, 0.0F)) * GUtil.RAD_TO_DEG).finish();
+        data.mane.rotation.localRotateZ(getBodyRollAngle(wolf, DataUpdateHandler.partialTicks, -0.08F) * GUtil.RAD_TO_DEG).finish();
+        data.tail.rotation.localRotateZ(getBodyRollAngle(wolf, DataUpdateHandler.partialTicks, -0.2F) * GUtil.RAD_TO_DEG).finish();
 
         // Tail wagging on interest
         data.tail.rotation.localRotateZ(wolf.getHeadRollAngle(DataUpdateHandler.partialTicks) * Mth.sin(ticks) * 20.0F).finish();
@@ -96,6 +100,13 @@ public class WolfController implements IAnimationController<WolfData>
         data.head.offset.set(0, 0, 0);
 
         return null;
+    }
+
+    private static float getBodyRollAngle(Wolf wolf, float partialTicks, float offset)
+    {
+        float progress = (wolf.getShakeAnim(partialTicks) + offset) / 1.8F;
+        progress = Mth.clamp(progress, 0.0F, 1.0F);
+        return Mth.sin(progress * GUtil.PI) * Mth.sin(progress * GUtil.PI * 11.0F) * 0.15F * GUtil.PI;
     }
 
 }
