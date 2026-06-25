@@ -1,8 +1,5 @@
 package goblinbob.mobends.standard.client.model.armor;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -12,7 +9,6 @@ import java.util.List;
  * Contains the upper and lower portions of the geometry with interpolated UVs.
  * Immutable after construction.
  */
-@OnlyIn(Dist.CLIENT)
 public class SliceResult
 {
     /**

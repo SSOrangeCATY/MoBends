@@ -12,10 +12,11 @@ import goblinbob.mobends.standard.data.SpiderData;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.monster.spider.SpiderModel;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.monster.spider.Spider;
 
-public class SpiderMutator extends Mutator<SpiderData, Spider, SpiderModel>
+public class SpiderMutator extends Mutator<SpiderData, Spider, LivingEntityRenderState, SpiderModel>
 {
 
     public BendsModelPart spiderHead;
@@ -38,23 +39,23 @@ public class SpiderMutator extends Mutator<SpiderData, Spider, SpiderModel>
     @Override
     public void storeVanillaModel(SpiderModel model)
     {
-        // In 1.20.1, we use composition pattern - no need to store vanilla parts
+        // In 26.2, we use composition pattern - no need to store vanilla parts
     }
 
     @Override
     public void applyVanillaModel(SpiderModel model)
     {
-        // In 1.20.1, demutation handled differently
+        // In 26.2, demutation handled differently
     }
 
     @Override
-    public void swapLayer(LivingEntityRenderer<?, ?, ?> renderer, int index, boolean isModelVanilla)
+    public void swapLayer(LivingEntityRenderer<Spider, LivingEntityRenderState, SpiderModel> renderer, int index, boolean isModelVanilla)
     {
         // No custom layers for spider
     }
 
     @Override
-    public void deswapLayer(LivingEntityRenderer<?, ?, ?> renderer, int index)
+    public void deswapLayer(LivingEntityRenderer<Spider, LivingEntityRenderState, SpiderModel> renderer, int index)
     {
         // No custom layers for spider
     }
@@ -185,43 +186,29 @@ public class SpiderMutator extends Mutator<SpiderData, Spider, SpiderModel>
             poseStack.translate(0, -SPIDER_MODEL_CENTER_Y, 0);
         }
 
-        // When climbing, we need to handle rotation specially.
-        // The renderer has already applied (180 - bodyYaw) rotation.
-        // We need to undo that and apply our climbing rotation instead.
         Quaternion renderRot = currentData.renderRotation.getSmooth();
-        if (!renderRot.isIdentity())
+        if (isClimbing && spider != null)
         {
-            if (isClimbing && spider != null)
-            {
-                // Get the climbing rotation (direction spider should face)
-                float climbingRotation = currentData.getCrawlingRotation();
+            // The renderer has already applied (180 - bodyYaw) rotation.
+            // Undo it and apply the wall-facing tilt on the same submitted pose
+            // that receives the spider texture.
+            float climbingRotation = currentData.getCrawlingRotation();
+            float bodyYaw = Mth.lerp(goblinbob.mobends.core.client.event.DataUpdateHandler.partialTicks,
+                    spider.yBodyRotO, spider.yBodyRot);
 
-                // Undo the renderer's body yaw rotation: it applied (180 - bodyYaw)
-                // So we rotate by (bodyYaw - 180) to undo it
-                float bodyYaw = Mth.lerp(goblinbob.mobends.core.client.event.DataUpdateHandler.partialTicks,
-                        spider.yBodyRotO, spider.yBodyRot);
-
-                poseStack.translate(0, SPIDER_MODEL_CENTER_Y, 0);
-
-                // Undo the renderer's rotation
-                poseStack.mulPose(Axis.YP.rotationDegrees(bodyYaw - 180.0F));
-
-                // Apply the climbing rotation: face the wall direction
-                poseStack.mulPose(Axis.YP.rotationDegrees(climbingRotation));
-
-                // Tilt to face the wall (rotate 90 degrees around X)
-                poseStack.mulPose(Axis.XP.rotationDegrees(-90.0F));
-
-                poseStack.translate(0, -SPIDER_MODEL_CENTER_Y, 0);
-            }
-            else
-            {
-                // Not climbing - apply normal renderRotation
-                poseStack.translate(0, SPIDER_MODEL_CENTER_Y, 0);
-                GlHelper.rotate(poseStack, renderRot);
-                poseStack.translate(0, -SPIDER_MODEL_CENTER_Y, 0);
-            }
+            poseStack.translate(0, SPIDER_MODEL_CENTER_Y, 0);
+            poseStack.mulPose(Axis.YP.rotationDegrees(bodyYaw - 180.0F));
+            poseStack.mulPose(Axis.YP.rotationDegrees(climbingRotation));
+            poseStack.mulPose(Axis.XP.rotationDegrees(-90.0F));
+            poseStack.translate(0, -SPIDER_MODEL_CENTER_Y, 0);
         }
+        else if (!renderRot.isIdentity())
+        {
+            poseStack.translate(0, SPIDER_MODEL_CENTER_Y, 0);
+            GlHelper.rotate(poseStack, renderRot);
+            poseStack.translate(0, -SPIDER_MODEL_CENTER_Y, 0);
+        }
+
 
         // Apply localOffset (after rotations)
         float lx = currentData.localOffset.getX();

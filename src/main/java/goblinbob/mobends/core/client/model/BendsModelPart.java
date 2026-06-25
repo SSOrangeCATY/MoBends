@@ -8,18 +8,15 @@ import goblinbob.mobends.core.math.matrix.IMat4x4d;
 import goblinbob.mobends.core.math.vector.IVec3f;
 import goblinbob.mobends.core.math.vector.Vec3f;
 import goblinbob.mobends.core.util.GlHelper;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A composition-based model part for 1.20.1.
+ * A composition-based model part for 26.2.
  * This replaces the old ModelPart that extended ModelRenderer.
  * Uses PoseStack and VertexConsumer for modern rendering.
  */
-@OnlyIn(Dist.CLIENT)
 public class BendsModelPart implements IModelPart
 {
     public Vec3f position = new Vec3f();
@@ -91,7 +88,7 @@ public class BendsModelPart implements IModelPart
      * This applies the full character transform chain (including all parent transforms).
      * Use this method for root parts that need to be positioned in world space.
      *
-     * @deprecated Use the overload with int color parameter for 1.21.1+
+     * @deprecated Use the overload with int color parameter for 26.2
      */
     @Deprecated
     public void render(PoseStack poseStack, VertexConsumer vertexConsumer,
@@ -107,7 +104,7 @@ public class BendsModelPart implements IModelPart
     }
 
     /**
-     * Render this part and all children using the modern PoseStack/VertexConsumer system (1.21.1+).
+     * Render this part and all children using the modern PoseStack/VertexConsumer system (26.2).
      * This applies the full character transform chain (including all parent transforms).
      * Use this method for root parts that need to be positioned in world space.
      */
@@ -138,7 +135,7 @@ public class BendsModelPart implements IModelPart
     /**
      * Render just this part without the full character transform.
      *
-     * @deprecated Use the overload with int color parameter for 1.21.1+
+     * @deprecated Use the overload with int color parameter for 26.2
      */
     @Deprecated
     public void renderJust(PoseStack poseStack, VertexConsumer vertexConsumer,
@@ -154,7 +151,7 @@ public class BendsModelPart implements IModelPart
     }
 
     /**
-     * Render just this part without the full character transform (1.21.1+).
+     * Render just this part without the full character transform (26.2).
      */
     public void renderJust(PoseStack poseStack, VertexConsumer vertexConsumer,
                            int packedLight, int packedOverlay, int color)
@@ -181,7 +178,7 @@ public class BendsModelPart implements IModelPart
     }
 
     /**
-     * Apply the character transform to a PoseStack (modern 1.20.1 style).
+     * Apply the character transform to a PoseStack (modern 26.2 style).
      * Parent transforms are applied first, then this part's transforms.
      */
     public void applyCharacterTransformPoseStack(PoseStack poseStack)
@@ -320,14 +317,14 @@ public class BendsModelPart implements IModelPart
     @Override
     public void renderPart(PoseStack poseStack, float scale)
     {
-        // Legacy method - in 1.20.1 we use render(PoseStack, VertexConsumer, ...) with full params
+        // Legacy method - in 26.2 we use render(PoseStack, VertexConsumer, ...) with full params
         // This is a stub for interface compliance
     }
 
     @Override
     public void renderJustPart(PoseStack poseStack, float scale)
     {
-        // Legacy method - in 1.20.1 we use renderJust(PoseStack, VertexConsumer, ...) with full params
+        // Legacy method - in 26.2 we use renderJust(PoseStack, VertexConsumer, ...) with full params
         // This is a stub for interface compliance
     }
 

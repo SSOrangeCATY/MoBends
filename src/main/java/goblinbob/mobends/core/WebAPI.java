@@ -1,6 +1,7 @@
 package goblinbob.mobends.core;
 
 import com.google.gson.Gson;
+import goblinbob.mobends.core.util.ConnectionHelper;
 import goblinbob.mobends.core.util.ErrorReporter;
 
 import java.io.BufferedReader;
@@ -8,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 public class WebAPI
 {
@@ -29,11 +31,14 @@ public class WebAPI
         {
             URL url = new URL(apiUrl);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            ConnectionHelper.configureConnection(connection);
             connection.setRequestMethod("GET");
             connection.connect();
 
-            BufferedReader json  = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            this.data = new Gson().fromJson(json, APIData.class);
+            try (BufferedReader json = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8)))
+            {
+                this.data = new Gson().fromJson(json, APIData.class);
+            }
         }
         catch (IOException e)
         {

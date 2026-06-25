@@ -9,7 +9,7 @@ import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 /**
  * Network handler for Mo' Bends.
- * Handles packet registration for NeoForge 1.21.
+ * Handles packet registration for NeoForge 26.2.
  *
  * Packets are registered as optional, allowing the mod to work on vanilla servers
  * that don't have Mo' Bends installed.

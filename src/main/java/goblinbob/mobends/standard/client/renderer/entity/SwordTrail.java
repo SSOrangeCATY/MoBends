@@ -1,21 +1,34 @@
 package goblinbob.mobends.standard.client.renderer.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import goblinbob.mobends.core.client.model.ModelPartTransform;
 import goblinbob.mobends.core.math.Quaternion;
 import goblinbob.mobends.core.math.vector.Vec3f;
 import goblinbob.mobends.core.util.GUtil;
 import goblinbob.mobends.core.util.IColorRead;
 import goblinbob.mobends.standard.data.BipedEntityData;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
+import net.neoforged.neoforge.client.event.SubmitCustomGeometryEvent;
+import net.neoforged.neoforge.common.NeoForge;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.function.Supplier;
 
 public class SwordTrail
 {
+    private static final List<QueuedTrailRender> QUEUED_RENDERS = new ArrayList<>();
+
+    static
+    {
+        NeoForge.EVENT_BUS.addListener(SwordTrail::submitQueuedRenders);
+    }
+
     protected final Supplier<IColorRead> baseColor;
     protected LinkedList<TrailPart> trailPartList = new LinkedList<>();
 
@@ -105,10 +118,93 @@ public class SwordTrail
         }
     }
 
-    public void render(PoseStack poseStack)
+    private record QueuedTrailRender(PoseStack.Pose pose, List<QueuedTrailQuad> quads)
     {
+        private void submit(PoseStack.Pose pose, VertexConsumer buffer)
+        {
+            for (QueuedTrailQuad quad : quads)
+            {
+                quad.submit(pose, buffer);
+            }
+        }
     }
 
+    private record QueuedTrailQuad(Vec3f previousPoint0, Vec3f previousPoint1, Vec3f point0, Vec3f point1,
+            int previousColor, int color)
+    {
+        private void submit(PoseStack.Pose pose, VertexConsumer buffer)
+        {
+            buffer.addVertex(pose, previousPoint0.x, previousPoint0.y, previousPoint0.z)
+                    .setColor(previousColor);
+            buffer.addVertex(pose, previousPoint1.x, previousPoint1.y, previousPoint1.z)
+                    .setColor(previousColor);
+            buffer.addVertex(pose, point1.x, point1.y, point1.z)
+                    .setColor(color);
+            buffer.addVertex(pose, point0.x, point0.y, point0.z)
+                    .setColor(color);
+        }
+    }
+
+    private static void submitQueuedRenders(SubmitCustomGeometryEvent event)
+    {
+        if (QUEUED_RENDERS.isEmpty())
+        {
+            return;
+        }
+
+        PoseStack poseStack = new PoseStack();
+        for (QueuedTrailRender queuedRender : QUEUED_RENDERS)
+        {
+            poseStack.last().set(queuedRender.pose());
+            event.getSubmitNodeCollector().submitCustomGeometry(poseStack, RenderTypes.debugQuads(), queuedRender::submit);
+        }
+        QUEUED_RENDERS.clear();
+    }
+
+    public void render(PoseStack poseStack)
+    {
+        if (trailPartList.isEmpty())
+        {
+            return;
+        }
+
+        Iterator<TrailPart> it = trailPartList.iterator();
+        TrailPart prevPart = null;
+        Vec3f[] prevPoints = null;
+        float prevAlpha = 0;
+        List<QueuedTrailQuad> quads = new ArrayList<>();
+
+        while (it.hasNext())
+        {
+            final TrailPart part = it.next();
+            final Vec3f[] points = part.getPoints();
+            final float alpha = part.getAlpha();
+            final IColorRead color = part.baseColor;
+
+            if (prevPart != null && prevPoints != null)
+            {
+                int prevColor = ((int)(prevAlpha * 255.0F) << 24) |
+                               ((int)(color.getR() * 255.0F) << 16) |
+                               ((int)(color.getG() * 255.0F) << 8) |
+                               (int)(color.getB() * 255.0F);
+                int currColor = ((int)(alpha * 255.0F) << 24) |
+                               ((int)(color.getR() * 255.0F) << 16) |
+                               ((int)(color.getG() * 255.0F) << 8) |
+                               (int)(color.getB() * 255.0F);
+
+                quads.add(new QueuedTrailQuad(prevPoints[0], prevPoints[1], points[0], points[1], prevColor, currColor));
+            }
+
+            prevPart = part;
+            prevPoints = points;
+            prevAlpha = alpha;
+        }
+
+        if (!quads.isEmpty())
+        {
+            QUEUED_RENDERS.add(new QueuedTrailRender(poseStack.last().copy(), quads));
+        }
+    }
 
     public void add(BipedEntityData<?> entityData, float velocityX, float velocityY, float velocityZ)
     {

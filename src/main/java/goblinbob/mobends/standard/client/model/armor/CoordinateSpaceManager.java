@@ -4,8 +4,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import goblinbob.mobends.core.client.model.ModelPartTransform;
 import goblinbob.mobends.standard.data.BipedEntityData;
 import net.minecraft.world.entity.LivingEntity;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -20,7 +18,6 @@ import org.joml.Vector3f;
  * 4. Bone Space - Local to a specific bone's transform
  * 5. Animated Space - After Mo'Bends animation transforms applied
  */
-@OnlyIn(Dist.CLIENT)
 public class CoordinateSpaceManager
 {
     // Minecraft model scale (1 unit = 1/16 of a block)

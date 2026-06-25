@@ -15,6 +15,7 @@ import goblinbob.mobends.mixin.LivingEntityRendererAccessor;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 
@@ -23,13 +24,14 @@ import java.util.List;
 
 /**
  * Base class for entity model mutators.
- * Updated for Minecraft 1.20.1.
+ * Updated for Minecraft 26.2.
  *
  * @param <D> The entity data type
  * @param <E> The entity type
  * @param <M> The model type
  */
-public abstract class Mutator<D extends LivingEntityData<E>, E extends LivingEntity, M extends EntityModel>
+public abstract class Mutator<D extends LivingEntityData<E>, E extends LivingEntity,
+        S extends LivingEntityRenderState, M extends EntityModel<? super S>>
 {
     protected M vanillaModel;
     protected float headYaw;
@@ -39,7 +41,7 @@ public abstract class Mutator<D extends LivingEntityData<E>, E extends LivingEnt
     protected float swingProgress;
 
     private final IEntityDataFactory<E> dataFactory;
-    protected List<RenderLayer<?, ?>> layerRenderers;
+    protected List<RenderLayer<S, M>> layerRenderers;
 
     public Mutator(IEntityDataFactory<E> dataFactory)
     {
@@ -50,11 +52,12 @@ public abstract class Mutator<D extends LivingEntityData<E>, E extends LivingEnt
      * Used to fetch private data from the original renderer.
      */
     @SuppressWarnings("unchecked")
-    public void fetchFields(LivingEntityRenderer<?, ?, ?> renderer)
+    public void fetchFields(LivingEntityRenderer<E, S, M> renderer)
     {
+        // Getting the layer renderers using the accessor mixin
         if (renderer instanceof LivingEntityRendererAccessor)
         {
-            this.layerRenderers = (List<RenderLayer<?, ?>>) ((LivingEntityRendererAccessor) renderer).getLayers();
+            this.layerRenderers = (List<RenderLayer<S, M>>) ((LivingEntityRendererAccessor) renderer).getLayers();
         }
     }
 
@@ -71,13 +74,13 @@ public abstract class Mutator<D extends LivingEntityData<E>, E extends LivingEnt
      * and if it's a vanilla model, it stores the vanilla layers
      * for future mutation reversal.
      */
-    public abstract void swapLayer(LivingEntityRenderer<?, ?, ?> renderer, int index, boolean isModelVanilla);
+    public abstract void swapLayer(LivingEntityRenderer<E, S, M> renderer, int index, boolean isModelVanilla);
 
     /**
      * Swaps the custom layers back with the vanilla layers.
      * Used to demutate the model.
      */
-    public abstract void deswapLayer(LivingEntityRenderer<?, ?, ?> renderer, int index);
+    public abstract void deswapLayer(LivingEntityRenderer<E, S, M> renderer, int index);
 
     /**
      * Creates all the custom parts you need! It swaps all the
@@ -88,10 +91,9 @@ public abstract class Mutator<D extends LivingEntityData<E>, E extends LivingEnt
     /**
      * Mutate the renderer's model.
      */
-    @SuppressWarnings("unchecked")
-    public boolean mutate(LivingEntityRenderer<?, ?, ?> renderer)
+    public boolean mutate(LivingEntityRenderer<E, S, M> renderer)
     {
-        M model = (M) renderer.getModel();
+        M model = renderer.getModel();
         if (model == null || this.shouldModelBeSkipped(model))
             return false;
 
@@ -123,10 +125,9 @@ public abstract class Mutator<D extends LivingEntityData<E>, E extends LivingEnt
     /**
      * Performs the steps needed to demutate the model.
      */
-    @SuppressWarnings("unchecked")
-    public void demutate(LivingEntityRenderer<?, ?, ?> renderer)
+    public void demutate(LivingEntityRenderer<E, S, M> renderer)
     {
-        M model = (M) renderer.getModel();
+        M model = renderer.getModel();
         if (this.shouldModelBeSkipped(model))
             return;
 
@@ -144,7 +145,7 @@ public abstract class Mutator<D extends LivingEntityData<E>, E extends LivingEnt
     /**
      * Update the model parameters from the entity state.
      */
-    public void updateModel(E entity, LivingEntityRenderer<?, ?, ?> renderer, float partialTicks)
+    public void updateModel(E entity, LivingEntityRenderer<E, S, M> renderer, float partialTicks)
     {
         boolean shouldSit = entity.isPassenger()
                 && (entity.getVehicle() != null && entity.getVehicle().shouldRiderSit());
@@ -179,7 +180,7 @@ public abstract class Mutator<D extends LivingEntityData<E>, E extends LivingEnt
 
         if (!entity.isPassenger())
         {
-            // 1.20.1 uses walkAnimation for limb swing
+            // 26.2 uses walkAnimation for limb swing
             f5 = entity.walkAnimation.speed(partialTicks);
             f6 = entity.walkAnimation.position(partialTicks);
 
@@ -200,7 +201,7 @@ public abstract class Mutator<D extends LivingEntityData<E>, E extends LivingEnt
     /**
      * Perform animations on the entity data.
      */
-    public void performAnimations(D data, String animatedEntityKey, LivingEntityRenderer<?, ?, ?> renderer, float partialTicks)
+    public void performAnimations(D data, String animatedEntityKey, LivingEntityRenderer<E, S, M> renderer, float partialTicks)
     {
         data.headYaw.set(Mth.wrapDegrees(this.headYaw));
         data.headPitch.set(Mth.wrapDegrees(this.headPitch));
@@ -270,7 +271,7 @@ public abstract class Mutator<D extends LivingEntityData<E>, E extends LivingEnt
 
     /**
      * Render the mutated model.
-     * This is the new 1.21.1 rendering method using PoseStack and VertexConsumer.
+     * This is the new 26.2 rendering method using PoseStack and VertexConsumer.
      */
     public abstract void renderMutated(PoseStack poseStack, VertexConsumer vertexConsumer,
                                        int packedLight, int packedOverlay, int color);

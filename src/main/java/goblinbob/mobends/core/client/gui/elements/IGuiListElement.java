@@ -11,7 +11,7 @@ public interface IGuiListElement
 
     void update(int mouseX, int mouseY);
 
-    void draw(GuiGraphicsExtractor GuiGraphicsExtractor, float partialTicks);
+    void draw(GuiGraphicsExtractor guiGraphics, float partialTicks);
 
     int getX();
 

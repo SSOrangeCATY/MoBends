@@ -5,9 +5,10 @@ import goblinbob.mobends.core.data.IEntityDataFactory;
 import goblinbob.mobends.standard.data.ZombieVillagerData;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.monster.zombie.ZombieVillagerModel;
+import net.minecraft.client.renderer.entity.state.ZombieVillagerRenderState;
 import net.minecraft.world.entity.monster.zombie.ZombieVillager;
 
-public class ZombieVillagerMutator extends ZombieMutatorBase<ZombieVillagerData, ZombieVillager, ZombieVillagerModel>
+public class ZombieVillagerMutator extends ZombieMutatorBase<ZombieVillagerData, ZombieVillager, ZombieVillagerRenderState, ZombieVillagerModel<ZombieVillagerRenderState>>
 {
 
 	public ZombieVillagerMutator(IEntityDataFactory<ZombieVillager> dataFactory)
@@ -16,9 +17,9 @@ public class ZombieVillagerMutator extends ZombieMutatorBase<ZombieVillagerData,
 	}
 
 	@Override
-	public void storeVanillaModel(ZombieVillagerModel model)
+	public void storeVanillaModel(ZombieVillagerModel<ZombieVillagerRenderState> model)
 	{
-		// In 1.20.1, models are created from LayerDefinitions
+		// In 26.2, models are created from LayerDefinitions
 		// Store reference to indicate this is vanilla
 		this.vanillaModel = model;
 
@@ -29,11 +30,11 @@ public class ZombieVillagerMutator extends ZombieMutatorBase<ZombieVillagerData,
 	}
 
 	@Override
-	public boolean createParts(ZombieVillagerModel original, float scaleFactor)
+	public boolean createParts(ZombieVillagerModel<ZombieVillagerRenderState> original, float scaleFactor)
 	{
 		boolean success = super.createParts(original, scaleFactor);
 
-		// In 1.20.1, we create our own head model part using BendsModelPart
+		// In 26.2, we create our own head model part using BendsModelPart
 		this.head = new BendsModelPart(0, 0);
 		this.head.setParent(body);
 		this.head.position.set(0.0F, -12.0F, 0.0F);

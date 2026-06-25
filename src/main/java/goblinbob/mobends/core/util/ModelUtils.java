@@ -13,7 +13,7 @@ import java.util.LinkedList;
 
 /**
  * Utility methods for working with models.
- * Updated for Minecraft 1.20.1 - removed dependencies on ModelRenderer, ModelBox, etc.
+ * Updated for Minecraft 26.2 - removed dependencies on ModelRenderer, ModelBox, etc.
  */
 public class ModelUtils
 {
@@ -116,7 +116,7 @@ public class ModelUtils
 
     /**
      * Create a MutatedQuad from vertices and a texture face definition.
-     * This is the 1.20.1 version that creates our custom quad type.
+     * This is the 26.2 version that creates our custom quad type.
      */
     public static MutatedBox.MutatedQuad createQuad(MutatedBox.MutatedVertex[] positions, BoxFactory.TextureFace face, float textureWidth, float textureHeight)
     {

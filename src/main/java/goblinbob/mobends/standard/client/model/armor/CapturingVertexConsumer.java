@@ -1,8 +1,6 @@
 package goblinbob.mobends.standard.client.model.armor;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,10 +9,9 @@ import java.util.List;
  * A VertexConsumer that captures all vertex data instead of (or in addition to) rendering.
  * Used to intercept armor rendering and capture the vertices for bone assignment.
  *
- * In 1.21.1, the pattern is: addVertex(x,y,z).setColor().setUv().setOverlay().setLight().setNormal()
+ * In 26.2, the pattern is: addVertex(x,y,z).setColor().setUv().setOverlay().setLight().setNormal()
  * The vertex is complete when the next addVertex() is called or when getVertices() is called.
  */
-@OnlyIn(Dist.CLIENT)
 public class CapturingVertexConsumer implements VertexConsumer
 {
     private final List<CapturedVertex> vertices = new ArrayList<>();
@@ -176,12 +173,13 @@ public class CapturingVertexConsumer implements VertexConsumer
     @Override
     public VertexConsumer setUv2(int u, int v)
     {
+        // This is the lightmap UV (alternative UV coordinates)
         this.lightmapUV = (v << 16) | (u & 0xFFFF);
         return this;
     }
 
     @Override
-    public VertexConsumer setLineWidth(float lineWidth)
+    public VertexConsumer setLineWidth(float width)
     {
         return this;
     }

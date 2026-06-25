@@ -1,6 +1,8 @@
 package goblinbob.mobends.core.addon;
 
-import goblinbob.mobends.core.CoreClient;
+import goblinbob.mobends.core.Core;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.loading.FMLEnvironment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +28,7 @@ public class Addons
 
         INSTANCE.addons.add(addon);
 
-        if (CoreClient.getInstance() != null)
+        if (FMLEnvironment.getDist() == Dist.CLIENT && Core.getInstance() != null)
         {
             addon.registerContent(new AddonAnimationRegistry(modId));
         }

@@ -23,15 +23,16 @@ public class GuiCustomButton extends Button
         return this;
     }
 
-    public void drawButton(GuiGraphicsExtractor GuiGraphicsExtractor, int mouseX, int mouseY, float partialTicks)
+    public void drawButton(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks)
     {
-        this.extractRenderState(GuiGraphicsExtractor, mouseX, mouseY, partialTicks);
+        this.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
     }
 
     @Override
-    protected void extractContents(GuiGraphicsExtractor GuiGraphicsExtractor, int mouseX, int mouseY, float partialTicks)
+    protected void extractContents(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks)
     {
-        this.extractDefaultLabel(GuiGraphicsExtractor.textRenderer());
+        this.extractDefaultSprite(guiGraphics);
+        this.extractDefaultLabel(guiGraphics.textRendererForWidget(this, GuiGraphicsExtractor.HoveredTextEffects.NONE));
     }
 
     public boolean mousePressed(int mouseX, int mouseY)

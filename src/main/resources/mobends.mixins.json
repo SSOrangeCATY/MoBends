@@ -6,10 +6,13 @@
     "mixins": [
     ],
     "client": [
-        "LivingEntityRendererMixin",
         "LivingEntityRendererAccessor",
+        "LivingEntityRendererMixin",
+        "LivingEntityRendererSubmitMixin",
         "ModelMixin",
+        "ModelFeatureRendererMixin",
         "HumanoidModelMixin",
+        "armor.HumanoidArmorLayerAccessor",
         "armor.ModelPartAccessor"
     ],
     "injectors": {

@@ -2,8 +2,6 @@ package goblinbob.mobends.standard.client.model.armor;
 
 import goblinbob.mobends.standard.main.MoBends;
 import net.minecraft.client.model.HumanoidModel;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,7 +10,6 @@ import java.util.Map;
  * Factory for creating and caching armor wrappers.
  * Maintains separate caches for different inflation levels (inner/outer layer).
  */
-@OnlyIn(Dist.CLIENT)
 public class ArmorModelFactory
 {
     /**

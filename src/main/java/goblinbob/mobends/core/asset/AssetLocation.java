@@ -10,7 +10,7 @@ import java.io.IOException;
 
 public class AssetLocation
 {
-    private static final String PREFIX = "assets/";
+    private static final String LEGACY_ASSETS_PREFIX = "assets/";
 
     private final Identifier identifier;
     private final AssetType assetType;
@@ -18,18 +18,18 @@ public class AssetLocation
 
     public AssetLocation(String assetPath)
     {
-        this.identifier = Identifier.fromNamespaceAndPath(ModStatics.MODID, PREFIX + assetPath);
-        this.assetPath = assetPath;
+        this.assetPath = normalizeAssetPath(assetPath);
+        this.identifier = Identifier.fromNamespaceAndPath(ModStatics.MODID, this.assetPath);
 
-        if (assetPath.startsWith("models/"))
+        if (this.assetPath.startsWith("models/"))
         {
             this.assetType = AssetType.MODEL;
         }
-        else if (assetPath.startsWith("textures/"))
+        else if (this.assetPath.startsWith("textures/"))
         {
             this.assetType = AssetType.TEXTURE;
         }
-        else if (assetPath.endsWith(".json"))
+        else if (this.assetPath.endsWith(".json"))
         {
             this.assetType = AssetType.JSON;
         }
@@ -41,9 +41,18 @@ public class AssetLocation
 
     public AssetLocation(String assetPath, AssetType assetType)
     {
-        this.identifier = Identifier.fromNamespaceAndPath(ModStatics.MODID, PREFIX + assetPath);
-        this.assetPath = assetPath;
+        this.assetPath = normalizeAssetPath(assetPath);
+        this.identifier = Identifier.fromNamespaceAndPath(ModStatics.MODID, this.assetPath);
         this.assetType = assetType;
+    }
+
+    private static String normalizeAssetPath(String assetPath)
+    {
+        if (assetPath.startsWith(LEGACY_ASSETS_PREFIX))
+        {
+            return assetPath.substring(LEGACY_ASSETS_PREFIX.length());
+        }
+        return assetPath;
     }
 
     public Identifier getResourceLocation()

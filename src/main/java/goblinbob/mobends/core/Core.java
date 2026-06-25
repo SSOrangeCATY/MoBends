@@ -10,7 +10,7 @@ import java.util.Collection;
 
 /**
  * Core class for Mo' Bends.
- * Handles module registration and lifecycle for 1.20.1.
+ * Handles module registration and lifecycle for 26.2.
  */
 public abstract class Core<T extends CoreConfig>
 {
@@ -46,7 +46,6 @@ public abstract class Core<T extends CoreConfig>
     public void applyConfigurationToEntityBenders()
     {
         // Default implementation does nothing
-        // CoreClient overrides this
     }
 
     /**
@@ -95,20 +94,17 @@ public abstract class Core<T extends CoreConfig>
         return INSTANCE;
     }
 
-    public static void createAsClient()
-    {
-        if (INSTANCE == null)
-        {
-            INSTANCE = new CoreClient();
-        }
-    }
-
     public static void createAsServer()
     {
         if (INSTANCE == null)
         {
             INSTANCE = new CoreServer();
         }
+    }
+
+    static void setInstance(Core<?> instance)
+    {
+        INSTANCE = instance;
     }
 
     public static void saveConfiguration()

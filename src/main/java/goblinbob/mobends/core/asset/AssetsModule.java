@@ -107,21 +107,22 @@ public class AssetsModule
         {
             URL url = new URL(manifest.getBaseUrl() + asset.getPath().getAssetPath());
             URLConnection connection = url.openConnection();
-            DataInputStream dis = new DataInputStream(connection.getInputStream());
-            byte[] fileData = new byte[connection.getContentLength()];
-            for (int q = 0; q < fileData.length; q++)
-            {
-                fileData[q] = dis.readByte();
-            }
-            dis.close();
+            ConnectionHelper.configureConnection(connection);
 
-            // Making sure the path exists.
-            File localAssetPath = getAssetFile(asset.getPath());
-            localAssetPath.getParentFile().mkdirs();
-            // Saving the file.
-            FileOutputStream fos = new FileOutputStream(localAssetPath);
-            fos.write(fileData);
-            fos.close();
+            try (DataInputStream dis = new DataInputStream(connection.getInputStream());
+                 ByteArrayOutputStream buffer = new ByteArrayOutputStream())
+            {
+                dis.transferTo(buffer);
+
+                // Making sure the path exists.
+                File localAssetPath = getAssetFile(asset.getPath());
+                localAssetPath.getParentFile().mkdirs();
+                // Saving the file.
+                try (FileOutputStream fos = new FileOutputStream(localAssetPath))
+                {
+                    fos.write(buffer.toByteArray());
+                }
+            }
         }
         catch (IOException m)
         {

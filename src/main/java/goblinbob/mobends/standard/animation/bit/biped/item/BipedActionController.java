@@ -12,6 +12,7 @@ import goblinbob.mobends.standard.data.BipedEntityData;
 import goblinbob.mobends.standard.main.ModConfig;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
@@ -60,15 +61,15 @@ public class BipedActionController
         {
             if (entity.getUseItemRemainingTicks() > 0)
             {
-                ItemUseAnimation ItemUseAnimation = heldItem.getUseAnimation();
+                ItemUseAnimation itemUseAnimation = heldItem.getUseAnimation();
 
-                if (ItemUseAnimation == ItemUseAnimation.BLOCK)
+                if (itemUseAnimation == ItemUseAnimation.BLOCK)
                     return HumanoidModel.ArmPose.BLOCK;
-                else if (ItemUseAnimation == ItemUseAnimation.BOW)
+                else if (itemUseAnimation == ItemUseAnimation.BOW)
                     return HumanoidModel.ArmPose.BOW_AND_ARROW;
-                else if (ItemUseAnimation == ItemUseAnimation.CROSSBOW)
+                else if (itemUseAnimation == ItemUseAnimation.CROSSBOW)
                     return HumanoidModel.ArmPose.CROSSBOW_HOLD;
-                else if (ItemUseAnimation == ItemUseAnimation.SPYGLASS)
+                else if (itemUseAnimation == ItemUseAnimation.SPYGLASS)
                     return HumanoidModel.ArmPose.SPYGLASS;
             }
 
@@ -106,6 +107,9 @@ public class BipedActionController
 
     public static AttackActionType getBuiltInItemAttackAction(Item item)
     {
+        if (item.builtInRegistryHolder().is(ItemTags.SWORDS))
+            return AttackActionType.SWORD;
+
         if (item == Items.AIR)
             return AttackActionType.FISTS;
 

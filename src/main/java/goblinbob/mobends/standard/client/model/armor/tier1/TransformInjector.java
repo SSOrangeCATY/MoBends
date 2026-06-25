@@ -9,8 +9,6 @@ import goblinbob.mobends.standard.client.model.armor.BoneTransformProvider;
 import goblinbob.mobends.standard.data.BipedEntityData;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Quaternionf;
 
 /**
@@ -18,7 +16,6 @@ import org.joml.Quaternionf;
  * This is the core of Tier 1 rendering - it modifies the armor model's
  * transforms to match the animated entity's bone positions.
  */
-@OnlyIn(Dist.CLIENT)
 public class TransformInjector
 {
     private static final float SCALE = 1.0f / 16.0f;

@@ -24,7 +24,7 @@ public class SquidController implements IAnimationController<SquidData>
     {
         Squid squid = data.getEntity();
 
-        // In 1.20.1, squidRotation/prevSquidRotation were renamed to xBodyRot/xBodyRotO
+        // In 26.2, squidRotation/prevSquidRotation were renamed to xBodyRot/xBodyRotO
         float squidRotation = squid.xBodyRotO + (squid.xBodyRot - squid.xBodyRotO) * DataUpdateHandler.partialTicks + 1.1F;
         float f = squidRotation / GUtil.PI;
         f = Math.max(0.0F, f);

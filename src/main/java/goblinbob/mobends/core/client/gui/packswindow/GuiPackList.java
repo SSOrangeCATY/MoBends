@@ -1,6 +1,5 @@
 package goblinbob.mobends.core.client.gui.packswindow;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import goblinbob.mobends.core.client.gui.elements.GuiList;
 import goblinbob.mobends.core.flux.Observable;
 import goblinbob.mobends.core.util.Draw;
@@ -38,20 +37,21 @@ public class GuiPackList extends GuiList<GuiPackEntry>
     }
 
     @Override
-    protected void drawBackground(GuiGraphicsExtractor GuiGraphicsExtractor, float partialTicks)
+    protected void drawBackground(GuiGraphicsExtractor guiGraphics, float partialTicks)
     {
+        Draw.bindTexture(GuiPacksWindow.BACKGROUND_TEXTURE);
         Draw.borderBox(0, 0, this.width, this.height, 4, 36, 117);
     }
 
     @Override
-    protected void drawContent(GuiGraphicsExtractor GuiGraphicsExtractor, float partialTicks)
+    protected void drawContent(GuiGraphicsExtractor guiGraphics, float partialTicks)
     {
         for (GuiPackEntry element : this.getListElements())
         {
             // Dragged elements are drawn separately.
             if (!element.isDragged())
             {
-                element.draw(GuiGraphicsExtractor, partialTicks);
+                element.draw(guiGraphics, partialTicks);
             }
         }
     }

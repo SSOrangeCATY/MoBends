@@ -4,9 +4,10 @@ import goblinbob.mobends.core.data.IEntityDataFactory;
 import goblinbob.mobends.standard.data.ZombieData;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.monster.zombie.ZombieModel;
+import net.minecraft.client.renderer.entity.state.ZombieRenderState;
 import net.minecraft.world.entity.monster.zombie.Zombie;
 
-public class ZombieMutator extends ZombieMutatorBase<ZombieData, Zombie, ZombieModel>
+public class ZombieMutator extends ZombieMutatorBase<ZombieData, Zombie, ZombieRenderState, ZombieModel<ZombieRenderState>>
 {
 
     public ZombieMutator(IEntityDataFactory<Zombie> dataFactory)
@@ -15,7 +16,7 @@ public class ZombieMutator extends ZombieMutatorBase<ZombieData, Zombie, ZombieM
     }
 
     @Override
-    public void storeVanillaModel(ZombieModel model)
+    public void storeVanillaModel(ZombieModel<ZombieRenderState> model)
     {
         super.storeVanillaModel(model);
     }

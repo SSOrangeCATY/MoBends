@@ -1,6 +1,5 @@
 package goblinbob.mobends.core.client.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import goblinbob.mobends.core.WebAPI;
 import goblinbob.mobends.core.client.gui.elements.GuiSectionButton;
 import goblinbob.mobends.core.client.gui.packswindow.GuiPacksWindow;
@@ -15,6 +14,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 
@@ -78,7 +78,7 @@ public class GuiBendsMenu extends Screen
 			return true;
 		}
 
-		if (event.key() == 256)
+		if (event.isEscape())
 		{
 			this.onClose();
 			return true;
@@ -115,11 +115,13 @@ public class GuiBendsMenu extends Screen
 	}
 
 	@Override
-	public boolean mouseClicked(MouseButtonEvent event, boolean doubled)
+	public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick)
 	{
-		int x = (int) event.x();
-		int y = (int) event.y();
+		double mouseX = event.x();
+		double mouseY = event.y();
 		int button = event.button();
+		int x = (int) mouseX;
+		int y = (int) mouseY;
 
 		if (popUp != null)
 		{
@@ -129,12 +131,12 @@ public class GuiBendsMenu extends Screen
 
 		if (settingsButton.mouseClicked(x, y, button))
 		{
-			minecraft.setScreenAndShow(new GuiSettingsWindow());
+			minecraft.gui.setScreen(new GuiSettingsWindow());
 			return true;
 		}
 		else if (packsButton.mouseClicked(x, y, button))
 		{
-			minecraft.setScreenAndShow(new GuiPacksWindow());
+			minecraft.gui.setScreen(new GuiPacksWindow());
 			return true;
 		}
 		else if (customizeButton.mouseClicked(x, y, button))
@@ -165,15 +167,17 @@ public class GuiBendsMenu extends Screen
 			return true;
 		}
 
-		return super.mouseClicked(event, doubled);
+		return super.mouseClicked(event, doubleClick);
 	}
 
 	@Override
 	public boolean mouseReleased(MouseButtonEvent event)
 	{
-		int x = (int) event.x();
-		int y = (int) event.y();
+		double mouseX = event.x();
+		double mouseY = event.y();
 		int button = event.button();
+		int x = (int) mouseX;
+		int y = (int) mouseY;
 
 		this.settingsButton.mouseReleased(x, y, button);
 		this.packsButton.mouseReleased(x, y, button);
@@ -183,29 +187,31 @@ public class GuiBendsMenu extends Screen
 	}
 
 	@Override
-	public void extractRenderState(GuiGraphicsExtractor GuiGraphicsExtractor, int mouseX, int mouseY, float partialTicks)
+	public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks)
 	{
-		this.extractBackground(GuiGraphicsExtractor, mouseX, mouseY, partialTicks);
+        Draw.setGuiGraphics(guiGraphics);
+        Draw.resetColor();
 
 		int titleWidth = 167 * 2;
 		int titleHeight = 37 * 2;
 
-		GuiHelper.blit(GuiGraphicsExtractor, MENU_TITLE_TEXTURE, (width - titleWidth) / 2, (height - titleHeight) / 2 - 70,
+		guiGraphics.blit(RenderPipelines.GUI_TEXTURED, MENU_TITLE_TEXTURE,
+				(width - titleWidth) / 2, (height - titleHeight) / 2 - 70,
 				0, 0, titleWidth, titleHeight, titleWidth, titleHeight);
 
-		this.settingsButton.display(GuiGraphicsExtractor);
+		this.settingsButton.display(guiGraphics);
 		if (NetworkConfiguration.instance.areBendsPacksAllowed())
 		{
-			this.packsButton.display(GuiGraphicsExtractor);
+			this.packsButton.display(guiGraphics);
 		}
-		this.customizeButton.display(GuiGraphicsExtractor);
+		this.customizeButton.display(guiGraphics);
 
-		super.extractRenderState(GuiGraphicsExtractor, mouseX, mouseY, partialTicks);
+		super.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
 
 		if (this.popUp != null)
 		{
-			this.extractBackground(GuiGraphicsExtractor, mouseX, mouseY, partialTicks);
-			this.popUp.display(GuiGraphicsExtractor, mouseX, mouseY, partialTicks);
+			guiGraphics.fill(0, 0, this.width, this.height, 0x66000000);
+			this.popUp.display(guiGraphics, mouseX, mouseY, partialTicks);
 		}
 	}
 

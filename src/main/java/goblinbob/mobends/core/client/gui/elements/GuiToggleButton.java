@@ -1,8 +1,6 @@
 package goblinbob.mobends.core.client.gui.elements;
 
-import goblinbob.mobends.core.util.GuiHelper;
-
-import com.mojang.blaze3d.systems.RenderSystem;
+import goblinbob.mobends.core.util.Draw;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -51,26 +49,32 @@ public class GuiToggleButton
                 mouseY >= y && mouseY <= y + HEIGHT;
     }
 
-    public void draw(GuiGraphicsExtractor GuiGraphicsExtractor)
+    public void draw(GuiGraphicsExtractor guiGraphics)
     {
         Minecraft mc = Minecraft.getInstance();
         Font font = mc.font;
 
+        Draw.bindTexture(BUTTON_TEXTURES);
+
         int k = this.hovered ? 1 : 0;
 
         // Draw the label background
-        GuiHelper.blit(GuiGraphicsExtractor, BUTTON_TEXTURES, this.x, this.y, 0, 66 + k * 20, (this.labelWidth + FLIPPER_WIDTH) / 2, HEIGHT);
-        GuiHelper.blit(GuiGraphicsExtractor, BUTTON_TEXTURES, this.x + this.labelWidth / 2, this.y, 200 - (this.labelWidth + FLIPPER_WIDTH) / 2, 66 + k * 20, (this.labelWidth + FLIPPER_WIDTH) / 2, HEIGHT);
+        Draw.texturedModalRect(this.x, this.y, 0, 66 + k * 20, (this.labelWidth + FLIPPER_WIDTH) / 2, HEIGHT);
+        Draw.texturedModalRect(this.x + this.labelWidth / 2, this.y, 200 - (this.labelWidth + FLIPPER_WIDTH) / 2, 66 + k * 20, (this.labelWidth + FLIPPER_WIDTH) / 2, HEIGHT);
 
         // Draw the flipper (toggle part)
         if (this.toggleState)
         {
+            Draw.setColor(0.3F, 1.0F, 0.5F, 1.0F);
         }
         else
         {
+            Draw.setColor(1.0F, 0.3F, 0.3F, 1.0F);
         }
-        GuiHelper.blit(GuiGraphicsExtractor, BUTTON_TEXTURES, this.x + this.labelWidth, this.y, 0, 66 + k * 20, FLIPPER_WIDTH / 2, HEIGHT);
-        GuiHelper.blit(GuiGraphicsExtractor, BUTTON_TEXTURES, this.x + this.labelWidth + FLIPPER_WIDTH / 2, this.y, 200 - FLIPPER_WIDTH / 2, 66 + k * 20, FLIPPER_WIDTH / 2, HEIGHT);
+        Draw.texturedModalRect(this.x + this.labelWidth, this.y, 0, 66 + k * 20, FLIPPER_WIDTH / 2, HEIGHT);
+        Draw.texturedModalRect(this.x + this.labelWidth + FLIPPER_WIDTH / 2, this.y, 200 - FLIPPER_WIDTH / 2, 66 + k * 20, FLIPPER_WIDTH / 2, HEIGHT);
+
+        Draw.resetColor();
 
         int l = 14737632;
 
@@ -85,9 +89,9 @@ public class GuiToggleButton
 
         String stateText = this.toggleState ? "ON" : "OFF";
         int textWidth = font.width(stateText);
-        GuiHelper.drawString(GuiGraphicsExtractor, font, stateText, this.x + this.labelWidth - textWidth/2 + FLIPPER_WIDTH/2, this.y + (HEIGHT - 8) / 2, l, false);
+        guiGraphics.text(font, stateText, this.x + this.labelWidth - textWidth/2 + FLIPPER_WIDTH/2, this.y + (HEIGHT - 8) / 2, l, false);
 
-        GuiHelper.drawString(GuiGraphicsExtractor, font, this.title, this.x + 10, this.y + (HEIGHT - 8) / 2, l, false);
+        guiGraphics.text(font, this.title, this.x + 10, this.y + (HEIGHT - 8) / 2, l, false);
     }
 
     public void setToggleState(boolean state)

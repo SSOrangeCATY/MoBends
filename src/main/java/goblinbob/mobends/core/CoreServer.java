@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import javax.annotation.Nullable;
 
 /**
- * Server-side Core implementation for Mo' Bends 1.20.1.
+ * Server-side Core implementation for Mo' Bends 26.2.
  */
 public class CoreServer extends Core<CoreServerConfig>
 {

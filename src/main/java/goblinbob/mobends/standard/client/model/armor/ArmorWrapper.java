@@ -15,15 +15,13 @@ import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Wrapper for armor models that provides animated rendering.
- * Updated for Minecraft 1.20.1 - renders custom geometry with Mo' Bends animation.
+ * Updated for Minecraft 26.2 - renders custom geometry with Mo' Bends animation.
  *
  * Instead of replacing vanilla model parts, this wrapper creates its own geometry
  * that can be rendered with proper transforms for bendable limbs.
@@ -34,7 +32,6 @@ import java.util.List;
  *             This class is kept for backward compatibility and will be removed in a future version.
  */
 @Deprecated
-@OnlyIn(Dist.CLIENT)
 public class ArmorWrapper
 {
     protected HumanoidModel<?> original;

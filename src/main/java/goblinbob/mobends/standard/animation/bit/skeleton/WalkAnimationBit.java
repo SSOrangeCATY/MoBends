@@ -2,12 +2,11 @@ package goblinbob.mobends.standard.animation.bit.skeleton;
 
 import goblinbob.mobends.standard.data.SkeletonData;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.monster.skeleton.AbstractSkeleton;
 
-public class WalkAnimationBit<E extends AbstractSkeleton> extends goblinbob.mobends.standard.animation.bit.biped.WalkAnimationBit<SkeletonData<E>>
+public class WalkAnimationBit extends goblinbob.mobends.standard.animation.bit.biped.WalkAnimationBit<SkeletonData>
 {
 	@Override
-	public void perform(SkeletonData<E> data)
+	public void perform(SkeletonData data)
 	{
 		super.perform(data);
 

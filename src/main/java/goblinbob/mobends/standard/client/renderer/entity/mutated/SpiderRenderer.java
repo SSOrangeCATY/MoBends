@@ -10,7 +10,7 @@ public class SpiderRenderer<T extends Spider> extends MutatedRenderer<T>
     /**
      * Override beforeRender to skip the sandwich transform pattern.
      * For spider, we apply transforms directly in SpiderMutator.renderMutated instead,
-     * because the sandwich pattern doesn't work correctly with the 1.20.1 PoseStack nesting.
+     * because the sandwich pattern doesn't work correctly with the 26.2 PoseStack nesting.
      */
     @Override
     public void beforeRender(EntityData<T> data, T entity, float partialTicks, PoseStack poseStack)

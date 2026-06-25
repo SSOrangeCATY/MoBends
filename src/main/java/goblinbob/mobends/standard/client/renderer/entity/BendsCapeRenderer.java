@@ -4,16 +4,17 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import goblinbob.mobends.standard.data.PlayerData;
 import goblinbob.mobends.standard.main.ModStatics;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 /**
  * Custom cape renderer for Mo' Bends animations.
- * Updated for Minecraft 1.20.1 - uses PoseStack and VertexConsumer instead of display lists.
+ * Updated for Minecraft 26.2 - uses PoseStack and VertexConsumer instead of display lists.
  */
 public class BendsCapeRenderer
 {
@@ -57,6 +58,22 @@ public class BendsCapeRenderer
     public void render(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay)
     {
         this.slabs[0].render(poseStack, vertexConsumer, packedLight, packedOverlay, 1.0F / 16.0F);
+    }
+
+    public void submit(PoseStack poseStack, SubmitNodeCollector submitNodeCollector,
+                       int packedLight, Identifier capeTexture, int outlineColor, float scale)
+    {
+        if (capeTexture == null)
+        {
+            return;
+        }
+
+        submitNodeCollector.submitCustomGeometry(poseStack, RenderTypes.entitySolid(capeTexture), (pose, buffer) ->
+        {
+            PoseStack submittedPoseStack = new PoseStack();
+            submittedPoseStack.last().set(pose);
+            this.slabs[0].render(submittedPoseStack, buffer, packedLight, OverlayTexture.NO_OVERLAY, scale);
+        });
     }
 
     static class Slab
@@ -170,8 +187,6 @@ public class BendsCapeRenderer
             this.rotateAngle = rotateAngle;
             this.hingeOffset = this.rotateAngle < 0 ? MODEL_DEPTH : 0;
         }
-
-        @OnlyIn(Dist.CLIENT)
         public void render(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float scale)
         {
             if (!this.isHidden && this.showModel)

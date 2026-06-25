@@ -1,7 +1,4 @@
 package goblinbob.mobends.standard.client.model.armor;
-
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Vector3f;
 
 /**
@@ -15,7 +12,6 @@ import org.joml.Vector3f;
  *
  * Joint positions are based on the vanilla player model dimensions.
  */
-@OnlyIn(Dist.CLIENT)
 public final class JointDefinitions
 {
     // Model scale factor (Minecraft uses 1/16 scale)

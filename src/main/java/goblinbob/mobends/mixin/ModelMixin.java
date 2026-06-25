@@ -16,7 +16,8 @@ public class ModelMixin
     private void mobends$renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer,
                                         int packedLight, int packedOverlay, int color, CallbackInfo callbackInfo)
     {
-        if (MoBendsRenderContext.renderCurrentModel((Model<?>) (Object) this, poseStack, vertexConsumer, packedLight, packedOverlay, color))
+        if (MoBendsRenderContext.renderCurrentModel((Model) (Object) this,
+                poseStack, vertexConsumer, packedLight, packedOverlay, color))
         {
             callbackInfo.cancel();
         }

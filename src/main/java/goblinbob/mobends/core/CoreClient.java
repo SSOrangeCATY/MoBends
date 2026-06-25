@@ -9,21 +9,19 @@ import goblinbob.mobends.core.connection.ConnectionManager;
 import goblinbob.mobends.core.env.EnvironmentModule;
 import goblinbob.mobends.core.pack.PackManager;
 import goblinbob.mobends.core.supporters.SupporterContent;
+import goblinbob.mobends.standard.client.event.RenderingEventHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.NeoForge;
 import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
 
 /**
- * Client-side Core implementation for Mo' Bends 1.20.1.
+ * Client-side Core implementation for Mo' Bends 26.2.
  */
-@OnlyIn(Dist.CLIENT)
 public class CoreClient extends Core<CoreClientConfig>
 {
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -68,6 +66,7 @@ public class CoreClient extends Core<CoreClientConfig>
         NeoForge.EVENT_BUS.register(new KeyboardHandler());
         NeoForge.EVENT_BUS.register(new FluxHandler());
         NeoForge.EVENT_BUS.register(new WorldJoinHandler());
+        NeoForge.EVENT_BUS.register(new RenderingEventHandler());
 
         // Note: Entity bender configuration is applied later in MoBends.clientSetup()
         // after entity benders are registered by addons
@@ -86,5 +85,13 @@ public class CoreClient extends Core<CoreClientConfig>
     public static CoreClient getInstance()
     {
         return INSTANCE;
+    }
+
+    public static void create()
+    {
+        if (Core.getInstance() == null)
+        {
+            Core.setInstance(new CoreClient());
+        }
     }
 }

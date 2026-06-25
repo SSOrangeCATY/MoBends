@@ -1,14 +1,16 @@
 package goblinbob.mobends.standard.client.renderer.entity;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import goblinbob.mobends.core.client.event.DataUpdateHandler;
 import goblinbob.mobends.core.math.vector.Vec3f;
 import goblinbob.mobends.core.math.vector.VectorUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.phys.Vec3;
-import org.lwjgl.opengl.GL11;
 
 public class ArrowTrail
 {
@@ -35,7 +37,24 @@ public class ArrowTrail
         spawnCooldown += DataUpdateHandler.ticksPerFrame;
     }
 
+    public void render(SubmitNodeCollector submitNodeCollector, Vec3 viewPos)
+    {
+        advanceNodes();
+        renderNodes(submitNodeCollector, viewPos);
+    }
+
     public void render(double x, double y, double z, float partialTicks)
+    {
+        advanceNodes();
+    }
+
+    public void resetNodes()
+    {
+        for (int i = 0; i < MAX_LENGTH; i++)
+            this.nodes[i] = new TrailNode(trackedArrow);
+    }
+
+    private void advanceNodes()
     {
         if (this.spawnCooldown > 40)
         {
@@ -52,18 +71,58 @@ public class ArrowTrail
             nodes[0].moveTo(trackedArrow);
             this.spawnCooldown -= SPAWN_INTERVAL;
         }
-
-        renderNodes(partialTicks);
     }
 
-    public void resetNodes()
+    public void renderNodes(SubmitNodeCollector submitNodeCollector, Vec3 viewPos)
     {
-        for (int i = 0; i < MAX_LENGTH; i++)
-            this.nodes[i] = new TrailNode(trackedArrow);
+        PoseStack poseStack = new PoseStack();
+        poseStack.pushPose();
+        poseStack.translate(-viewPos.x, -viewPos.y, -viewPos.z);
+        submitNodeCollector.submitCustomGeometry(poseStack, RenderTypes.debugQuads(), (pose, buffer) ->
+                submitTrailVertices(pose, buffer));
+        poseStack.popPose();
     }
 
-    public void renderNodes(float partialTicks)
+    private void submitTrailVertices(PoseStack.Pose pose, VertexConsumer vertexBuffer)
     {
+        final int color = 0x80FFFFFF;
+
+        for (int i = 1; i < MAX_LENGTH; i++)
+        {
+            TrailNode node0 = nodes[i - 1];
+            TrailNode node1 = nodes[i];
+
+            float scale0 = ((float) (MAX_LENGTH - i)) / MAX_LENGTH * .1F;
+            float scale1 = ((float) MAX_LENGTH - i - 1.0f) / MAX_LENGTH * .1F;
+            if (i == 1)
+            {
+                scale1 = 0;
+            }
+            final Vec3f up0 = node0.up;
+            final Vec3f right0 = node0.right;
+            final Vec3f up1 = node1.up;
+            final Vec3f right1 = node1.right;
+
+            addVertex(vertexBuffer, pose, node0, -right0.x, -right0.y, -right0.z, scale0, color);
+            addVertex(vertexBuffer, pose, node0, right0.x, right0.y, right0.z, scale0, color);
+            addVertex(vertexBuffer, pose, node1, right1.x, right1.y, right1.z, scale1, color);
+            addVertex(vertexBuffer, pose, node1, -right1.x, -right1.y, -right1.z, scale1, color);
+
+            addVertex(vertexBuffer, pose, node0, -up0.x, -up0.y, -up0.z, scale0, color);
+            addVertex(vertexBuffer, pose, node0, up0.x, up0.y, up0.z, scale0, color);
+            addVertex(vertexBuffer, pose, node1, up1.x, up1.y, up1.z, scale1, color);
+            addVertex(vertexBuffer, pose, node1, -up1.x, -up1.y, -up1.z, scale1, color);
+        }
+    }
+
+    private static void addVertex(VertexConsumer vertexBuffer, PoseStack.Pose pose, TrailNode node,
+            float offsetX, float offsetY, float offsetZ, float scale, int color)
+    {
+        vertexBuffer.addVertex(pose,
+                (float) node.x + offsetX * scale,
+                (float) node.y + offsetY * scale,
+                (float) node.z + offsetZ * scale)
+                .setColor(color);
     }
 
     public boolean shouldBeRemoved()

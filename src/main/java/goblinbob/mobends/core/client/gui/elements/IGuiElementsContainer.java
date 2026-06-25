@@ -16,11 +16,11 @@ public interface IGuiElementsContainer extends IGuiPositioned
         element.initGui();
     }
 
-    default void drawChildren(GuiGraphicsExtractor GuiGraphicsExtractor, float partialTicks)
+    default void drawChildren(GuiGraphicsExtractor guiGraphics, float partialTicks)
     {
         for (IGuiElement element : getElements())
         {
-            element.draw(GuiGraphicsExtractor, partialTicks);
+            element.draw(guiGraphics, partialTicks);
         }
     }
 

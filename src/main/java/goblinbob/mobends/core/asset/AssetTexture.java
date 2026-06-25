@@ -1,43 +1,39 @@
 package goblinbob.mobends.core.asset;
 
 import com.mojang.blaze3d.platform.NativeImage;
-import net.minecraft.client.renderer.texture.AbstractTexture;
-import net.minecraft.resources.Identifier;
+import com.mojang.logging.LogUtils;
+import net.minecraft.client.renderer.texture.ReloadableTexture;
+import net.minecraft.client.renderer.texture.TextureContents;
 import net.minecraft.server.packs.resources.ResourceManager;
+import org.slf4j.Logger;
 
-import java.io.FileNotFoundException;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class AssetTexture extends AbstractTexture
+public class AssetTexture extends ReloadableTexture
 {
-    public static final String PREFIX = "textures";
-    public static final String SUFFIX = ".png";
+    private static final Logger LOGGER = LogUtils.getLogger();
 
-    protected AssetLocation location;
-    protected NativeImage image;
+    private final AssetLocation assetLocation;
 
-    public AssetTexture(AssetLocation location)
+    public AssetTexture(AssetLocation assetLocation)
     {
-        this.location = location;
+        super(assetLocation.getResourceLocation());
+        this.assetLocation = assetLocation;
     }
 
-    public void load(ResourceManager resourceManager) throws IOException
+    @Override
+    public TextureContents loadContents(ResourceManager resourceManager) throws IOException
     {
-        if (this.image != null)
+        try (InputStream inputStream = new FileInputStream(AssetsModule.INSTANCE.getAssetFile(assetLocation)))
         {
-            this.image.close();
-            this.image = null;
+            return new TextureContents(NativeImage.read(inputStream), null);
         }
-
-        Identifier resourceLocation = Identifier.fromNamespaceAndPath(location.getNamespace(), PREFIX + "/" + location.getAssetPath() + SUFFIX);
-        try (InputStream inputStream = resourceManager.open(resourceLocation))
+        catch (IOException ioexception)
         {
-            this.image = NativeImage.read(inputStream);
-        }
-        catch (FileNotFoundException e)
-        {
-            e.printStackTrace();
+            LOGGER.error("Couldn't load asset texture {}", assetLocation.toString(), ioexception);
+            throw ioexception;
         }
     }
 }

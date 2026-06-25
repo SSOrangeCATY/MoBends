@@ -1,8 +1,5 @@
 package goblinbob.mobends.core.client.gui.settingswindow;
 
-import goblinbob.mobends.core.util.GuiHelper;
-
-import com.mojang.blaze3d.systems.RenderSystem;
 import goblinbob.mobends.core.bender.EntityBender;
 import goblinbob.mobends.core.client.gui.elements.GuiSmallToggleButton;
 import goblinbob.mobends.core.client.gui.elements.IGuiListElement;
@@ -51,12 +48,11 @@ public class GuiBenderSettings implements IGuiListElement
         toggleButton.update(mouseX, mouseY);
     }
 
-    public void draw(GuiGraphicsExtractor GuiGraphicsExtractor, float partialTicks)
+    public void draw(GuiGraphicsExtractor guiGraphics, float partialTicks)
     {
+        guiGraphics.text(mc.font, bender.getLocalizedName(), this.x + 38, this.y + 10, 0xffffff, true);
 
-        GuiHelper.drawString(GuiGraphicsExtractor, mc.font, bender.getLocalizedName(), this.x + 38, this.y + 10, 0xffffff, true);
-
-        toggleButton.draw(GuiGraphicsExtractor);
+        toggleButton.draw(guiGraphics);
     }
 
     @Override

@@ -13,9 +13,9 @@ import goblinbob.mobends.standard.client.renderer.entity.layers.LayerCustomHeldI
 import goblinbob.mobends.standard.data.BipedEntityData;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HumanoidModel;
-import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import net.minecraft.client.renderer.entity.layers.CustomHeadLayer;
 import net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer;
 import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
@@ -24,8 +24,9 @@ import net.minecraft.world.entity.LivingEntity;
 
 public abstract class BipedMutator<D extends BipedEntityData<E>,
                                    E extends LivingEntity,
-                                   M extends EntityModel>
-                                  extends Mutator<D, E, M>
+                                   S extends HumanoidRenderState,
+                                   M extends HumanoidModel<S>>
+                                  extends Mutator<D, E, S, M>
 {
 
     // Custom bendable parts
@@ -50,12 +51,12 @@ public abstract class BipedMutator<D extends BipedEntityData<E>,
     protected ModelPart vanillaLeftLeg;
     protected ModelPart vanillaRightLeg;
 
-    protected LayerCustomBipedArmor layerArmor;
-    protected Object layerArmorVanilla;
-    protected LayerCustomHeldItem layerHeldItem;
-    protected Object layerHeldItemVanilla;
-    protected Object layerCustomHead;
-    protected Object layerCustomHeadVanilla;
+    protected LayerCustomBipedArmor<E, S, M> layerArmor;
+    protected HumanoidArmorLayer<S, M, ?> layerArmorVanilla;
+    protected LayerCustomHeldItem<E, S, M> layerHeldItem;
+    protected ItemInHandLayer<S, M> layerHeldItemVanilla;
+    protected CustomHeadLayer<S, M> layerCustomHead;
+    protected CustomHeadLayer<S, M> layerCustomHeadVanilla;
 
     public BipedMutator(IEntityDataFactory<E> dataFactory)
     {
@@ -70,16 +71,13 @@ public abstract class BipedMutator<D extends BipedEntityData<E>,
     @Override
     public void storeVanillaModel(M model)
     {
-        if (model instanceof HumanoidModel<?> humanoidModel)
-        {
-            this.vanillaBody = humanoidModel.body;
-            this.vanillaHead = humanoidModel.head;
-            this.vanillaHat = humanoidModel.hat;
-            this.vanillaLeftArm = humanoidModel.leftArm;
-            this.vanillaRightArm = humanoidModel.rightArm;
-            this.vanillaLeftLeg = humanoidModel.leftLeg;
-            this.vanillaRightLeg = humanoidModel.rightLeg;
-        }
+        this.vanillaBody = model.body;
+        this.vanillaHead = model.head;
+        this.vanillaHat = model.hat;
+        this.vanillaLeftArm = model.leftArm;
+        this.vanillaRightArm = model.rightArm;
+        this.vanillaLeftLeg = model.leftLeg;
+        this.vanillaRightLeg = model.rightLeg;
     }
 
     /**
@@ -89,7 +87,7 @@ public abstract class BipedMutator<D extends BipedEntityData<E>,
     @Override
     public void applyVanillaModel(M model)
     {
-        // In 1.20.1, model parts are final and cannot be directly replaced
+        // In 26.2, model parts are final and cannot be directly replaced
         // The demutation will need to handle this differently
         // For now, we just track that we need to restore vanilla rendering
     }
@@ -100,8 +98,36 @@ public abstract class BipedMutator<D extends BipedEntityData<E>,
      * for future mutation reversal.
      */
     @Override
-    public void swapLayer(LivingEntityRenderer<?, ?, ?> renderer, int index, boolean isModelVanilla)
+    @SuppressWarnings("unchecked")
+    public void swapLayer(LivingEntityRenderer<E, S, M> renderer, int index, boolean isModelVanilla)
     {
+        RenderLayer<S, M> layer = layerRenderers.get(index);
+        if (layer instanceof HumanoidArmorLayer)
+        {
+            HumanoidArmorLayer<S, M, ?> vanillaArmor = (HumanoidArmorLayer<S, M, ?>) layer;
+            if (isModelVanilla)
+                this.layerArmorVanilla = vanillaArmor;
+
+            // Create our custom armor layer
+            this.layerArmor = new LayerCustomBipedArmor<>(renderer, this);
+            this.layerArmor.setVanillaArmorLayer(vanillaArmor);
+
+            layerRenderers.set(index, this.layerArmor);
+        }
+        else if (layer instanceof ItemInHandLayer)
+        {
+            this.layerHeldItem = new LayerCustomHeldItem<>(renderer, this);
+            if (isModelVanilla)
+                this.layerHeldItemVanilla = (ItemInHandLayer<S, M>) layer;
+            layerRenderers.set(index, this.layerHeldItem);
+        }
+        else if (layer instanceof CustomHeadLayer)
+        {
+            // For custom head layer, we need special handling
+            if (isModelVanilla)
+                this.layerCustomHeadVanilla = (CustomHeadLayer<S, M>) layer;
+            // Don't swap - let vanilla handle it for now
+        }
     }
 
     /**
@@ -109,8 +135,21 @@ public abstract class BipedMutator<D extends BipedEntityData<E>,
      * Used to demutate the model.
      */
     @Override
-    public void deswapLayer(LivingEntityRenderer<?, ?, ?> renderer, int index)
+    public void deswapLayer(LivingEntityRenderer<E, S, M> renderer, int index)
     {
+        RenderLayer<S, M> layer = layerRenderers.get(index);
+        if (layer instanceof LayerCustomBipedArmor && this.layerArmorVanilla != null)
+        {
+            layerRenderers.set(index, this.layerArmorVanilla);
+        }
+        else if (layer instanceof LayerCustomHeldItem && this.layerHeldItemVanilla != null)
+        {
+            layerRenderers.set(index, this.layerHeldItemVanilla);
+        }
+        else if (layer == this.layerCustomHead && this.layerCustomHeadVanilla != null)
+        {
+            layerRenderers.set(index, this.layerCustomHeadVanilla);
+        }
     }
 
     /**

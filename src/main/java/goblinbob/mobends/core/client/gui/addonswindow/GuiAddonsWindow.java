@@ -1,13 +1,12 @@
 package goblinbob.mobends.core.client.gui.addonswindow;
 
-import goblinbob.mobends.core.util.GuiHelper;
-
 import goblinbob.mobends.core.addon.Addons;
 import goblinbob.mobends.core.addon.IAddon;
 import goblinbob.mobends.standard.main.ModStatics;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.resources.Identifier;
 
@@ -38,16 +37,16 @@ public class GuiAddonsWindow
     {
     }
 
-    public void display(GuiGraphicsExtractor GuiGraphicsExtractor, int mouseX, int mouseY, float partialTicks)
+    public void display(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks)
     {
-        GuiHelper.blit(GuiGraphicsExtractor, BACKGROUND_TEXTURE, this.x, this.y, 0, 0, WIDTH, HEIGHT);
+        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, BACKGROUND_TEXTURE, this.x, this.y, 0, 0, WIDTH, HEIGHT, WIDTH, HEIGHT);
 
         String title = I18n.get("mobends.gui.addons");
-        GuiHelper.drawCenteredString(GuiGraphicsExtractor, this.font, title, this.x + WIDTH/2, this.y + 4, 0xFFFFFF);
+        guiGraphics.centeredText(this.font, title, this.x + WIDTH/2, this.y + 4, 0xFFFFFF);
 
         int y = this.y + 50;
         for (IAddon addon : Addons.getRegistered()) {
-            GuiHelper.drawCenteredString(GuiGraphicsExtractor, this.font, addon.getDisplayName(), this.x + WIDTH/2, y, 0xFFFFFF);
+            guiGraphics.centeredText(this.font, addon.getDisplayName(), this.x + WIDTH/2, y, 0xFFFFFF);
             y += 50;
         }
     }

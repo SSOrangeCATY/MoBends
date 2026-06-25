@@ -48,9 +48,11 @@ public class GuiPackTab
         }
     }
 
-    public void draw(GuiGraphicsExtractor GuiGraphicsExtractor, int mouseX, int mouseY)
+    public void draw(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY)
     {
         update(mouseX, mouseY);
+
+        Draw.bindTexture(GuiPacksWindow.BACKGROUND_TEXTURE);
 
         final int yOffset = y - HEIGHT + (selected ? -1 : 0);
         final int SELECTED_TEXTURE_Y = 147;
@@ -62,8 +64,9 @@ public class GuiPackTab
 
         if (this.selectedTransitionTween > 0)
         {
+            Draw.setColor(1F, 1F, 1F, this.selectedTransitionTween);
             Draw.texturedModalRect(x, yOffset, textureIndex * WIDTH, SELECTED_TEXTURE_Y, WIDTH, HEIGHT);
-
+            Draw.resetColor();
         }
     }
 

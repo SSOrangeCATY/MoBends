@@ -26,7 +26,7 @@ public class SharedBooleanProp extends SharedProperty<Boolean>
     @Override
     public void readFromNBT(CompoundTag tag)
     {
-        value = tag.getBoolean(key).orElse(value);
+        value = tag.getBooleanOr(key, value);
     }
 
     @Override

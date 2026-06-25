@@ -1,6 +1,5 @@
 package goblinbob.mobends.core.client.gui.settingswindow;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import goblinbob.mobends.core.client.gui.elements.GuiList;
 import goblinbob.mobends.core.client.gui.packswindow.GuiPacksWindow;
 import goblinbob.mobends.core.util.Draw;
@@ -20,8 +19,9 @@ public class GuiBenderList extends GuiList<GuiBenderSettings>
     }
 
     @Override
-    protected void drawBackground(GuiGraphicsExtractor GuiGraphicsExtractor, float partialTicks)
+    protected void drawBackground(GuiGraphicsExtractor guiGraphics, float partialTicks)
     {
+        Draw.bindTexture(GuiPacksWindow.BACKGROUND_TEXTURE);
         Draw.borderBox(0, 0, this.width, this.height, 4, 36, 117);
     }
 

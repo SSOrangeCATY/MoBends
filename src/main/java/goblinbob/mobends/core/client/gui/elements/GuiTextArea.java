@@ -1,13 +1,8 @@
 package goblinbob.mobends.core.client.gui.elements;
 
-import goblinbob.mobends.core.util.GuiHelper;
-
-import net.minecraft.SharedConstants;
-import net.minecraft.util.Util;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.util.Mth;
@@ -298,28 +293,24 @@ public class GuiTextArea
     /**
      * Call this method from your GuiScreen to process the keys into the textbox
      */
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers)
+    public boolean keyPressed(KeyEvent event)
     {
         if (!this.isFocused)
         {
             return false;
         }
-
-        boolean controlDown = (modifiers & 2) != 0;
-        boolean shiftDown = (modifiers & 1) != 0;
-
-        if (controlDown && keyCode == 65)
+        else if (event.isSelectAll())
         {
             this.setCursorPositionEnd();
             this.setSelectionPos(0);
             return true;
         }
-        else if (controlDown && keyCode == 67)
+        else if (event.isCopy())
         {
             Minecraft.getInstance().keyboardHandler.setClipboard(this.getSelectedText());
             return true;
         }
-        else if (controlDown && keyCode == 86)
+        else if (event.isPaste())
         {
             if (this.isEnabled)
             {
@@ -328,7 +319,7 @@ public class GuiTextArea
 
             return true;
         }
-        else if (controlDown && keyCode == 88)
+        else if (event.isCut())
         {
             Minecraft.getInstance().keyboardHandler.setClipboard(this.getSelectedText());
 
@@ -341,11 +332,11 @@ public class GuiTextArea
         }
         else
         {
-            switch (keyCode)
+            switch (event.key())
             {
                 case 259: // Backspace
 
-                    if (controlDown)
+                    if (event.hasControlDownWithQuirk())
                     {
                         if (this.isEnabled)
                         {
@@ -360,7 +351,7 @@ public class GuiTextArea
                     return true;
                 case 268: // Home
 
-                    if (shiftDown)
+                    if (event.hasShiftDown())
                     {
                         this.setSelectionPos(0);
                     }
@@ -372,9 +363,9 @@ public class GuiTextArea
                     return true;
                 case 263: // Left arrow
 
-                    if (shiftDown)
+                    if (event.hasShiftDown())
                     {
-                        if (controlDown)
+                        if (event.hasControlDownWithQuirk())
                         {
                             this.setSelectionPos(this.getNthWordFromPos(-1, this.getSelectionEnd()));
                         }
@@ -383,7 +374,7 @@ public class GuiTextArea
                             this.setSelectionPos(this.getSelectionEnd() - 1);
                         }
                     }
-                    else if (controlDown)
+                    else if (event.hasControlDownWithQuirk())
                     {
                         this.setCursorPosition(this.getNthWordFromCursor(-1));
                     }
@@ -395,9 +386,9 @@ public class GuiTextArea
                     return true;
                 case 262: // Right arrow
 
-                    if (shiftDown)
+                    if (event.hasShiftDown())
                     {
-                        if (controlDown)
+                        if (event.hasControlDownWithQuirk())
                         {
                             this.setSelectionPos(this.getNthWordFromPos(1, this.getSelectionEnd()));
                         }
@@ -406,7 +397,7 @@ public class GuiTextArea
                             this.setSelectionPos(this.getSelectionEnd() + 1);
                         }
                     }
-                    else if (controlDown)
+                    else if (event.hasControlDownWithQuirk())
                     {
                         this.setCursorPosition(this.getNthWordFromCursor(1));
                     }
@@ -418,7 +409,7 @@ public class GuiTextArea
                     return true;
                 case 269: // End
 
-                    if (shiftDown)
+                    if (event.hasShiftDown())
                     {
                         this.setSelectionPos(this.text.length());
                     }
@@ -430,7 +421,7 @@ public class GuiTextArea
                     return true;
                 case 261: // Delete
 
-                    if (controlDown)
+                    if (event.hasControlDownWithQuirk())
                     {
                         if (this.isEnabled)
                         {
@@ -472,26 +463,6 @@ public class GuiTextArea
         return false;
     }
 
-    public boolean charTyped(char typedChar, int modifiers)
-    {
-        if (!this.isFocused)
-        {
-            return false;
-        }
-
-        if (StringUtil.isAllowedChatCharacter(typedChar))
-        {
-            if (this.isEnabled)
-            {
-                this.writeText(Character.toString(typedChar));
-            }
-
-            return true;
-        }
-
-        return false;
-    }
-
     /**
      * Called when mouse is clicked, regardless as to whether it is over this button or not.
      */
@@ -521,14 +492,14 @@ public class GuiTextArea
     /**
      * Draws the textbox
      */
-    public void drawTextBox(GuiGraphicsExtractor GuiGraphicsExtractor)
+    public void drawTextBox(GuiGraphicsExtractor guiGraphics)
     {
         if (this.getVisible())
         {
             if (this.getEnableBackgroundDrawing())
             {
-                GuiGraphicsExtractor.fill(this.xPosition - 1, this.yPosition - 1, this.xPosition + this.width + 1, this.yPosition + this.height + 1, -6250336);
-                GuiGraphicsExtractor.fill(this.xPosition, this.yPosition, this.xPosition + this.width, this.yPosition + this.height, -16777216);
+                guiGraphics.fill(this.xPosition - 1, this.yPosition - 1, this.xPosition + this.width + 1, this.yPosition + this.height + 1, -6250336);
+                guiGraphics.fill(this.xPosition, this.yPosition, this.xPosition + this.width, this.yPosition + this.height, -16777216);
             }
 
             int i = this.isEnabled ? this.enabledColor : this.disabledColor;
@@ -549,7 +520,8 @@ public class GuiTextArea
             if (!s.isEmpty())
             {
                 String s1 = flag ? s.substring(0, j) : s;
-                j1 = GuiHelper.drawString(GuiGraphicsExtractor, this.font, s1, l, i1, i, true);
+                guiGraphics.text(this.font, s1, l, i1, i, true);
+                j1 = l + this.font.width(s1);
             }
 
             boolean flag2 = this.cursorPosition < this.text.length();
@@ -567,25 +539,25 @@ public class GuiTextArea
 
             if (!s.isEmpty() && flag && j < s.length())
             {
-                GuiHelper.drawString(GuiGraphicsExtractor, this.font, s.substring(j), j1, i1, i, true);
+                guiGraphics.text(this.font, s.substring(j), j1, i1, i, true);
             }
 
             if (flag1)
             {
                 if (flag2)
                 {
-                    GuiGraphicsExtractor.fill(k1, i1 - 1, k1 + 1, i1 + 1 + this.font.lineHeight, -3092272);
+                    guiGraphics.fill(k1, i1 - 1, k1 + 1, i1 + 1 + this.font.lineHeight, -3092272);
                 }
                 else
                 {
-                    GuiHelper.drawString(GuiGraphicsExtractor, this.font, "_", k1, i1, i, true);
+                    guiGraphics.text(this.font, "_", k1, i1, i, true);
                 }
             }
 
             if (k != j)
             {
                 int l1 = l + this.font.width(s.substring(0, k));
-                this.drawSelectionBox(GuiGraphicsExtractor, k1, i1 - 1, l1 - 1, i1 + 1 + this.font.lineHeight);
+                this.drawSelectionBox(guiGraphics, k1, i1 - 1, l1 - 1, i1 + 1 + this.font.lineHeight);
             }
         }
     }
@@ -593,9 +565,38 @@ public class GuiTextArea
     /**
      * Draws the blue selection box.
      */
-    private void drawSelectionBox(GuiGraphicsExtractor GuiGraphicsExtractor, int _startX, int _startY, int _endX, int _endY)
+    private void drawSelectionBox(GuiGraphicsExtractor guiGraphics, int _startX, int _startY, int _endX, int _endY)
     {
-        GuiGraphicsExtractor.fill(_startX, _startY, _endX, _endY, -16776961);
+        int startX = _startX;
+        int startY = _startY;
+        int endX = _endX;
+        int endY = _endY;
+
+        if (startX < endX)
+        {
+            int temp = startX;
+            startX = endX;
+            endX = temp;
+        }
+
+        if (startY < endY)
+        {
+            int j = startY;
+            startY = endY;
+            endY = j;
+        }
+
+        if (endX > this.xPosition + this.width)
+        {
+            endX = this.xPosition + this.width;
+        }
+
+        if (startX > this.xPosition + this.width)
+        {
+            startX = this.xPosition + this.width;
+        }
+
+        guiGraphics.textHighlight(startX, startY, endX, endY, true);
     }
 
     /**

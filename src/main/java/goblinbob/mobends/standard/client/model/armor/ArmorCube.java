@@ -2,17 +2,14 @@ package goblinbob.mobends.standard.client.model.armor;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 /**
  * A cube specifically for armor rendering that can be sliced at a Y plane.
- * Based on the original MutatedBox but designed for 1.20.1 rendering.
+ * Based on the original MutatedBox but designed for 26.2 rendering.
  */
-@OnlyIn(Dist.CLIENT)
 public class ArmorCube
 {
     public static final int LEFT = 0;
@@ -388,7 +385,7 @@ public class ArmorCube
                     float ty = matrix.m01() * x + matrix.m11() * y + matrix.m21() * z + matrix.m31();
                     float tz = matrix.m02() * x + matrix.m12() * y + matrix.m22() * z + matrix.m32();
 
-                    // Pack RGBA into single int for 1.21.1
+                    // Pack RGBA into single int for 26.2
                     int color = ((int)(alpha * 255.0F) << 24) | ((int)(red * 255.0F) << 16) | ((int)(green * 255.0F) << 8) | (int)(blue * 255.0F);
                     vertexConsumer.addVertex(tx, ty, tz)
                             .setColor(color)

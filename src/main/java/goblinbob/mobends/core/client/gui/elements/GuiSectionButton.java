@@ -1,6 +1,5 @@
 package goblinbob.mobends.core.client.gui.elements;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import goblinbob.mobends.core.client.event.DataUpdateHandler;
 import goblinbob.mobends.core.client.gui.CustomFont;
 import goblinbob.mobends.core.client.gui.CustomFontRenderer;
@@ -123,7 +122,7 @@ public class GuiSectionButton
         this.ticksAfterHovered = 0F;
     }
 
-    public void display(GuiGraphicsExtractor GuiGraphicsExtractor)
+    public void display(GuiGraphicsExtractor guiGraphics)
     {
         this.ticksAfterHovered += DataUpdateHandler.ticksPerFrame;
 
@@ -132,6 +131,11 @@ public class GuiSectionButton
 
         float uScale = 0.001953125F;
         float vScale = 0.0078125F;
+
+        if (this.hover)
+            Draw.setColor(this.bgColor.r, this.bgColor.g, this.bgColor.b, this.bgColor.a);
+        else
+            Draw.setColor(this.neutralColor.r, this.neutralColor.g, this.neutralColor.b, this.neutralColor.a);
 
         Draw.rectangle(x, y, width, height);
 
@@ -150,6 +154,8 @@ public class GuiSectionButton
         }
 
         int mountainOffsetY = (int) (bgt * 10);
+
+        Draw.bindTexture(BUTTONS_TEXTURE);
         Draw.texturedRectangle(x, y + mountainOffsetY, width, height - 2 - mountainOffsetY, tX * uScale, tY * vScale, (tX + width) * uScale, (tY + height - 2 - mountainOffsetY) * vScale);
         // Bottom bar
         Draw.texturedRectangle(x, y + height - 2, width, 2, tX * uScale, (tY + height - 2) * vScale, (tX + width) * uScale, (tY + 2) * vScale);
@@ -169,15 +175,27 @@ public class GuiSectionButton
 
             if (leftIcon != null)
             {
-                leftIcon.draw(GuiGraphicsExtractor, uScale, vScale);
+                Draw.resetColor();
+                guiGraphics.pose().pushMatrix();
+                guiGraphics.pose().translate(x + iconSpacing, y + height / 2F);
+                guiGraphics.pose().scale(scale, scale);
+                leftIcon.draw(guiGraphics, uScale, vScale);
+                guiGraphics.pose().popMatrix();
             }
 
             if (rightIcon != null)
             {
-                rightIcon.draw(GuiGraphicsExtractor, uScale, vScale);
+                guiGraphics.pose().pushMatrix();
+                guiGraphics.pose().translate(x + width - iconSpacing, y + height / 2F);
+                guiGraphics.pose().scale(scale, scale);
+                rightIcon.draw(guiGraphics, uScale, vScale);
+                guiGraphics.pose().popMatrix();
             }
         }
+
+        Draw.resetColor();
         this.fontRenderer.drawCenteredText(this.label, x + width / 2, y + height / 2 + 6);
+        Draw.resetColor();
     }
 
     public void setPosition(int i, int j)
@@ -202,8 +220,9 @@ public class GuiSectionButton
             this.texHeight = height;
         }
 
-        public void draw(GuiGraphicsExtractor GuiGraphicsExtractor, float uScale, float vScale)
+        public void draw(GuiGraphicsExtractor guiGraphics, float uScale, float vScale)
         {
+            Draw.bindTexture(BUTTONS_TEXTURE);
             Draw.texturedRectangle(-texWidth / 2, -texHeight / 2,
                     texWidth, texHeight,
                     texU * uScale, texV * vScale,

@@ -1,8 +1,8 @@
 package goblinbob.mobends.core.configuration;
 
 /**
- * Base configuration class for Mo' Bends 1.20.1.
- * Uses the new Forge config spec system.
+ * Base configuration class for Mo' Bends 26.2.
+ * Uses the NeoForge config spec system.
  */
 public abstract class CoreConfig
 {

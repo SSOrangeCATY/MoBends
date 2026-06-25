@@ -1,10 +1,10 @@
 package goblinbob.mobends.core.client.gui.elements;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import goblinbob.mobends.core.util.Draw;
 import goblinbob.mobends.core.util.GUtil;
 import goblinbob.mobends.core.util.UIScissorHelper;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import org.joml.Matrix3x2fStack;
 
 public abstract class GuiScrollPanel extends GuiElement
 {
@@ -143,32 +143,41 @@ public abstract class GuiScrollPanel extends GuiElement
     }
 
     @Override
-    public void draw(GuiGraphicsExtractor GuiGraphicsExtractor, float partialTicks)
+    public void draw(GuiGraphicsExtractor guiGraphics, float partialTicks)
     {
-        GUtil.lerp(this.prevScrollAmount, this.scrollAmount, partialTicks);
+        final float scroll = GUtil.lerp(this.prevScrollAmount, this.scrollAmount, partialTicks);
 
-        this.drawBackground(GuiGraphicsExtractor, partialTicks);
+        Matrix3x2fStack poseStack = guiGraphics.pose();
+        poseStack.pushMatrix();
+        poseStack.translate(this.getViewX(), this.getViewY());
 
+        this.drawBackground(guiGraphics, partialTicks);
+
+        poseStack.pushMatrix();
+        poseStack.translate(0, -scroll);
         UIScissorHelper.INSTANCE.setUIBounds((int) this.getAbsoluteX(), (int) this.getAbsoluteY(), this.width - this.scrollBarWidth, this.height);
         UIScissorHelper.INSTANCE.enable();
 
-        this.drawChildren(GuiGraphicsExtractor, partialTicks);
-        this.drawContent(GuiGraphicsExtractor, partialTicks);
+        this.drawChildren(guiGraphics, partialTicks);
+        this.drawContent(guiGraphics, partialTicks);
 
         UIScissorHelper.INSTANCE.disable();
+        poseStack.popMatrix();
 
-        this.drawForeground(GuiGraphicsExtractor, partialTicks);
+        this.drawForeground(guiGraphics, partialTicks);
+
+        poseStack.popMatrix();
     }
 
-    protected abstract void drawContent(GuiGraphicsExtractor GuiGraphicsExtractor, float partialTicks);
+    protected abstract void drawContent(GuiGraphicsExtractor guiGraphics, float partialTicks);
 
     @Override
-    protected void drawForeground(GuiGraphicsExtractor GuiGraphicsExtractor, float partialTicks)
+    protected void drawForeground(GuiGraphicsExtractor guiGraphics, float partialTicks)
     {
-        this.drawScrollBar(GuiGraphicsExtractor, partialTicks);
+        this.drawScrollBar(guiGraphics, partialTicks);
     }
 
-    protected void drawScrollBar(GuiGraphicsExtractor GuiGraphicsExtractor, float partialTicks)
+    protected void drawScrollBar(GuiGraphicsExtractor guiGraphics, float partialTicks)
     {
         if (contentSize <= height)
             return;
@@ -176,14 +185,15 @@ public abstract class GuiScrollPanel extends GuiElement
         final int scrollBarHeight = this.getScrollHandleHeight();
 
         // Background
-        GuiGraphicsExtractor.fill(width - scrollBarWidth, 0, width, height, this.getBackgroundColor());
+        guiGraphics.fill(width - scrollBarWidth, 0, width, height, this.getBackgroundColor());
 
         final int barColor = this.scrollBarGrabbed
                 ? getScrollBarGrabbedColor()
                 : (this.scrollHandleHovered ? this.getScrollBarHoveredColor() : this.getScrollBarColor());
 
         // Handle
-        GuiGraphicsExtractor.fill(width - scrollBarWidth, this.getScrollHandleY(partialTicks), width, this.getScrollHandleY(partialTicks) + scrollBarHeight, barColor);
+        guiGraphics.fill(width - scrollBarWidth, this.getScrollHandleY(partialTicks), width, this.getScrollHandleY(partialTicks) + scrollBarHeight, barColor);
+        Draw.resetColor();
     }
 
     public int getScrollAmount()

@@ -2,8 +2,6 @@ package goblinbob.mobends.standard.client.model.armor.tier;
 
 import goblinbob.mobends.standard.client.model.armor.BoneRegion;
 import net.minecraft.client.model.geom.ModelPart;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -15,7 +13,6 @@ import java.util.Map;
  * Used by Tier 2 rendering to map arbitrary ModelParts to bone regions.
  * Immutable after construction.
  */
-@OnlyIn(Dist.CLIENT)
 public class PartClassification
 {
     /**

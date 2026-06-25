@@ -7,8 +7,6 @@ import goblinbob.mobends.core.math.Quaternion;
 import goblinbob.mobends.core.math.SmoothOrientation;
 import goblinbob.mobends.core.math.vector.IVec3f;
 import goblinbob.mobends.standard.data.BipedEntityData;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -26,7 +24,6 @@ import java.util.Map;
  *
  * This approach works with ANY armor - vanilla, modded, custom OBJ, etc.
  */
-@OnlyIn(Dist.CLIENT)
 public class RigidArmorRenderer
 {
     private static final float SCALE = 1.0f / 16.0f;

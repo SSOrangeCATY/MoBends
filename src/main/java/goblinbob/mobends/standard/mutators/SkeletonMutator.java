@@ -6,40 +6,41 @@ import goblinbob.mobends.standard.data.SkeletonData;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.monster.skeleton.SkeletonModel;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
-import net.minecraft.world.entity.monster.skeleton.AbstractSkeleton;
+import net.minecraft.client.renderer.entity.state.SkeletonRenderState;
+import net.minecraft.world.entity.monster.skeleton.Skeleton;
 
 /**
  * Instantiated once per SkeletonRenderer
  *
  * @author Iwo Plaza
  */
-public class SkeletonMutator<E extends AbstractSkeleton> extends BipedMutator<SkeletonData<E>, E, SkeletonModel>
+public class SkeletonMutator extends BipedMutator<SkeletonData, Skeleton, SkeletonRenderState, SkeletonModel<SkeletonRenderState>>
 {
 
     protected boolean boneLimbs = false;
 
-    public SkeletonMutator(IEntityDataFactory<E> dataCreationFunction)
+    public SkeletonMutator(IEntityDataFactory<Skeleton> dataCreationFunction)
     {
         super(dataCreationFunction);
     }
 
     @Override
-    public void fetchFields(LivingEntityRenderer<?, ?, ?> renderer)
+    public void fetchFields(LivingEntityRenderer<Skeleton, SkeletonRenderState, SkeletonModel<SkeletonRenderState>> renderer)
     {
         super.fetchFields(renderer);
 
-        // In 1.20.1, skeleton limbs are always bone-style (thin)
+        // In 26.2, skeleton limbs are always bone-style (thin)
         this.boneLimbs = true;
     }
 
     @Override
-    public void storeVanillaModel(SkeletonModel model)
+    public void storeVanillaModel(SkeletonModel<SkeletonRenderState> model)
     {
         super.storeVanillaModel(model);
     }
 
     @Override
-    public boolean createParts(SkeletonModel original, float scaleFactor)
+    public boolean createParts(SkeletonModel<SkeletonRenderState> original, float scaleFactor)
     {
         // Create custom bendable parts using BendsModelPart
         // Body - root of upper body hierarchy

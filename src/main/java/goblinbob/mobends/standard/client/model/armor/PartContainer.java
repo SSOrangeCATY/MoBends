@@ -11,12 +11,10 @@ import goblinbob.mobends.core.math.vector.IVec3f;
 import goblinbob.mobends.core.math.vector.Vec3f;
 import goblinbob.mobends.core.util.GlHelper;
 import net.minecraft.client.model.geom.ModelPart;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 /**
  * A container that wraps a vanilla ModelPart and provides animated transformations.
- * Updated for Minecraft 1.20.1 - no longer extends ModelRenderer (which doesn't exist).
+ * Updated for Minecraft 26.2 - no longer extends ModelRenderer (which doesn't exist).
  * Instead, it contains a reference to a vanilla ModelPart and applies transformations via PoseStack.
  *
  * @deprecated This class is part of the legacy armor rendering system.
@@ -113,7 +111,6 @@ public class PartContainer implements IModelPart
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
     public void renderPart(PoseStack poseStack, float scale)
     {
         if (!(this.isShowing())) return;

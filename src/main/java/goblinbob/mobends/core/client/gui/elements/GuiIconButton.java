@@ -1,9 +1,7 @@
 package goblinbob.mobends.core.client.gui.elements;
 
-import goblinbob.mobends.core.util.GuiHelper;
-
-import com.mojang.blaze3d.systems.RenderSystem;
 import goblinbob.mobends.core.client.gui.GuiBendsMenu;
+import goblinbob.mobends.core.util.Draw;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public class GuiIconButton
@@ -43,11 +41,13 @@ public class GuiIconButton
                   mouseY >= y && mouseY <= y + HEIGHT;
     }
 
-    public void display(GuiGraphicsExtractor GuiGraphicsExtractor)
+    public void display(GuiGraphicsExtractor guiGraphics)
     {
         int bgTextureY = hovered ? 64 : 44;
-        GuiHelper.blit(GuiGraphicsExtractor, GuiBendsMenu.ICONS_TEXTURE, x, y, 88, bgTextureY, WIDTH, HEIGHT);
-        GuiHelper.blit(GuiGraphicsExtractor, GuiBendsMenu.ICONS_TEXTURE, x + WIDTH/2 - this.iconWidth / 2, y + HEIGHT/2 - this.iconHeight / 2, this.iconU, this.iconV, this.iconWidth, this.iconHeight);
+
+        Draw.bindTexture(GuiBendsMenu.ICONS_TEXTURE);
+        Draw.texturedModalRect(x, y, 88, bgTextureY, WIDTH, HEIGHT);
+        Draw.texturedModalRect(x + WIDTH/2 - this.iconWidth / 2, y + HEIGHT/2 - this.iconHeight / 2, this.iconU, this.iconV, this.iconWidth, this.iconHeight);
     }
 
     public boolean mouseClicked(int mouseX, int mouseY, int state)

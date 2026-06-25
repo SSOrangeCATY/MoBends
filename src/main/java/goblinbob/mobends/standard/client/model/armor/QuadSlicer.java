@@ -1,8 +1,5 @@
 package goblinbob.mobends.standard.client.model.armor;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +7,6 @@ import java.util.List;
  * Slices quads (4-vertex faces) at joint planes with proper UV interpolation.
  * Used for splitting armor geometry at elbow/knee joints.
  */
-@OnlyIn(Dist.CLIENT)
 public class QuadSlicer
 {
     /**

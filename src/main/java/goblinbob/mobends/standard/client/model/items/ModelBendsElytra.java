@@ -1,6 +1,7 @@
 package goblinbob.mobends.standard.client.model.items;
 
-import net.minecraft.client.model.object.equipment.ElytraModel;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeDeformation;
@@ -8,11 +9,16 @@ import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.client.model.object.equipment.ElytraModel;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
-@OnlyIn(Dist.CLIENT)
+/**
+ * Custom elytra model for Mo' Bends animations.
+ * Updated for Minecraft 26.2 - uses modern model architecture.
+ *
+ * NOTE: This is a simplified implementation. Full integration with the
+ * MoBends animation system would require additional work.
+ */
 public class ModelBendsElytra extends ElytraModel
 {
     private final ModelPart leftWing;
@@ -47,9 +53,11 @@ public class ModelBendsElytra extends ElytraModel
     }
 
     @Override
-    public void setupAnim(HumanoidRenderState renderState)
+    public void setupAnim(HumanoidRenderState state)
     {
-        super.setupAnim(renderState);
+        super.setupAnim(state);
+
+        this.leftWing.x = 5.0F;
         this.rightWing.x = -this.leftWing.x;
         this.rightWing.yRot = -this.leftWing.yRot;
         this.rightWing.y = this.leftWing.y;

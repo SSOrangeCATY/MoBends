@@ -2,7 +2,6 @@ package goblinbob.mobends.standard.animation.bit.spider;
 
 import goblinbob.mobends.core.client.event.DataUpdateHandler;
 import goblinbob.mobends.standard.data.SpiderData;
-import net.minecraft.world.entity.monster.spider.Spider;
 import net.minecraft.util.Mth;
 
 public class SpiderCrawlAnimationBit extends SpiderAnimationBitBase
@@ -19,9 +18,6 @@ public class SpiderCrawlAnimationBit extends SpiderAnimationBitBase
     @Override
     public void perform(SpiderData data)
     {
-        final float pt = DataUpdateHandler.partialTicks;
-        final Spider spider = data.getEntity();
-
         final float headYaw = data.headYaw.get();
         final float headPitch = data.headPitch.get();
         final float limbSwing = data.getInterpolatedCrawlProgress() * 5.0F;
@@ -50,17 +46,9 @@ public class SpiderCrawlAnimationBit extends SpiderAnimationBitBase
         animateMovingLimb(data, groundLevel, limbSwing + .7F, 6, 10F, 20.0F, 60, 80.0F);
         animateMovingLimb(data, groundLevel, limbSwing + .4F, 7, 10F, 20.0F, 60, 80.0F);
 
-        final float climbingRotation = data.getCrawlingRotation();
-        // Use body yaw, not entity yaw - Minecraft's renderer applies body yaw rotation,
-        // so we need to compensate based on body yaw to avoid mismatch when spider looks around
-        final float bodyYaw = spider.yBodyRotO + (spider.yBodyRot - spider.yBodyRotO) * pt;
-        final float renderRotationY = Mth.wrapDegrees(bodyYaw - climbingRotation);
-        data.renderRotation.orientX(-90F);
-        data.renderRotation.setSmoothness(.6F).rotateY(renderRotationY);
-
-        // Reset local offset - position handled by the rotation transforms
         data.localOffset.slideToZero();
         data.centerRotation.orientZero();
+        data.renderRotation.orientZero();
     }
 
 }

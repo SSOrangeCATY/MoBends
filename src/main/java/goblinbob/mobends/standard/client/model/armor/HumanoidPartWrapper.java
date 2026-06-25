@@ -6,21 +6,18 @@ import goblinbob.mobends.core.client.model.IModelPart;
 import goblinbob.mobends.standard.data.BipedEntityData;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 /**
  * Wrapper for a single body part in humanoid armor models (head, body, headwear).
  * Creates armor geometry that follows Mo' Bends animation.
  *
- * Updated for Minecraft 1.20.1 - creates its own renderable geometry.
+ * Updated for Minecraft 26.2 - creates its own renderable geometry.
  *
  * @deprecated This class is part of the legacy armor rendering system.
  *             Use the three-tier rendering system (ArmorRenderingFacade) instead.
  *             This class is kept for backward compatibility and will be removed in a future version.
  */
 @Deprecated
-@OnlyIn(Dist.CLIENT)
 public class HumanoidPartWrapper implements IPartWrapper
 {
     protected IPartWrapper.DataPartSelector dataPartSelector;

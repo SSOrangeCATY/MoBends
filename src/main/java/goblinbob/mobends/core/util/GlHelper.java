@@ -5,21 +5,18 @@ import goblinbob.mobends.core.math.Quaternion;
 import goblinbob.mobends.core.math.matrix.IMat4x4d;
 import goblinbob.mobends.core.math.vector.IVec3dRead;
 import goblinbob.mobends.core.math.vector.IVec3fRead;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 
 /**
  * Helper class for rendering operations.
- * Updated for 1.20.1 to use PoseStack instead of GlStateManager.
+ * Updated for Minecraft 26.2 to use PoseStack-based rendering.
  */
-@OnlyIn(Dist.CLIENT)
 public class GlHelper
 {
     /**
      * Apply a quaternion rotation to a PoseStack.
-     * This is the primary method for 1.20.1 rendering.
+     * This is the primary method for modern PoseStack rendering.
      */
     public static void rotate(PoseStack poseStack, Quaternion quaternionIn)
     {
@@ -155,27 +152,27 @@ public class GlHelper
     // ============================================
 
     /**
-     * @deprecated Use rotate(PoseStack, Quaternion) instead for 1.20.1
+     * @deprecated Use rotate(PoseStack, Quaternion) instead for Minecraft 26.2
      */
     @Deprecated
     public static void rotate(Quaternion quaternionIn)
     {
-        // Legacy GlStateManager rotation no longer available in 1.20.1
+        // Legacy immediate rotation path no longer exists in Minecraft 26.2.
         // This method is kept for compilation compatibility but does nothing
     }
 
     /**
-     * @deprecated Use transform(PoseStack, IMat4x4d) instead for 1.20.1
+     * @deprecated Use transform(PoseStack, IMat4x4d) instead for Minecraft 26.2
      */
     @Deprecated
     public static void transform(IMat4x4d matrixIn)
     {
-        // Legacy GlStateManager transformation no longer available in 1.20.1
+        // Legacy immediate transform path no longer exists in Minecraft 26.2.
         // This method is kept for compilation compatibility but does nothing
     }
 
     /**
-     * @deprecated Immediate mode vertex submission is not used in 1.20.1
+     * @deprecated Immediate mode vertex submission is not used in Minecraft 26.2
      */
     @Deprecated
     public static void vertex(IVec3fRead vector)
@@ -184,7 +181,7 @@ public class GlHelper
     }
 
     /**
-     * @deprecated Immediate mode vertex submission is not used in 1.20.1
+     * @deprecated Immediate mode vertex submission is not used in Minecraft 26.2
      */
     @Deprecated
     public static void vertex(IVec3dRead vector)

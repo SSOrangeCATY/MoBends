@@ -8,14 +8,19 @@ import goblinbob.mobends.core.data.LivingEntityData;
 import goblinbob.mobends.core.mutators.IMutatorFactory;
 import goblinbob.mobends.core.mutators.Mutator;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.ServerLevelAccessor;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.InvocationTargetException;
@@ -31,7 +36,7 @@ public abstract class EntityBender<T extends LivingEntity>
     private final MutatedRenderer<T> renderer;
     public final Class<T> entityClass;
 
-    private final Map<LivingEntityRenderer<?, ?, ?>, Mutator<LivingEntityData<T>, T, ?>> mutatorMap = new HashMap<>();
+    private final Map<LivingEntityRenderer<? extends T, ?, ?>, Mutator<LivingEntityData<T>, T, ?, ?>> mutatorMap = new HashMap<>();
 
     private boolean animate;
     protected Map<String, BoneMetadata> boneMetadataMap;
@@ -53,12 +58,12 @@ public abstract class EntityBender<T extends LivingEntity>
             if (entityType == null)
                 throw new RuntimeException("Unable to find an EntityType for " + entityClass.getName());
 
-            Identifier Identifier = BuiltInRegistries.ENTITY_TYPE.getKey(entityType);
-            if (Identifier == null)
+            Identifier identifier = BuiltInRegistries.ENTITY_TYPE.getKey(entityType);
+            if (identifier == null)
                 throw new RuntimeException("Unable to find a key for " + entityClass.getName());
 
-            key = Identifier.toString();
-            unlocalizedName = "entity." + Identifier.getNamespace() + "." + Identifier.getPath();
+            key = identifier.toString();
+            unlocalizedName = "entity." + identifier.getNamespace() + "." + identifier.getPath();
         }
 
         this.key = modId + "-" + key;
@@ -141,18 +146,19 @@ public abstract class EntityBender<T extends LivingEntity>
      * Called from EntityBender.
      */
     @SuppressWarnings("unchecked")
-    public boolean applyMutation(LivingEntityRenderer<?, ?, ?> renderer, T entity, float partialTicks)
+    public <S extends LivingEntityRenderState, M extends EntityModel<? super S>> boolean applyMutation(
+            LivingEntityRenderer<T, S, M> renderer, T entity, float partialTicks)
     {
-        Mutator<LivingEntityData<T>, T, ?> mutator = (Mutator<LivingEntityData<T>, T, ?>) mutatorMap.get(renderer);
+        Mutator<LivingEntityData<T>, T, S, M> mutator = (Mutator<LivingEntityData<T>, T, S, M>) mutatorMap.get(renderer);
         if (mutator == null)
         {
-            mutator = (Mutator<LivingEntityData<T>, T, ?>) this.getMutatorFactory().createMutator(this.getDataFactory());
+            mutator = (Mutator<LivingEntityData<T>, T, S, M>) this.getMutatorFactory().createMutator(this.getDataFactory());
             if (!mutator.mutate(renderer))
             {
                 return false;
             }
 
-            mutatorMap.put(renderer, mutator);
+            mutatorMap.put(renderer, (Mutator<LivingEntityData<T>, T, ?, ?>) mutator);
         }
 
         mutator.updateModel(entity, renderer, partialTicks);
@@ -168,11 +174,12 @@ public abstract class EntityBender<T extends LivingEntity>
      * Called from EntityBender.
      */
     @SuppressWarnings("unchecked")
-    public void deapplyMutation(LivingEntityRenderer<?, ?, ?> renderer, LivingEntity entity)
+    public <S extends LivingEntityRenderState, M extends EntityModel<? super S>> void deapplyMutation(
+            LivingEntityRenderer<T, S, M> renderer, LivingEntity entity)
     {
         if (mutatorMap.containsKey(renderer))
         {
-            Mutator<LivingEntityData<T>, T, ?> mutator = (Mutator<LivingEntityData<T>, T, ?>) mutatorMap.get(renderer);
+            Mutator<LivingEntityData<T>, T, S, M> mutator = (Mutator<LivingEntityData<T>, T, S, M>) mutatorMap.get(renderer);
             mutator.demutate(renderer);
             mutatorMap.remove(renderer);
         }
@@ -181,13 +188,13 @@ public abstract class EntityBender<T extends LivingEntity>
     /**
      * Used to refresh the mutators in case of real-time changes during development.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public void refreshMutation()
     {
-        for (Entry<LivingEntityRenderer<?, ?, ?>, Mutator<LivingEntityData<T>, T, ?>> entry : mutatorMap.entrySet())
+        for (Entry<LivingEntityRenderer<? extends T, ?, ?>, Mutator<LivingEntityData<T>, T, ?, ?>> entry : mutatorMap.entrySet())
         {
-            LivingEntityRenderer<?, ?, ?> renderer = entry.getKey();
-            Mutator<LivingEntityData<T>, T, ?> mutator = entry.getValue();
+            LivingEntityRenderer renderer = (LivingEntityRenderer) entry.getKey();
+            Mutator mutator = (Mutator) entry.getValue();
             mutator.demutate(renderer);
             mutator.mutate(renderer);
             mutator.postRefresh();
@@ -205,6 +212,22 @@ public abstract class EntityBender<T extends LivingEntity>
             Mob entity = (Mob) this.entityClass.getConstructor(EntityType.class, Level.class)
                 .newInstance(getEntityTypeForClass(entityClass), level);
             entity.setPos(0, 0, 0);
+            entity.setYRot(0);
+            entity.setXRot(0);
+
+            MinecraftServer server = Minecraft.getInstance().getSingleplayerServer();
+            ServerLevelAccessor spawnLevel = server != null
+                ? server.overworld()
+                : level instanceof ServerLevelAccessor serverLevel ? serverLevel : null;
+            if (spawnLevel != null)
+            {
+                entity.finalizeSpawn(
+                    spawnLevel,
+                    spawnLevel.getCurrentDifficultyAt(entity.blockPosition()),
+                    EntitySpawnReason.COMMAND,
+                    null
+                );
+            }
             PreviewHelper.registerPreviewEntity(entity);
 
             return (T) entity;
@@ -217,7 +240,7 @@ public abstract class EntityBender<T extends LivingEntity>
         return null;
     }
 
-    public Mutator<?, ?, ?> getMutator(LivingEntityRenderer<? extends LivingEntity, ?, ?> renderer)
+    public Mutator<?, ?, ?, ?> getMutator(LivingEntityRenderer<? extends LivingEntity, ?, ?> renderer)
     {
         return this.mutatorMap.get(renderer);
     }

@@ -4,8 +4,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import goblinbob.mobends.core.client.model.ModelPartTransform;
 import goblinbob.mobends.standard.data.BipedEntityData;
 import net.minecraft.world.entity.LivingEntity;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -16,7 +14,6 @@ import javax.annotation.Nullable;
  * Provides bone transforms from entity animation data.
  * Acts as a bridge between BipedEntityData and the armor rendering system.
  */
-@OnlyIn(Dist.CLIENT)
 public class BoneTransformProvider
 {
     private static final float MODEL_SCALE = 1.0f / 16.0f;

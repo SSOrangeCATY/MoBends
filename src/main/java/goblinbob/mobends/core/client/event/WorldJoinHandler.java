@@ -26,7 +26,7 @@ public class WorldJoinHandler
             if (serverHasMod)
             {
                 // Server has Mo' Bends - set restrictive defaults, then request server config
-                NetworkConfiguration.instance.onWorldJoin();
+                NetworkConfiguration.instance.onModdedServerJoin(Minecraft.getInstance().hasSingleplayerServer());
 
                 // Request server configuration
                 ClientPacketDistributor.sendToServer(new ConfigRequestPayload());

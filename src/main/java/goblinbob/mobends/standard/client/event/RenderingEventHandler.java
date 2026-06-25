@@ -4,8 +4,10 @@ import goblinbob.mobends.core.util.BenderHelper;
 import goblinbob.mobends.standard.mutators.PlayerMutator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.player.AvatarRenderer;
 import net.minecraft.world.entity.Entity;
+import net.neoforged.neoforge.client.event.RenderArmEvent;
 import net.neoforged.neoforge.client.event.RenderHandEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 
@@ -21,15 +23,45 @@ public class RenderingEventHandler
         if (!(viewEntity instanceof AbstractClientPlayer))
             return;
 
-        AbstractClientPlayer player = (AbstractClientPlayer) viewEntity;
+        poseFirstPersonPlayer((AbstractClientPlayer) viewEntity);
+    }
 
-        if (!BenderHelper.isEntityAnimated(player))
-        	return;
+    @SubscribeEvent
+    public void beforeArmRender(RenderArmEvent event)
+    {
+        PlayerMutator mutator = getFirstPersonMutator(event.getPlayer());
+        if (mutator == null)
+        {
+            return;
+        }
 
-        AvatarRenderer renderPlayer = (AvatarRenderer) mc.getEntityRenderDispatcher().getRenderer(player);
-        PlayerMutator mutator = (PlayerMutator) BenderHelper.getMutatorForRenderer(AbstractClientPlayer.class, renderPlayer);
+        mutator.poseForFirstPersonView();
+        mutator.submitFirstPersonArm(event.getPoseStack(), event.getSubmitNodeCollector(),
+                event.getPackedLight(), event.getArm(), event.getPlayer());
+        event.setCanceled(true);
+    }
+
+    private void poseFirstPersonPlayer(AbstractClientPlayer player)
+    {
+        PlayerMutator mutator = getFirstPersonMutator(player);
         if (mutator != null)
             mutator.poseForFirstPersonView();
+    }
+
+    private PlayerMutator getFirstPersonMutator(AbstractClientPlayer player)
+    {
+        if (player == null)
+            return null;
+
+        if (!BenderHelper.isEntityAnimated(player))
+            return null;
+
+        Minecraft mc = Minecraft.getInstance();
+        EntityRenderer<? super AbstractClientPlayer, ?> renderer = mc.getEntityRenderDispatcher().getRenderer(player);
+        if (!(renderer instanceof AvatarRenderer<?> renderPlayer))
+            return null;
+
+        return (PlayerMutator) BenderHelper.getMutatorForRenderer(AbstractClientPlayer.class, renderPlayer);
     }
 
 }

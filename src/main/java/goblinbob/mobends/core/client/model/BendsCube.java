@@ -3,18 +3,15 @@ package goblinbob.mobends.core.client.model;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import goblinbob.mobends.core.math.physics.AABBox;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 /**
- * A cube/box for the new 1.20.1 rendering system.
+ * A cube/box for the new 26.2 rendering system.
  * Replaces MutatedBox and uses VertexConsumer for immediate-mode rendering
  * instead of the obsolete display lists.
  */
-@OnlyIn(Dist.CLIENT)
 public class BendsCube
 {
     public static final int LEFT = 0;
@@ -176,7 +173,7 @@ public class BendsCube
     /**
      * Compile and render this cube to the vertex consumer.
      *
-     * @deprecated Use the overload with int color parameter for 1.21.1+
+     * @deprecated Use the overload with int color parameter for 26.2
      */
     @Deprecated
     public void compile(PoseStack.Pose pose, VertexConsumer vertexConsumer,
@@ -192,7 +189,7 @@ public class BendsCube
     }
 
     /**
-     * Compile and render this cube to the vertex consumer (1.21.1+).
+     * Compile and render this cube to the vertex consumer (26.2).
      */
     public void compile(PoseStack.Pose pose, VertexConsumer vertexConsumer,
                         int packedLight, int packedOverlay, int color)
@@ -223,12 +220,11 @@ public class BendsCube
                     float ty = matrix.m01() * x + matrix.m11() * y + matrix.m21() * z + matrix.m31();
                     float tz = matrix.m02() * x + matrix.m12() * y + matrix.m22() * z + matrix.m32();
 
-                    vertexConsumer.addVertex(tx, ty, tz)
-                            .setColor(color)
-                            .setUv(vertex.u, vertex.v)
-                            .setOverlay(packedOverlay)
-                            .setLight(packedLight)
-                            .setNormal(normal.x(), normal.y(), normal.z());
+                    vertexConsumer.addVertex(tx, ty, tz,
+                            color,
+                            vertex.u, vertex.v,
+                            packedOverlay, packedLight,
+                            normal.x(), normal.y(), normal.z());
                 }
             }
             tempFlag >>= 1;

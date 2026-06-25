@@ -6,8 +6,6 @@ import goblinbob.mobends.core.client.model.ModelPartTransform;
 import goblinbob.mobends.core.util.GlHelper;
 import goblinbob.mobends.standard.data.BipedEntityData;
 import net.minecraft.client.model.geom.ModelPart;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
@@ -19,7 +17,6 @@ import java.util.List;
  * Used by both Tier 1 and Tier 2 armor renderers to ensure consistent
  * transform application matching vanilla armor behavior.
  */
-@OnlyIn(Dist.CLIENT)
 public final class ArmorPoseHelper
 {
     /** Scale factor: 1 model unit = 1/16 render units */
@@ -363,7 +360,7 @@ public final class ArmorPoseHelper
         float tintB = (armorColor & 0xFF) / 255.0F;
         float tintA = ((armorColor >> 24) & 0xFF) / 255.0F;
 
-        // Pack tinted RGBA into single int for 1.21.1
+        // Pack tinted RGBA into single int for 26.2
         int color = ((int)(v.alpha * tintA * 255.0F) << 24) |
                     ((int)(v.red * tintR * 255.0F) << 16) |
                     ((int)(v.green * tintG * 255.0F) << 8) |

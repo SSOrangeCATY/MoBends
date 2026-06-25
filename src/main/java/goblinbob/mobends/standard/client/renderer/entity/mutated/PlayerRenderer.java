@@ -6,7 +6,7 @@ import net.minecraft.client.player.AbstractClientPlayer;
 
 /**
  * Renderer for player entities with Mo' Bends animations.
- * Updated for 1.20.1 to use PoseStack instead of GlStateManager.
+ * Updated for Minecraft 26.2 to use PoseStack-based rendering.
  */
 public class PlayerRenderer extends BipedRenderer<AbstractClientPlayer>
 {

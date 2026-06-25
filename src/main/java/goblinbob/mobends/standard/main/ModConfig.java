@@ -8,6 +8,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
@@ -100,7 +101,7 @@ public class ModConfig
     @SubscribeEvent
     public static void onConfigLoading(final ModConfigEvent.Loading event)
     {
-        if (event.getConfig().getModId().equals(ModStatics.MODID))
+        if (event.getConfig().getSpec() == SPEC)
         {
             configLoaded = true;
             syncConfigValues();
@@ -110,7 +111,7 @@ public class ModConfig
     @SubscribeEvent
     public static void onConfigReloading(final ModConfigEvent.Reloading event)
     {
-        if (event.getConfig().getModId().equals(ModStatics.MODID))
+        if (event.getConfig().getSpec() == SPEC)
         {
             syncConfigValues();
         }
@@ -119,6 +120,11 @@ public class ModConfig
     public static boolean isConfigLoaded()
     {
         return configLoaded;
+    }
+
+    public static void register(ModContainer container)
+    {
+        container.registerConfig(net.neoforged.fml.config.ModConfig.Type.CLIENT, SPEC, ModStatics.MODID + "-standard-client.toml");
     }
 
     private static void syncConfigValues()
@@ -175,33 +181,33 @@ public class ModConfig
         return entries;
     }
 
-    private static boolean doesLocationMatchPattern(Identifier Identifier, String pattern)
+    private static boolean doesLocationMatchPattern(Identifier identifier, String pattern)
     {
         final Identifier patternLocation = Identifier.parse(pattern);
 
-        if (Identifier.equals(patternLocation))
+        if (identifier.equals(patternLocation))
             return true;
 
         WildcardPattern domainPattern = new WildcardPattern(patternLocation.getNamespace());
         WildcardPattern pathPattern = new WildcardPattern(patternLocation.getPath());
 
-        return domainPattern.matches(Identifier.getNamespace()) &&
-               pathPattern.matches(Identifier.getPath());
+        return domainPattern.matches(identifier.getNamespace()) &&
+               pathPattern.matches(identifier.getPath());
     }
 
-    private static boolean checkForPatterns(Identifier Identifier, String[] patterns)
+    private static boolean checkForPatterns(Identifier identifier, String[] patterns)
     {
-        if (Identifier == null)
+        if (identifier == null)
             return false;
 
-        final String resourceNamespace = Identifier.getNamespace();
-        final String resourcePath = Identifier.getPath();
+        final String resourceNamespace = identifier.getNamespace();
+        final String resourcePath = identifier.getPath();
 
         for (String pattern : patterns)
         {
             final Identifier patternLocation = Identifier.parse(pattern);
 
-            if (Identifier.equals(patternLocation))
+            if (identifier.equals(patternLocation))
                 return true;
 
             WildcardPattern domainPattern = new WildcardPattern(patternLocation.getNamespace());

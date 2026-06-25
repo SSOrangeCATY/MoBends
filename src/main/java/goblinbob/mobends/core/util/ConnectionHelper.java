@@ -11,14 +11,19 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.net.URLEncoder;
+import java.net.URL;
+import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 public class ConnectionHelper
 {
+    public static final int CONNECT_TIMEOUT_MS = 3000;
+    public static final int READ_TIMEOUT_MS = 5000;
+
     public static ConnectionHelper INSTANCE = new ConnectionHelper();
     private Gson gson;
 
@@ -42,45 +47,57 @@ public class ConnectionHelper
 
     public static <T> T sendGetRequest(URL url, Map<String, String> params, Class<T> responseClass) throws IOException, URISyntaxException
     {
-        URL requestUrl = buildGetUrl(url, params);
-        HttpURLConnection connection = (HttpURLConnection) requestUrl.openConnection();
+        HttpURLConnection connection = (HttpURLConnection) buildUri(url, params).toURL().openConnection();
+        configureConnection(connection);
         connection.setRequestMethod("GET");
+        connection.setRequestProperty("Accept", "application/json");
 
-        try (BufferedReader json = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8)))
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8)))
         {
-            return INSTANCE.gson.fromJson(json, responseClass);
-        }
-        finally
-        {
-            connection.disconnect();
+            return INSTANCE.gson.fromJson(reader, responseClass);
         }
     }
 
-    private static URL buildGetUrl(URL url, Map<String, String> params) throws IOException, URISyntaxException
+    private static URI buildUri(URL url, Map<String, String> params) throws URISyntaxException
     {
-        if (params.isEmpty())
-        {
-            return url;
-        }
+        String query = url.getQuery();
+        String extraQuery = buildQuery(params);
+        String combinedQuery = query == null || query.isEmpty() ? extraQuery : query + "&" + extraQuery;
 
-        StringBuilder query = new StringBuilder(url.toURI().getRawQuery() == null ? "" : url.toURI().getRawQuery());
+        return new URI(
+            url.getProtocol(),
+            url.getUserInfo(),
+            url.getHost(),
+            url.getPort(),
+            url.getPath(),
+            combinedQuery == null || combinedQuery.isEmpty() ? null : combinedQuery,
+            url.getRef()
+        );
+    }
+
+    private static String buildQuery(Map<String, String> params)
+    {
+        StringBuilder query = new StringBuilder();
+
         for (Map.Entry<String, String> entry : params.entrySet())
         {
             if (query.length() > 0)
             {
                 query.append('&');
             }
+
             query.append(URLEncoder.encode(entry.getKey(), StandardCharsets.UTF_8));
             query.append('=');
             query.append(URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8));
         }
 
-        return new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getPath() + "?" + query);
+        return query.toString();
     }
 
     public static <T> T sendPostRequest(URL url, JsonObject body, Class<T> responseClass) throws IOException
     {
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        configureConnection(connection);
         connection.setRequestMethod("POST");
         connection.setDoOutput(true);
 
@@ -96,10 +113,15 @@ public class ConnectionHelper
             os.write(out);
         }
 
-        // Response
-        BufferedReader json = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        T response = INSTANCE.gson.fromJson(json, responseClass);
+        try (BufferedReader json = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8)))
+        {
+            return INSTANCE.gson.fromJson(json, responseClass);
+        }
+    }
 
-        return response;
+    public static void configureConnection(URLConnection connection)
+    {
+        connection.setConnectTimeout(CONNECT_TIMEOUT_MS);
+        connection.setReadTimeout(READ_TIMEOUT_MS);
     }
 }

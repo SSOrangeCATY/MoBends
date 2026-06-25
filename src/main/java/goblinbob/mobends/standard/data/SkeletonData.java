@@ -1,20 +1,20 @@
 package goblinbob.mobends.standard.data;
 
 import goblinbob.mobends.standard.animation.controller.SkeletonController;
-import net.minecraft.world.entity.monster.skeleton.AbstractSkeleton;
+import net.minecraft.world.entity.monster.skeleton.Skeleton;
 
-public class SkeletonData<E extends AbstractSkeleton> extends BipedEntityData<E>
+public class SkeletonData extends BipedEntityData<Skeleton>
 {
 
-    private final SkeletonController<E> controller = new SkeletonController<>();
+    private final SkeletonController controller = new SkeletonController();
 
-    public SkeletonData(E entity)
+    public SkeletonData(Skeleton entity)
     {
         super(entity);
     }
 
     @Override
-    public SkeletonController<E> getController()
+    public SkeletonController getController()
     {
         return controller;
     }

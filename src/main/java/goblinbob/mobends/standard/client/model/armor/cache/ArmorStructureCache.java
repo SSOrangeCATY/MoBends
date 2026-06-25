@@ -5,8 +5,6 @@ import goblinbob.mobends.standard.client.model.armor.tier.PartClassification;
 import goblinbob.mobends.standard.client.model.armor.tier.RenderTier;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -18,7 +16,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * Maps model classes to their structural analysis results.
  * Thread-safe for concurrent access during rendering.
  */
-@OnlyIn(Dist.CLIENT)
 public class ArmorStructureCache
 {
     /**

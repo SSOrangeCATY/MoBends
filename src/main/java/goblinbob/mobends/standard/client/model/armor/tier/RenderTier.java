@@ -1,13 +1,9 @@
 package goblinbob.mobends.standard.client.model.armor.tier;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-
 /**
  * Defines the two rendering tiers for armor.
  * Each tier represents a different approach to applying Mo'Bends transforms to armor.
  */
-@OnlyIn(Dist.CLIENT)
 public enum RenderTier
 {
     /**

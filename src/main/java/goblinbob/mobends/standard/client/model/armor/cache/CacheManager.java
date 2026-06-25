@@ -1,8 +1,5 @@
 package goblinbob.mobends.standard.client.model.armor.cache;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +7,6 @@ import java.util.List;
  * Centralized manager for all armor rendering caches.
  * Handles cache lifecycle, configuration, and statistics.
  */
-@OnlyIn(Dist.CLIENT)
 public class CacheManager
 {
     private static CacheManager instance;

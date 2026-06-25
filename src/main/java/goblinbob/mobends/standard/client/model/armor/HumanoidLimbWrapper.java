@@ -6,8 +6,6 @@ import goblinbob.mobends.core.client.model.IModelPart;
 import goblinbob.mobends.standard.data.BipedEntityData;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.List;
 import java.util.Map;
@@ -16,7 +14,7 @@ import java.util.Map;
  * Wrapper for humanoid limbs (arms and legs) that supports animation with bendable joints.
  * Creates sliced armor geometry that can bend at the elbow/knee.
  *
- * Updated for Minecraft 1.20.1 - creates its own geometry rather than modifying vanilla parts.
+ * Updated for Minecraft 26.2 - creates its own geometry rather than modifying vanilla parts.
  *
  * @deprecated This class is part of the legacy armor rendering system.
  *             Use the three-tier rendering system (ArmorRenderingFacade) with
@@ -24,7 +22,6 @@ import java.util.Map;
  *             This class is kept for backward compatibility and will be removed in a future version.
  */
 @Deprecated
-@OnlyIn(Dist.CLIENT)
 public class HumanoidLimbWrapper implements IPartWrapper
 {
     protected IPartWrapper.DataPartSelector upperPartDataSelector;
@@ -107,7 +104,7 @@ public class HumanoidLimbWrapper implements IPartWrapper
      */
     protected void createSlicedGeometry(ModelPart vanillaPart, float cutPlane, float inflation)
     {
-        // In 1.20.1, ModelPart stores cubes in a list. We need to extract them.
+        // In 26.2, ModelPart stores cubes in a list. We need to extract them.
         // Since ModelPart.cubes is private, we'll create standard humanoid limb geometry
         // that matches the vanilla layout.
 
@@ -299,7 +296,7 @@ public class HumanoidLimbWrapper implements IPartWrapper
     @Override
     public void apply(ArmorWrapper armorWrapper)
     {
-        // In 1.20.1, we don't swap parts - we just mark that we should render our custom geometry
+        // In 26.2, we don't swap parts - we just mark that we should render our custom geometry
         upperPart.visible = true;
     }
 

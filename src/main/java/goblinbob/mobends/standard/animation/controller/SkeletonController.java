@@ -10,7 +10,7 @@ import goblinbob.mobends.standard.animation.bit.skeleton.WalkAnimationBit;
 import goblinbob.mobends.standard.data.BipedEntityData;
 import goblinbob.mobends.standard.data.SkeletonData;
 import net.minecraft.world.entity.HumanoidArm;
-import net.minecraft.world.entity.monster.skeleton.AbstractSkeleton;
+import net.minecraft.world.entity.monster.skeleton.Skeleton;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
@@ -25,10 +25,10 @@ import java.util.List;
  * @author Iwo Plaza
  *
  */
-public class SkeletonController<E extends AbstractSkeleton> implements IAnimationController<SkeletonData<E>>
+public class SkeletonController implements IAnimationController<SkeletonData>
 {
-	protected HardAnimationLayer<BipedEntityData<E>> layerBase;
-	protected AnimationBit<? extends BipedEntityData<E>> bitStand, bitWalk, bitJump;
+	protected HardAnimationLayer<BipedEntityData<Skeleton>> layerBase;
+	protected AnimationBit<? extends BipedEntityData<Skeleton>> bitStand, bitWalk, bitJump;
 
 	protected final BipedActionController actionController = new BipedActionController();
 
@@ -41,7 +41,7 @@ public class SkeletonController<E extends AbstractSkeleton> implements IAnimatio
 		this.bitJump = new JumpAnimationBit<>();
 	}
 
-	public void performActionAnimations(SkeletonData<E> data, E skeleton)
+	public void performActionAnimations(SkeletonData data, Skeleton skeleton)
 	{
 		final HumanoidArm primaryHand = skeleton.getMainArm();
 		final ItemStack heldItemMainhand = skeleton.getMainHandItem();
@@ -52,9 +52,9 @@ public class SkeletonController<E extends AbstractSkeleton> implements IAnimatio
 	}
 
 	@Override
-	public Collection<String> perform(SkeletonData<E> skeletonData)
+	public Collection<String> perform(SkeletonData skeletonData)
 	{
-		E skeleton = skeletonData.getEntity();
+		Skeleton skeleton = skeletonData.getEntity();
 		
 		if (!skeletonData.isOnGround() || skeletonData.getTicksAfterTouchdown() < 1)
 		{

@@ -1,8 +1,5 @@
 package goblinbob.mobends.core.client.gui.packswindow;
 
-import goblinbob.mobends.core.util.GuiHelper;
-
-import com.mojang.blaze3d.systems.RenderSystem;
 import goblinbob.mobends.core.client.gui.IGuiDraggable;
 import goblinbob.mobends.core.client.gui.elements.IGuiListElement;
 import goblinbob.mobends.core.pack.IBendsPack;
@@ -178,18 +175,22 @@ public class GuiPackEntry implements IGuiListElement, IGuiDraggable
     }
 
     @Override
-    public void draw(GuiGraphicsExtractor GuiGraphicsExtractor, float partialTicks)
+    public void draw(GuiGraphicsExtractor guiGraphics, float partialTicks)
     {
         final int viewX = dragged ? dragX - dragPivotX : smoothX;
         final int viewY = dragged ? dragY - dragPivotY : smoothY;
+
+        Draw.bindTexture(GuiPacksWindow.BACKGROUND_TEXTURE);
         final int SELECTED_TEXTURE_Y = 62;
         final int HOVER_TEXTURE_Y = 31;
         final int NEUTRAL_TEXTURE_Y = 0;
         final int textureY = selected ? SELECTED_TEXTURE_Y : hover ? HOVER_TEXTURE_Y : NEUTRAL_TEXTURE_Y;
         Draw.texturedModalRect(viewX - 1, viewY - (selected ? 1 : 0), 0, textureY, 102, HEIGHT);
+
+        Draw.bindTexture(thumbnailLocation);
         Draw.texturedRectangle(viewX + 2, viewY + 2, 25, 25, 0, 0, 25F / 32F, 25F / 32F);
 
-        GuiHelper.drawString(GuiGraphicsExtractor, font, font.plainSubstrByWidth(this.displayName, 70), viewX + 32, viewY + 1, 0xffffff, true);
+        guiGraphics.text(font, font.plainSubstrByWidth(this.displayName, 70), viewX + 32, viewY + 1, 0xffffff, true);
         Draw.rectangleHorizontalGradient(viewX + 101 - 40, viewY + 1, 39, 9, 0x004e4e4e, 0xff4e4e4e);
     }
 

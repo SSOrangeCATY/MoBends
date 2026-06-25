@@ -53,11 +53,11 @@ public class SpiderPreviewer implements IPreviewer<SpiderData>
 			case "move":
 				final float ticks = DataUpdateHandler.getTicks();
 
-				// In 1.20.1, position fields are accessed differently
+				// In 26.2, position fields are accessed differently
 				Spider entity = data.getEntity();
 				if (entity != null)
 				{
-					// Position updates happen through setPos() in 1.20.1
+					// Position updates happen through setPos() in 26.2
 					// For preview, we override the animation state
 					entity.noPhysics = true;
 				}

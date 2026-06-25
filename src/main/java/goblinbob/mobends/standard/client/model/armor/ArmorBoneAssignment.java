@@ -1,7 +1,4 @@
 package goblinbob.mobends.standard.client.model.armor;
-
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Vector3f;
 
 /**
@@ -11,7 +8,6 @@ import org.joml.Vector3f;
  * All coordinates are in model space (1/16th scale, Y+ down for player model).
  * The model is rendered at the entity position, so coordinates are relative to entity center.
  */
-@OnlyIn(Dist.CLIENT)
 public class ArmorBoneAssignment
 {
     // Scale factor: model units to render units

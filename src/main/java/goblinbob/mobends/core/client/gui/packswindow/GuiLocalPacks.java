@@ -1,7 +1,5 @@
 package goblinbob.mobends.core.client.gui.packswindow;
 
-import goblinbob.mobends.core.util.GuiHelper;
-
 import goblinbob.mobends.core.client.gui.GuiDragger;
 import goblinbob.mobends.core.flux.ISubscriber;
 import goblinbob.mobends.core.flux.Subscription;
@@ -129,20 +127,20 @@ public class GuiLocalPacks implements ISubscriber, IDisposable
         }
     }
 
-    public void draw(GuiGraphicsExtractor GuiGraphicsExtractor, float partialTicks)
+    public void draw(GuiGraphicsExtractor guiGraphics, float partialTicks)
     {
-        availablePacksList.draw(GuiGraphicsExtractor, partialTicks);
-        appliedPacksList.draw(GuiGraphicsExtractor, partialTicks);
+        availablePacksList.draw(guiGraphics, partialTicks);
+        appliedPacksList.draw(guiGraphics, partialTicks);
 
         String unusedText = I18n.get("mobends.gui.unusedpacks");
         String appliedText = I18n.get("mobends.gui.appliedpacks");
-        GuiHelper.drawCenteredString(GuiGraphicsExtractor, font, unusedText, x + GuiPacksWindow.EDITOR_WIDTH / 4, y + 8, 0xffffff);
-        GuiHelper.drawCenteredString(GuiGraphicsExtractor, font, appliedText, x + GuiPacksWindow.EDITOR_WIDTH * 3 / 4 + 6, y + 8, 0xffffff);
+        guiGraphics.centeredText(font, unusedText, x + GuiPacksWindow.EDITOR_WIDTH / 4, y + 8, 0xffffff);
+        guiGraphics.centeredText(font, appliedText, x + GuiPacksWindow.EDITOR_WIDTH * 3 / 4 + 6, y + 8, 0xffffff);
 
         final GuiPackEntry element = dragger.getDraggedElement();
         if (element != null)
         {
-            element.draw(GuiGraphicsExtractor, partialTicks);
+            element.draw(guiGraphics, partialTicks);
         }
     }
 

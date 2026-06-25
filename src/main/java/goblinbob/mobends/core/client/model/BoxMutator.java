@@ -4,9 +4,9 @@ import goblinbob.mobends.core.client.model.BoxFactory.TextureFace;
 
 /**
  * BoxMutator for mutating box geometry in models.
- * Updated for Minecraft 1.20.1 - no longer depends on ModelBase/ModelRenderer/ModelBox.
+ * Updated for Minecraft 26.2 - no longer depends on ModelBase/ModelRenderer/ModelBox.
  *
- * In 1.20.1, the model system is completely different, so this class now works
+ * In 26.2, the model system is completely different, so this class now works
  * with our custom ModelPart and BoxFactory classes instead.
  */
 public class BoxMutator
@@ -27,7 +27,7 @@ public class BoxMutator
 
     /**
      * Creates a BoxMutator from a MutatedBox.
-     * This is the 1.20.1 version that works with our custom model classes.
+     * This is the 26.2 version that works with our custom model classes.
      */
     public static BoxMutator createFrom(ModelPart modelPart, MutatedBox box)
     {

@@ -1,14 +1,10 @@
 package goblinbob.mobends.standard.client.model.armor;
-
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Vector3f;
 
 /**
  * Defines a plane at a joint that divides "upper" from "lower" segments.
  * Used for rigid bone assignment of armor vertices.
  */
-@OnlyIn(Dist.CLIENT)
 public class JointPlane
 {
     private final Vector3f point;

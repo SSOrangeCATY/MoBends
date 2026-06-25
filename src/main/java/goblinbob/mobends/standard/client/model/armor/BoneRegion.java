@@ -1,12 +1,8 @@
 package goblinbob.mobends.standard.client.model.armor;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-
 /**
  * Enumeration of bone regions for armor vertex assignment.
  */
-@OnlyIn(Dist.CLIENT)
 public enum BoneRegion
 {
     HEAD,

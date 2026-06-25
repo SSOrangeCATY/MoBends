@@ -1,6 +1,5 @@
 package goblinbob.mobends.core.client.gui.packswindow;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import goblinbob.mobends.core.client.gui.GuiBendsMenu;
 import goblinbob.mobends.core.pack.InvalidPackFormatException;
 import goblinbob.mobends.core.pack.PackManager;
@@ -101,12 +100,15 @@ public class GuiPacksWindow extends Screen
     }
 
     @Override
-    public boolean mouseClicked(MouseButtonEvent event, boolean doubled)
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick)
     {
-        if (super.mouseClicked(event, doubled)) return true;
+        if (super.mouseClicked(event, doubleClick)) return true;
 
-        this.tabNavigation.mouseClicked((int)event.x(), (int)event.y(), event.button());
-        this.localPacks.mouseClicked((int)event.x(), (int)event.y(), event.button());
+        double mouseX = event.x();
+        double mouseY = event.y();
+        int button = event.button();
+        this.tabNavigation.mouseClicked((int)mouseX, (int)mouseY, button);
+        this.localPacks.mouseClicked((int)mouseX, (int)mouseY, button);
         return true;
     }
 
@@ -115,7 +117,10 @@ public class GuiPacksWindow extends Screen
     {
         super.mouseReleased(event);
 
-        this.localPacks.mouseReleased((int)event.x(), (int)event.y(), event.button());
+        double mouseX = event.x();
+        double mouseY = event.y();
+        int state = event.button();
+        this.localPacks.mouseReleased((int)mouseX, (int)mouseY, state);
         return true;
     }
 
@@ -130,11 +135,12 @@ public class GuiPacksWindow extends Screen
     }
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor GuiGraphicsExtractor, int mouseX, int mouseY, float partialTicks)
+    public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks)
     {
-        this.extractBackground(GuiGraphicsExtractor, mouseX, mouseY, partialTicks);
-
         float delta = this.timer.tick();
+
+        Draw.setGuiGraphics(guiGraphics);
+        Draw.bindTexture(BACKGROUND_TEXTURE);
         // Container
         Draw.borderBox(x + 4, y + 4, EDITOR_WIDTH, EDITOR_HEIGHT, 4, 36, 126);
         // Title background
@@ -142,25 +148,25 @@ public class GuiPacksWindow extends Screen
         Draw.texturedModalRect(x + 4, y - 13, EDITOR_WIDTH - 16, 16, 105, 0, 1, 16);
         Draw.texturedModalRect(x + EDITOR_WIDTH - 17, y - 13, 106, 0, 19, 16);
 
-        this.tabNavigation.draw(GuiGraphicsExtractor, mouseX, mouseY);
+        this.tabNavigation.draw(guiGraphics, mouseX, mouseY);
         if (this.tabNavigation.getSelectedTab() == this.localPacksTab)
         {
-            this.localPacks.draw(GuiGraphicsExtractor, partialTicks);
+            this.localPacks.draw(guiGraphics, partialTicks);
         }
         else if (this.tabNavigation.getSelectedTab() == this.publicPacksTab)
         {
             String text = "Coming soon...";
-            GuiHelper.drawString(GuiGraphicsExtractor, font, text, x + EDITOR_WIDTH / 2 - font.width(text) / 2, y + EDITOR_HEIGHT / 2 - 10,
+            guiGraphics.text(font, text, x + EDITOR_WIDTH / 2 - font.width(text) / 2, y + EDITOR_HEIGHT / 2 - 10,
                     0xffffff, true);
         }
 
-        super.extractRenderState(GuiGraphicsExtractor, mouseX, mouseY, partialTicks);
+        super.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
     }
 
     @Override
     public boolean keyPressed(KeyEvent event)
     {
-        if (event.key() == 256)
+        if (event.isEscape())
         {
             GuiHelper.closeGui();
             return true;
@@ -170,7 +176,7 @@ public class GuiPacksWindow extends Screen
 
     private void goBack()
     {
-        this.minecraft.setScreenAndShow(new GuiBendsMenu());
+        this.minecraft.gui.setScreen(new GuiBendsMenu());
     }
 
     @Override

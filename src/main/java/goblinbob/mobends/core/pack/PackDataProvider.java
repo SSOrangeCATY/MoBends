@@ -67,6 +67,11 @@ public class PackDataProvider
                 JsonReader fileReader = new JsonReader(new FileReader(file));
                 BendsPackData data = KumoSerializer.INSTANCE.gson.fromJson(fileReader, BendsPackData.class);
                 fileReader.close();
+                if (data == null)
+                {
+                    data = new BendsPackData();
+                }
+                data.normalize();
 
                 validatePackData(data);
 
@@ -90,6 +95,8 @@ public class PackDataProvider
 
     public void validatePackData(BendsPackData data) throws MalformedKumoTemplateException
     {
+        data.normalize();
+
         IKumoValidationContext context = new IKumoValidationContext() {
             @Override
             public boolean doesAnimationExist(String animationKey)

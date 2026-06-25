@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 
 /**
  * Extended model part that includes an optional extension part.
- * Updated for 1.20.1 to use PoseStack instead of GlStateManager.
+ * Updated for Minecraft 26.2 to use PoseStack-based rendering.
  */
 public class ModelPartExtended extends ModelPart
 {
@@ -35,7 +35,7 @@ public class ModelPartExtended extends ModelPart
         poseStack.pushPose();
 
         this.applyCharacterTransform(poseStack, scale);
-        // Render the cubes - handled by parent renderer in 1.20.1
+        // Render the cubes - handled by parent renderer in 26.2
         if (extension != null)
             extension.renderJustPart(poseStack, scale);
 

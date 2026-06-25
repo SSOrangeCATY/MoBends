@@ -11,7 +11,7 @@ import goblinbob.mobends.core.util.GlHelper;
 /**
  * Used for manipulating the transform of things that are
  * going to postRender this part.
- * Updated for 1.20.1 to use PoseStack instead of GlStateManager.
+ * Updated for Minecraft 26.2 to use PoseStack-based rendering.
  */
 public class ModelPartTransform implements IModelPart
 {

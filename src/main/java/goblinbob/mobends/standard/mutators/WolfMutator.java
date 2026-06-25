@@ -9,9 +9,10 @@ import goblinbob.mobends.standard.data.WolfData;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.animal.wolf.WolfModel;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.entity.state.WolfRenderState;
 import net.minecraft.world.entity.animal.wolf.Wolf;
 
-public class WolfMutator extends Mutator<WolfData, Wolf, WolfModel>
+public class WolfMutator extends Mutator<WolfData, Wolf, WolfRenderState, WolfModel>
 {
 
     public BendsModelPart wolfHeadMain;
@@ -43,23 +44,23 @@ public class WolfMutator extends Mutator<WolfData, Wolf, WolfModel>
     @Override
     public void storeVanillaModel(WolfModel model)
     {
-        // In 1.20.1, we use composition pattern - no need to store vanilla parts
+        // In 26.2, we use composition pattern - no need to store vanilla parts
     }
 
     @Override
     public void applyVanillaModel(WolfModel model)
     {
-        // In 1.20.1, demutation handled differently
+        // In 26.2, demutation handled differently
     }
 
     @Override
-    public void swapLayer(LivingEntityRenderer<?, ?, ?> renderer, int index, boolean isModelVanilla)
+    public void swapLayer(LivingEntityRenderer<Wolf, WolfRenderState, WolfModel> renderer, int index, boolean isModelVanilla)
     {
         // No custom layers for wolf yet
     }
 
     @Override
-    public void deswapLayer(LivingEntityRenderer<?, ?, ?> renderer, int index)
+    public void deswapLayer(LivingEntityRenderer<Wolf, WolfRenderState, WolfModel> renderer, int index)
     {
         // No custom layers for wolf yet
     }

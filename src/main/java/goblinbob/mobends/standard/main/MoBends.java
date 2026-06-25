@@ -2,40 +2,28 @@ package goblinbob.mobends.standard.main;
 
 import com.mojang.logging.LogUtils;
 import goblinbob.mobends.core.Core;
-import goblinbob.mobends.core.addon.AddonHelper;
-import goblinbob.mobends.core.addon.Addons;
-import goblinbob.mobends.core.animation.keyframe.AnimationLoader;
-import goblinbob.mobends.core.asset.AssetReloadListener;
-import goblinbob.mobends.core.bender.EntityBenderRegistry;
-import goblinbob.mobends.core.client.event.KeyboardHandler;
-import goblinbob.mobends.core.compat.PlayerAnimationLibCompat;
-import goblinbob.mobends.core.configuration.CoreClientConfig;
 import goblinbob.mobends.core.configuration.CoreServerConfig;
-import goblinbob.mobends.core.data.EntityDatabase;
 import goblinbob.mobends.core.network.NetworkHandler;
-import goblinbob.mobends.core.pack.PackDataProvider;
-import goblinbob.mobends.core.util.GsonResources;
-import goblinbob.mobends.standard.DefaultAddon;
-import goblinbob.mobends.standard.client.event.RenderingEventHandler;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
-import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * Main entry point for the Mo' Bends mod.
- * Ported to Minecraft 1.20.1 with Forge.
+ * Ported to Minecraft 26.2 with NeoForge.
  */
 @Mod(ModStatics.MODID)
 public class MoBends
 {
     private static final Logger LOGGER = LogUtils.getLogger();
+    private static final String CLIENT_BOOTSTRAP_CLASS = "goblinbob.mobends.standard.client.ClientBootstrap";
     public static final Logger LOG = LOGGER;
     public static MoBends instance;
 
@@ -46,10 +34,7 @@ public class MoBends
         // Register configurations
         CoreServerConfig.register(container);
         if (FMLEnvironment.getDist() == Dist.CLIENT) {
-            CoreClientConfig.register(container);
-            modEventBus.addListener(this::clientSetup);
-            modEventBus.addListener(this::onAddClientReloadListeners);
-            modEventBus.addListener(KeyboardHandler::registerKeyMappings);
+            registerClient(modEventBus, container);
         }
 
         // Register lifecycle event listeners
@@ -66,40 +51,13 @@ public class MoBends
      */
     private void commonSetup(final FMLCommonSetupEvent event)
     {
+        if (FMLEnvironment.getDist() == Dist.DEDICATED_SERVER)
+        {
+            Core.createAsServer();
+            Core.getInstance().onCommonSetup();
+        }
+
         LOGGER.info("Mo' Bends common setup complete");
-    }
-
-    /**
-     * Register client resource reload listeners.
-     */
-    private void onAddClientReloadListeners(AddClientReloadListenersEvent event)
-    {
-        event.addListener(Identifier.fromNamespaceAndPath(ModStatics.MODID, "assets"), new AssetReloadListener());
-    }
-
-    /**
-     * Client-specific setup.
-     */
-    private void clientSetup(final FMLClientSetupEvent event)
-    {
-        // Initialize the Core for client
-        Core.createAsClient();
-
-        // Perform client setup on the Core (registers event handlers)
-        Core.getInstance().onClientSetup();
-
-        // Register the default addon (standard animations) - this registers entity benders
-        AddonHelper.registerAddon(ModStatics.MODID, new DefaultAddon());
-
-        // Apply configuration AFTER entity benders are registered
-        Core.getInstance().applyConfigurationToEntityBenders();
-
-        // Initialize mod compatibility layers
-        PlayerAnimationLibCompat.init();
-
-        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.register(new RenderingEventHandler());
-
-        LOGGER.info("Mo' Bends client setup complete");
     }
 
     /**
@@ -107,13 +65,42 @@ public class MoBends
      */
     public static void refreshSystems()
     {
-        AnimationLoader.clearCache();
-        GsonResources.clearCache();
-        PackDataProvider.INSTANCE.clearCache();
-        EntityDatabase.instance.refresh();
-        EntityBenderRegistry.instance.refreshMutators();
-        Addons.onRefresh();
+        if (FMLEnvironment.getDist() == Dist.CLIENT)
+        {
+            invokeClient("refreshSystems", new Class<?>[0]);
+        }
+    }
 
-        Core.getInstance().refreshModules();
+    private static void registerClient(IEventBus modEventBus, ModContainer container)
+    {
+        invokeClient("register", new Class<?>[] { IEventBus.class, ModContainer.class }, modEventBus, container);
+    }
+
+    private static void invokeClient(String methodName, Class<?>[] parameterTypes, Object... args)
+    {
+        try
+        {
+            Class<?> clientBootstrap = Class.forName(CLIENT_BOOTSTRAP_CLASS);
+            Method method = clientBootstrap.getMethod(methodName, parameterTypes);
+            method.invoke(null, args);
+        }
+        catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException e)
+        {
+            throw new IllegalStateException("Unable to initialize Mo' Bends client bootstrap", e);
+        }
+        catch (InvocationTargetException e)
+        {
+            Throwable cause = e.getCause();
+            if (cause instanceof RuntimeException runtimeException)
+            {
+                throw runtimeException;
+            }
+            if (cause instanceof Error error)
+            {
+                throw error;
+            }
+
+            throw new IllegalStateException("Mo' Bends client bootstrap failed", cause);
+        }
     }
 }

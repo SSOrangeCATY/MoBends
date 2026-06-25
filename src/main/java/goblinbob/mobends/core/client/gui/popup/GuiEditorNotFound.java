@@ -1,7 +1,5 @@
 package goblinbob.mobends.core.client.gui.popup;
 
-import goblinbob.mobends.core.util.GuiHelper;
-
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.resources.language.I18n;
 
@@ -23,15 +21,15 @@ public class GuiEditorNotFound extends GuiPopUp
     }
 
     @Override
-    public void display(GuiGraphicsExtractor GuiGraphicsExtractor, int mouseX, int mouseY, float partialTicks)
+    public void display(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks)
     {
-        super.display(GuiGraphicsExtractor, mouseX, mouseY, partialTicks);
+        super.display(guiGraphics, mouseX, mouseY, partialTicks);
 
         if (errorOccurred)
         {
             String message = "There seems to be something wrong. Please check your internet connection," +
                     " or contact the developers.";
-            GuiHelper.drawString(GuiGraphicsExtractor, font, message, 5, 5, 0xffff0000, true);
+            guiGraphics.text(font, message, 5, 5, 0xffff0000, true);
         }
     }
 }

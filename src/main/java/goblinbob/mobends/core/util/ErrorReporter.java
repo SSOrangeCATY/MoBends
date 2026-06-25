@@ -1,13 +1,18 @@
 package goblinbob.mobends.core.util;
 
+import com.mojang.logging.LogUtils;
 import goblinbob.mobends.core.pack.InvalidPackFormatException;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.loading.FMLEnvironment;
+import org.slf4j.Logger;
 
 public class ErrorReporter
 {
+    private static final Logger LOGGER = LogUtils.getLogger();
+    private static final String CLIENT_REPORTER_CLASS = "goblinbob.mobends.core.client.ClientErrorReporter";
 
     public static MutableComponent createErrorHeader()
     {
@@ -16,16 +21,22 @@ public class ErrorReporter
 
     public static void showErrorToPlayer(Component textComponent)
     {
-        if (Minecraft.getInstance().player == null)
+        LOGGER.warn("[Mo' Bends] {}", textComponent.getString());
+
+        if (FMLEnvironment.getDist() != Dist.CLIENT)
         {
             return;
         }
 
-        MutableComponent base = Component.literal("").withStyle(ChatFormatting.WHITE);
-        base.append(createErrorHeader());
-        base.append(textComponent);
-
-        Minecraft.getInstance().player.sendSystemMessage(base);
+        try
+        {
+            Class<?> reporter = Class.forName(CLIENT_REPORTER_CLASS);
+            reporter.getMethod("showErrorToPlayer", Component.class).invoke(null, textComponent);
+        }
+        catch (ReflectiveOperationException e)
+        {
+            LOGGER.warn("Failed to display Mo' Bends error to the local player.", e);
+        }
     }
 
     public static void showErrorToPlayer(String error)

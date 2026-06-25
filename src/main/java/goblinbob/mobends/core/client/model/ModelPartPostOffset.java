@@ -6,7 +6,7 @@ import org.joml.Vector3f;
 /**
  * This part is used, when accessories are rendered using it's postRender() method. It simply offsets those accessories
  * by a certain transformation.
- * Updated for 1.20.1 to use PoseStack instead of GlStateManager.
+ * Updated for Minecraft 26.2 to use PoseStack-based rendering.
  */
 public class ModelPartPostOffset extends ModelPart
 {

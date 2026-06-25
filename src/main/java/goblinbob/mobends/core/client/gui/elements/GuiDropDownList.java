@@ -1,8 +1,5 @@
 package goblinbob.mobends.core.client.gui.elements;
 
-import goblinbob.mobends.core.util.GuiHelper;
-
-import com.mojang.blaze3d.systems.RenderSystem;
 import goblinbob.mobends.core.client.gui.GuiBendsMenu;
 import goblinbob.mobends.core.client.gui.IChangeListener;
 import goblinbob.mobends.core.client.gui.IObservable;
@@ -227,7 +224,7 @@ public class GuiDropDownList<T> implements IObservable
 		return this;
 	}
 
-	public void display(GuiGraphicsExtractor GuiGraphicsExtractor)
+	public void display(GuiGraphicsExtractor guiGraphics)
 	{
 		if (!isEnabled())
 			return;
@@ -242,14 +239,15 @@ public class GuiDropDownList<T> implements IObservable
 		boolean noValue = noValueAllowed && selectedIndex == 0;
 		String text = noValue ? "None"
 				: this.font.plainSubstrByWidth(getSelectedEntry().getLabel(), this.getWidth() - 20);
-		GuiHelper.drawString(GuiGraphicsExtractor, this.font, text, x + 5, y + 4, noValue ? 0x999999 : 0xe2e2e2, true);
+        guiGraphics.text(this.font, text, x + 5, y + 4, noValue ? 0x999999 : 0xe2e2e2, true);
 
 		// Label gradient overlay
 		Draw.rectangleHorizontalGradient(x + width - 40, y + 1, 27, HEIGHT - 2, 0x00000000,
 				hovered || dropped ? 0xff222222 : 0xff000000);
 
 		// Arrow icon
-		Draw.texturedModalRect(x + width - 12, y + 3, 94, 24 + (hovered || dropped ? 10 : 0), 10, 10);
+        Draw.bindTexture(GuiBendsMenu.ICONS_TEXTURE);
+        Draw.texturedModalRect(x + width - 12, y + 3, 94, 24 + (hovered || dropped ? 10 : 0), 10, 10);
 
 		if (dropped)
 		{
@@ -269,8 +267,8 @@ public class GuiDropDownList<T> implements IObservable
 					Draw.rectangle(x + 1, y + HEIGHT + i * ELEMENT_HEIGHT, width - 2, ELEMENT_HEIGHT, 0xff151525);
 				String name = noValue ? "None"
 						: this.font.plainSubstrByWidth(entries.get(entryID).getLabel(), getWidth());
-				GuiHelper.drawString(GuiGraphicsExtractor, this.font, name, x + 3, y + HEIGHT + i * ELEMENT_HEIGHT + 2,
-						noValue ? 0x999999 : 0xe2e2e2, true);
+                guiGraphics.text(this.font, name, x + 3, y + HEIGHT + i * ELEMENT_HEIGHT + 2,
+                        noValue ? 0x999999 : 0xe2e2e2, true);
 			}
 
 			if (shouldShowScrollBar())

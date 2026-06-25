@@ -27,16 +27,16 @@ public class GuiPopUpCreatePack extends GuiPopUp
         titleTextField.setPosition(this.x + 5, this.y + 39);
     }
 
-    public void display(GuiGraphicsExtractor GuiGraphicsExtractor, int mouseX, int mouseY, float partialTicks)
+    public void display(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks)
     {
-        super.display(GuiGraphicsExtractor, mouseX, mouseY, partialTicks);
-        titleTextField.extractWidgetRenderState(GuiGraphicsExtractor, mouseX, mouseY, partialTicks);
+        super.display(guiGraphics, mouseX, mouseY, partialTicks);
+        titleTextField.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
     }
 
     public void update(int mouseX, int mouseY)
     {
         super.update(mouseX, mouseY);
-        // Note: tick() method removed in 1.21.1, cursor animation handled internally
+        // Note: tick() method removed in 26.2, cursor animation handled internally
     }
 
     public void mouseClicked(int mouseX, int mouseY, int button)
@@ -47,7 +47,7 @@ public class GuiPopUpCreatePack extends GuiPopUp
 
     public void keyTyped(char typedChar, int keyCode)
     {
-        // In 1.20.1, key handling is done differently via keyPressed/charTyped methods
+        // In 26.2, key handling is done differently via keyPressed/charTyped methods
         // This method is kept for compatibility but may need to be replaced with:
         // titleTextField.keyPressed(keyCode, scanCode, modifiers) or titleTextField.charTyped(typedChar, modifiers)
     }

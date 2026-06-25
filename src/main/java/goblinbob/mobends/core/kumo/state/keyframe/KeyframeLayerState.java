@@ -4,6 +4,7 @@ import goblinbob.mobends.core.animation.keyframe.ArmatureMask;
 import goblinbob.mobends.core.animation.keyframe.Bone;
 import goblinbob.mobends.core.animation.keyframe.Keyframe;
 import goblinbob.mobends.core.animation.keyframe.KeyframeAnimation;
+import goblinbob.mobends.core.animation.keyframe.KeyframeSampler;
 import goblinbob.mobends.core.client.model.IModelPart;
 import goblinbob.mobends.core.data.EntityData;
 import goblinbob.mobends.core.kumo.state.*;
@@ -175,32 +176,26 @@ public class KeyframeLayerState implements ILayerState
 
     public void applyKeyframeAnimation(EntityData<?> entityData, KeyframeAnimation animation, float keyframeIndex, float amount)
     {
-        final int frameA = (int) keyframeIndex;
-        final int frameB = (int) keyframeIndex + 1;
-        final float tween = keyframeIndex - frameA;
-
         if (shouldPartBeAffected("root") && animation.bones.containsKey("root"))
         {
             final Bone rootBone = animation.bones.get("root");
-            final Keyframe keyframe = rootBone.keyframes.get(frameA);
-            final Keyframe nextFrame = rootBone.keyframes.get(frameB);
+            final KeyframeSampler.Sample sample = KeyframeSampler.sample(rootBone, keyframeIndex);
 
-            if (keyframe != null && nextFrame != null)
+            if (sample != null && sample.current() != null && sample.next() != null)
             {
-                KeyframeUtils.tweenVectorAdditive(entityData.globalOffset, keyframe.position, nextFrame.position, tween, amount);
+                KeyframeUtils.tweenVectorAdditive(entityData.globalOffset, sample.current().position, sample.next().position, sample.progress(), amount);
             }
         }
 
         if (shouldPartBeAffected("centerRotation") && animation.bones.containsKey("centerRotation"))
         {
             final Bone rootBone = animation.bones.get("centerRotation");
-            final Keyframe keyframe = rootBone.keyframes.get(frameA);
-            final Keyframe nextFrame = rootBone.keyframes.get(frameB);
+            final KeyframeSampler.Sample sample = KeyframeSampler.sample(rootBone, keyframeIndex);
 
-            if (keyframe != null && nextFrame != null)
+            if (sample != null && sample.current() != null && sample.next() != null)
             {
-                KeyframeUtils.tweenOrientationAdditive(entityData.centerRotation, keyframe.rotation, nextFrame.rotation, tween, amount);
-                KeyframeUtils.tweenVectorAdditive(entityData.globalOffset, keyframe.position, nextFrame.position, tween, amount);
+                KeyframeUtils.tweenOrientationAdditive(entityData.centerRotation, sample.current().rotation, sample.next().rotation, sample.progress(), amount);
+                KeyframeUtils.tweenVectorAdditive(entityData.globalOffset, sample.current().position, sample.next().position, sample.progress(), amount);
             }
         }
 
@@ -215,16 +210,15 @@ public class KeyframeLayerState implements ILayerState
 
                 if (part != null)
                 {
-                    Keyframe keyframe = bone.keyframes.get(frameA);
-                    Keyframe nextFrame = bone.keyframes.get(frameB);
+                    KeyframeSampler.Sample sample = KeyframeSampler.sample(bone, keyframeIndex);
 
-                    if (keyframe != null && nextFrame != null)
+                    if (sample != null && sample.current() != null && sample.next() != null)
                     {
                         if (part instanceof IModelPart)
                         {
-                            KeyframeUtils.tweenOrientationAdditive(((IModelPart) part).getRotation(), keyframe.rotation, nextFrame.rotation, tween, amount);
+                            KeyframeUtils.tweenOrientationAdditive(((IModelPart) part).getRotation(), sample.current().rotation, sample.next().rotation, sample.progress(), amount);
                             // Note that the amount is negated.
-                            KeyframeUtils.tweenVectorAdditive(((IModelPart) part).getOffset(), keyframe.position, nextFrame.position, tween, -amount);
+                            KeyframeUtils.tweenVectorAdditive(((IModelPart) part).getOffset(), sample.current().position, sample.next().position, sample.progress(), -amount);
                         }
                     }
                 }

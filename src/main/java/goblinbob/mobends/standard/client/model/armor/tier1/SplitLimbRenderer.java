@@ -10,8 +10,6 @@ import goblinbob.mobends.standard.client.model.armor.JointDefinitions;
 import goblinbob.mobends.standard.client.model.armor.JointPlane;
 import goblinbob.mobends.standard.data.BipedEntityData;
 import net.minecraft.client.model.geom.ModelPart;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Quaternionf;
 
 /**
@@ -24,7 +22,6 @@ import org.joml.Quaternionf;
  *
  * This class handles the split rendering by using clip planes at joint positions.
  */
-@OnlyIn(Dist.CLIENT)
 public class SplitLimbRenderer
 {
     private static final float SCALE = 1.0f / 16.0f;

@@ -15,6 +15,6 @@ public class SerialHelper
             buffer.write(stream.readByte());
         }
 
-        return new String(buffer.toByteArray(), StandardCharsets.UTF_8);
+        return buffer.toString(StandardCharsets.UTF_8);
     }
 }

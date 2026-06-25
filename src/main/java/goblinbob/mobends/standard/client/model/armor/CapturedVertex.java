@@ -1,13 +1,9 @@
 package goblinbob.mobends.standard.client.model.armor;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-
 /**
  * Stores all data for a captured vertex from armor rendering.
  * Immutable - created once during capture.
  */
-@OnlyIn(Dist.CLIENT)
 public class CapturedVertex
 {
     public final float x, y, z;

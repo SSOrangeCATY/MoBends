@@ -5,7 +5,7 @@ import goblinbob.mobends.core.math.vector.Vec3f;
 
 /**
  * Factory class for creating MutatedBox instances.
- * Updated for 1.20.1 - no longer depends on Minecraft's ModelBox/ModelRenderer classes.
+ * Updated for 26.2 - no longer depends on Minecraft's ModelBox/ModelRenderer classes.
  */
 public class BoxFactory
 {

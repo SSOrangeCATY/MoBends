@@ -11,7 +11,7 @@ import org.joml.Vector3f;
 
 /**
  * Custom box implementation for Mo' Bends animations.
- * Updated for Minecraft 1.20.1 - no longer extends ModelBox (which doesn't exist).
+ * Updated for Minecraft 26.2 and the modern model rendering API.
  * Uses immediate-mode rendering via VertexConsumer instead of display lists.
  */
 public class MutatedBox
@@ -139,7 +139,7 @@ public class MutatedBox
                 Vector3f normal = new Vector3f(normalX, normalY, normalZ);
                 normal.mul(normalMatrix);
 
-                // Pack RGBA into single int for 1.21.1
+                // Pack RGBA into the modern VertexConsumer color format
                 int color = ((int)(alpha * 255.0F) << 24) | ((int)(red * 255.0F) << 16) | ((int)(green * 255.0F) << 8) | (int)(blue * 255.0F);
                 vertexConsumer.addVertex(pos.x, pos.y, pos.z)
                         .setColor(color)
@@ -339,7 +339,7 @@ public class MutatedBox
 
     /**
      * Render this box to the given VertexConsumer.
-     * This is the 1.20.1 rendering method replacing the old BufferBuilder approach.
+     * This is the Minecraft 26.2 VertexConsumer rendering path.
      */
     public void render(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay,
                       float red, float green, float blue, float alpha)

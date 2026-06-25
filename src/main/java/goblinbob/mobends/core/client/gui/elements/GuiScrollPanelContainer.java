@@ -12,13 +12,13 @@ public class GuiScrollPanelContainer extends GuiScrollPanel
     }
 
     @Override
-    protected void drawContent(GuiGraphicsExtractor GuiGraphicsExtractor, float partialTicks)
+    protected void drawContent(GuiGraphicsExtractor guiGraphics, float partialTicks)
     {
 
     }
 
     @Override
-    protected void drawBackground(GuiGraphicsExtractor GuiGraphicsExtractor, float partialTicks)
+    protected void drawBackground(GuiGraphicsExtractor guiGraphics, float partialTicks)
     {
 
     }

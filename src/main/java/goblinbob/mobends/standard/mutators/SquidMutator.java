@@ -10,9 +10,10 @@ import goblinbob.mobends.standard.data.SquidData;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.animal.squid.SquidModel;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.entity.state.SquidRenderState;
 import net.minecraft.world.entity.animal.squid.Squid;
 
-public class SquidMutator extends Mutator<SquidData, Squid, SquidModel>
+public class SquidMutator extends Mutator<SquidData, Squid, SquidRenderState, SquidModel>
 {
 
 	public ModelPart squidBody;
@@ -26,7 +27,7 @@ public class SquidMutator extends Mutator<SquidData, Squid, SquidModel>
 	@Override
 	public void storeVanillaModel(SquidModel model)
 	{
-		// In 1.20.1, model parts are accessed differently
+		// In 26.2, model parts are accessed differently
 		// SquidModel uses root.getChild() pattern
 		this.vanillaModel = model;
 	}
@@ -34,18 +35,18 @@ public class SquidMutator extends Mutator<SquidData, Squid, SquidModel>
 	@Override
 	public void applyVanillaModel(SquidModel model)
 	{
-		// In 1.20.1, we can't directly set model fields
+		// In 26.2, we can't directly set model fields
 		// The vanilla model restoration would need to be handled via mixin
 	}
 
 	@Override
-	public void swapLayer(LivingEntityRenderer<?, ?, ?> renderer, int index, boolean isModelVanilla)
+	public void swapLayer(LivingEntityRenderer<Squid, SquidRenderState, SquidModel> renderer, int index, boolean isModelVanilla)
 	{
 		// No behaviour
 	}
 
 	@Override
-	public void deswapLayer(LivingEntityRenderer<?, ?, ?> renderer, int index)
+	public void deswapLayer(LivingEntityRenderer<Squid, SquidRenderState, SquidModel> renderer, int index)
 	{
 		// No behaviour
 	}
@@ -53,7 +54,7 @@ public class SquidMutator extends Mutator<SquidData, Squid, SquidModel>
 	@Override
 	public boolean createParts(SquidModel original, float scaleFactor)
 	{
-		// In 1.20.1, SquidModel uses a completely different structure
+		// In 26.2, SquidModel uses a completely different structure
 		// The model is baked from LayerDefinition and parts are accessed via root
 		// For now, create the custom parts without modifying the original model
 
@@ -100,7 +101,7 @@ public class SquidMutator extends Mutator<SquidData, Squid, SquidModel>
 	@Override
 	public boolean isModelVanilla(SquidModel model)
 	{
-		// In 1.20.1, check if we've applied mutations
+		// In 26.2, check if we've applied mutations
 		return !(model instanceof IModelPart);
 	}
 

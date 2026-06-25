@@ -5,8 +5,6 @@ import goblinbob.mobends.standard.client.model.armor.cache.CacheManager;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelPart;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.util.HashSet;
@@ -21,7 +19,6 @@ import java.util.Set;
  *
  * Results are cached for performance.
  */
-@OnlyIn(Dist.CLIENT)
 public class TierClassifier
 {
     // Singleton instance

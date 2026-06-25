@@ -6,8 +6,6 @@ import goblinbob.mobends.core.client.model.IModelPart;
 import goblinbob.mobends.core.math.SmoothOrientation;
 import goblinbob.mobends.core.math.vector.Vec3f;
 import goblinbob.mobends.core.util.GlHelper;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +14,6 @@ import java.util.List;
  * An armor part that can contain multiple cubes and apply animation transforms.
  * This is used for rendering armor with proper Mo' Bends animation.
  */
-@OnlyIn(Dist.CLIENT)
 public class ArmorPart
 {
     /**

@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import java.util.*;
 
 /**
- * Client-side configuration for Mo' Bends 1.20.1.
+ * Client-side configuration for Mo' Bends 26.2.
  */
 public class CoreClientConfig extends CoreConfig
 {

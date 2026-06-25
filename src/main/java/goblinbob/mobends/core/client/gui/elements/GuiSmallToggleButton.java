@@ -1,8 +1,6 @@
 package goblinbob.mobends.core.client.gui.elements;
 
-import goblinbob.mobends.core.util.GuiHelper;
-
-import com.mojang.blaze3d.systems.RenderSystem;
+import goblinbob.mobends.core.util.Draw;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -43,22 +41,28 @@ public class GuiSmallToggleButton
                 mouseY >= y && mouseY <= y + HEIGHT;
     }
 
-    public void draw(GuiGraphicsExtractor GuiGraphicsExtractor)
+    public void draw(GuiGraphicsExtractor guiGraphics)
     {
         Minecraft mc = Minecraft.getInstance();
         Font font = mc.font;
+
+        Draw.bindTexture(BUTTON_TEXTURES);
 
         int k = this.hovered ? 1 : 0;
 
         if (this.toggleState)
         {
+            Draw.setColor(0.3F, 1.0F, 0.7F, 1.0F);
         }
         else
         {
+            Draw.setColor(1.0F, 0.3F, 0.4F, 1.0F);
         }
 
-        GuiHelper.blit(GuiGraphicsExtractor, BUTTON_TEXTURES, this.x, this.y, 0, 66 + k * 20, WIDTH / 2, HEIGHT);
-        GuiHelper.blit(GuiGraphicsExtractor, BUTTON_TEXTURES, this.x + WIDTH / 2, this.y, 200 - WIDTH / 2, 66 + k * 20, WIDTH / 2, HEIGHT);
+        Draw.texturedModalRect(this.x, this.y, 0, 66 + k * 20, WIDTH / 2, HEIGHT);
+        Draw.texturedModalRect(this.x + WIDTH / 2, this.y, 200 - WIDTH / 2, 66 + k * 20, WIDTH / 2, HEIGHT);
+
+        Draw.resetColor();
 
         int l = 14737632;
 
@@ -73,7 +77,7 @@ public class GuiSmallToggleButton
 
         String stateText = this.toggleState ? "ON" : "OFF";
         int textWidth = font.width(stateText);
-        GuiHelper.drawString(GuiGraphicsExtractor, font, stateText, this.x - textWidth/2 + WIDTH /2, this.y + (HEIGHT - 8) / 2, l, false);
+        guiGraphics.text(font, stateText, this.x - textWidth/2 + WIDTH /2, this.y + (HEIGHT - 8) / 2, l, false);
     }
 
     public void setToggleState(boolean state)

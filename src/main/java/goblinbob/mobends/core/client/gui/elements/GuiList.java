@@ -127,11 +127,11 @@ public abstract class GuiList<T extends IGuiListElement> extends GuiScrollPanel
     }
 
     @Override
-    protected void drawContent(GuiGraphicsExtractor GuiGraphicsExtractor, float partialTicks)
+    protected void drawContent(GuiGraphicsExtractor guiGraphics, float partialTicks)
     {
         for (T element : this.getListElements())
         {
-            element.draw(GuiGraphicsExtractor, partialTicks);
+            element.draw(guiGraphics, partialTicks);
         }
     }
 

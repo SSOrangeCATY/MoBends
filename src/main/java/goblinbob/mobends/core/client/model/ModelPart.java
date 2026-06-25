@@ -12,16 +12,13 @@ import goblinbob.mobends.core.math.vector.IVec3f;
 import goblinbob.mobends.core.math.vector.Vec3f;
 import goblinbob.mobends.core.util.GlHelper;
 import net.minecraft.client.model.geom.ModelPart.Cube;
-import net.minecraft.client.renderer.rendertype.RenderType;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Custom ModelPart implementation for Mo' Bends animations.
- * Updated for Minecraft 1.20.1 to use PoseStack instead of GlStateManager.
+ * Updated for Minecraft 26.2 to use PoseStack-based rendering.
  */
 public class ModelPart implements IModelPart
 {
@@ -70,7 +67,6 @@ public class ModelPart implements IModelPart
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
     public void renderPart(PoseStack poseStack, float scale)
     {
         if (!(this.isShowing())) return;
@@ -78,7 +74,7 @@ public class ModelPart implements IModelPart
         poseStack.pushPose();
 
         this.applyCharacterTransform(poseStack, scale);
-        // Render the cubes - in 1.20.1 this is done through VertexConsumer
+        // Render the cubes - in 26.2 this is done through VertexConsumer
         // The actual rendering is handled by the parent renderer
 
         if (this.childModels != null)
@@ -93,7 +89,6 @@ public class ModelPart implements IModelPart
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
     public void renderJustPart(PoseStack poseStack, float scale)
     {
         if (!(this.isShowing())) return;

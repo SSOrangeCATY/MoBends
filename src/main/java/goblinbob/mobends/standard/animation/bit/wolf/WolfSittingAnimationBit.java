@@ -9,7 +9,7 @@ public class WolfSittingAnimationBit extends KeyframeAnimationBit<WolfData>
 {
 
     private static final String[] ACTIONS = new String[] { "sitting" };
-    private static final Identifier SITTING_ANIMATION = Identifier.fromNamespaceAndPath(ModStatics.MODID, "bends/animations/wolf_sitting_down.json");
+    private static final Identifier SITTING_ANIMATION = Identifier.fromNamespaceAndPath(ModStatics.MODID, "bends/animations/wolf_sitting_down.bendsanim");
 
     public WolfSittingAnimationBit(float animationSpeed)
     {

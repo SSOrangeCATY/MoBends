@@ -3,6 +3,7 @@ package goblinbob.mobends.core.animation.layer;
 import goblinbob.mobends.core.animation.keyframe.Bone;
 import goblinbob.mobends.core.animation.keyframe.Keyframe;
 import goblinbob.mobends.core.animation.keyframe.KeyframeAnimation;
+import goblinbob.mobends.core.animation.keyframe.KeyframeSampler;
 import goblinbob.mobends.core.client.event.DataUpdateHandler;
 import goblinbob.mobends.core.client.model.IModelPart;
 import goblinbob.mobends.core.data.EntityData;
@@ -54,21 +55,21 @@ public class KeyframeAnimationLayer<T extends EntityData<?>> extends AnimationLa
 	@Override
 	public void perform(T entityData)
 	{
-		int minKeyframes = Integer.MAX_VALUE;
-		
 		if (this.performedAnimation != null)
 		{
-			int index = (int) keyframeIndex;
-			int nextIndex = index + 1;
-			if (nextIndex >= minKeyframes - 1)
-				nextIndex = minKeyframes - 1;
-			float progress = keyframeIndex - index;
+			int animationFrameCount = KeyframeSampler.maxFrameCount(this.performedAnimation);
+			if (animationFrameCount <= 0)
+				return;
 
 			if (this.performedAnimation.bones.containsKey("root"))
 			{
 				Bone rootBone = this.performedAnimation.bones.get("root");
-				Keyframe keyframe = rootBone.keyframes.get(index);
-				Keyframe nextFrame = rootBone.keyframes.get(nextIndex);
+				KeyframeSampler.Sample sample = KeyframeSampler.sample(rootBone, keyframeIndex);
+				if (sample == null)
+					return;
+				Keyframe keyframe = sample.current();
+				Keyframe nextFrame = sample.next();
+				float progress = sample.progress();
 
 				float x = keyframe.position[0] + (nextFrame.position[0] - keyframe.position[0]) * progress;
 				float y = keyframe.position[1] + (nextFrame.position[1] - keyframe.position[1]) * progress;
@@ -80,12 +81,15 @@ public class KeyframeAnimationLayer<T extends EntityData<?>> extends AnimationLa
 			for (Map.Entry<String, Bone> entry : this.performedAnimation .bones.entrySet())
 			{
 				Bone bone = entry.getValue();
-				minKeyframes = bone.keyframes.size();
+				KeyframeSampler.Sample sample = KeyframeSampler.sample(bone, keyframeIndex);
+				if (sample == null)
+					continue;
 
 				Object part = entityData.getPartForName(entry.getKey());
 
-				Keyframe keyframe = bone.keyframes.get(index);
-				Keyframe nextFrame = bone.keyframes.get(nextIndex);
+				Keyframe keyframe = sample.current();
+				Keyframe nextFrame = sample.next();
+				float progress = sample.progress();
 
 				if (keyframe != null && nextFrame != null)
 				{
@@ -110,8 +114,16 @@ public class KeyframeAnimationLayer<T extends EntityData<?>> extends AnimationLa
 			}
 
 			keyframeIndex += DataUpdateHandler.ticksPerFrame * 0.8F;
-			if (keyframeIndex >= minKeyframes - 1)
-				keyframeIndex -= minKeyframes - 1;
+			float loopFrame = animationFrameCount - 1;
+			if (loopFrame <= 0.0F)
+			{
+				keyframeIndex = 0.0F;
+			}
+			else
+			{
+				while (keyframeIndex >= loopFrame)
+					keyframeIndex -= loopFrame;
+			}
 		}
 	}
 }

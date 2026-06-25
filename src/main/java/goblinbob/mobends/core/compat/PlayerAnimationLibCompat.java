@@ -1,9 +1,8 @@
 package goblinbob.mobends.core.compat;
 
 import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.world.entity.Avatar;
 import net.minecraft.world.entity.LivingEntity;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.fml.ModList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,18 +16,17 @@ import java.lang.reflect.Method;
  * When PlayerAnimationLib has an animation playing on a player,
  * Mo'Bends should not override those animations.
  */
-@OnlyIn(Dist.CLIENT)
 public class PlayerAnimationLibCompat
 {
     private static final Logger LOGGER = LoggerFactory.getLogger("MoBends-PlayerAnimCompat");
-    private static final String MOD_ID = "playeranimator";
+    private static final String MOD_ID = "player_animation_library";
 
     private static boolean initialized = false;
     private static boolean isLoaded = false;
 
     // Reflection cache
     private static Class<?> playerAnimationAccessClass;
-    private static Method getPlayerAnimLayerMethod;
+    private static Method getPlayerAnimManagerMethod;
     private static Method isActiveMethod;
 
     /**
@@ -67,15 +65,11 @@ public class PlayerAnimationLibCompat
      */
     private static void initReflection() throws Exception
     {
-        // Get PlayerAnimationAccess class
-        playerAnimationAccessClass = Class.forName("dev.kosmx.playerAnim.minecraftApi.PlayerAnimationAccess");
+        playerAnimationAccessClass = Class.forName("com.zigythebird.playeranim.api.PlayerAnimationAccess");
 
-        // Get the getPlayerAnimLayer method
-        // Method signature: public static AnimationStack getPlayerAnimLayer(AbstractClientPlayer player)
-        getPlayerAnimLayerMethod = playerAnimationAccessClass.getMethod("getPlayerAnimLayer", AbstractClientPlayer.class);
+        getPlayerAnimManagerMethod = playerAnimationAccessClass.getMethod("getPlayerAnimManager", Avatar.class);
 
-        // Get AnimationStack class and isActive method
-        Class<?> animationStackClass = Class.forName("dev.kosmx.playerAnim.api.layered.AnimationStack");
+        Class<?> animationStackClass = Class.forName("com.zigythebird.playeranimcore.animation.layered.AnimationStack");
         isActiveMethod = animationStackClass.getMethod("isActive");
     }
 
@@ -113,8 +107,7 @@ public class PlayerAnimationLibCompat
 
         try
         {
-            // Get the animation stack for the player
-            Object animationStack = getPlayerAnimLayerMethod.invoke(null, player);
+            Object animationStack = getPlayerAnimManagerMethod.invoke(null, player);
 
             if (animationStack == null)
             {
@@ -149,7 +142,7 @@ public class PlayerAnimationLibCompat
         LOGGER.info("PlayerAnimationLib compat debug:");
         LOGGER.info("  - Mod loaded: {}", isLoaded);
         LOGGER.info("  - PlayerAnimationAccess class: {}", playerAnimationAccessClass);
-        LOGGER.info("  - getPlayerAnimLayer method: {}", getPlayerAnimLayerMethod);
+        LOGGER.info("  - getPlayerAnimManager method: {}", getPlayerAnimManagerMethod);
         LOGGER.info("  - isActive method: {}", isActiveMethod);
     }
 }

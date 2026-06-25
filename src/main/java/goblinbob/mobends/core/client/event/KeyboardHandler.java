@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import goblinbob.mobends.core.client.gui.GuiBendsMenu;
 import goblinbob.mobends.standard.client.gui.ArmorDebugScreen;
 import goblinbob.mobends.standard.main.MoBends;
+import goblinbob.mobends.standard.main.ModStatics;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
@@ -15,7 +16,8 @@ import org.lwjgl.glfw.GLFW;
 public class KeyboardHandler
 {
 
-    private static final KeyMapping.Category MAIN_CATEGORY = KeyMapping.Category.register(Identifier.fromNamespaceAndPath("mobends", "main"));
+    private static final KeyMapping.Category MAIN_CATEGORY = new KeyMapping.Category(
+            Identifier.fromNamespaceAndPath(ModStatics.MODID, "main"));
     private static final KeyMapping KEY_MENU = new KeyMapping(
             "key.mobends.menu",
             GLFW.GLFW_KEY_G,
@@ -31,6 +33,7 @@ public class KeyboardHandler
 
     public static void registerKeyMappings(RegisterKeyMappingsEvent event)
     {
+        event.registerCategory(MAIN_CATEGORY);
         event.register(KEY_MENU);
         event.register(KEY_REFRESH);
         event.register(KEY_ARMOR_DEBUG);
@@ -41,7 +44,7 @@ public class KeyboardHandler
     {
         if (KEY_MENU.consumeClick())
         {
-            Minecraft.getInstance().setScreenAndShow(new GuiBendsMenu());
+            Minecraft.getInstance().gui.setScreen(new GuiBendsMenu());
         }
         else if (KEY_REFRESH.consumeClick())
         {
@@ -49,7 +52,7 @@ public class KeyboardHandler
         }
         else if (KEY_ARMOR_DEBUG.consumeClick())
         {
-            Minecraft.getInstance().setScreenAndShow(new ArmorDebugScreen());
+            Minecraft.getInstance().gui.setScreen(new ArmorDebugScreen());
         }
     }
 

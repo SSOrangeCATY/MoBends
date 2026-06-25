@@ -1,7 +1,5 @@
 package goblinbob.mobends.core.network;
 
-import net.minecraft.client.Minecraft;
-
 /**
  * These are options that are provided by a server the player's playing on.
  * They are default when playing on single-player.
@@ -37,9 +35,8 @@ public class NetworkConfiguration
      * Used when connecting to a server that has Mo' Bends installed.
      * Sets restrictive defaults that the server can then relax via config response.
      */
-	public void onWorldJoin()
+	public void onModdedServerJoin(boolean singleplayer)
     {
-        boolean singleplayer = Minecraft.getInstance().hasSingleplayerServer();
         this.modelScalingAllowed.setValue(singleplayer);
         this.bendsPacksAllowed.setValue(true);
         this.movementLimited.setValue(!singleplayer);
@@ -60,6 +57,13 @@ public class NetworkConfiguration
     public SharedConfig getSharedConfig()
     {
         return sharedConfig;
+    }
+
+    public void updateServerValues(boolean modelScalingAllowed, boolean bendsPacksAllowed, boolean movementLimited)
+    {
+        this.modelScalingAllowed.setValue(modelScalingAllowed);
+        this.bendsPacksAllowed.setValue(bendsPacksAllowed);
+        this.movementLimited.setValue(movementLimited);
     }
 
 	public boolean isModelScalingAllowed()

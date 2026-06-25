@@ -1,6 +1,7 @@
 package goblinbob.mobends.core.network.msg;
 
 import com.mojang.logging.LogUtils;
+import goblinbob.mobends.core.configuration.CoreServerConfig;
 import goblinbob.mobends.core.network.NetworkConfiguration;
 import goblinbob.mobends.core.network.SharedProperty;
 import goblinbob.mobends.standard.main.ModStatics;
@@ -39,6 +40,7 @@ public record ConfigResponsePayload(CompoundTag configData) implements CustomPac
 
     private static CompoundTag createConfigData() {
         CompoundTag data = new CompoundTag();
+        CoreServerConfig.syncNetworkConfiguration();
         NetworkConfiguration.instance.getSharedConfig().writeToNBT(data);
         return data;
     }

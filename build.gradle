@@ -6,7 +6,6 @@ plugins {
     id 'net.neoforged.moddev' version '2.0.+'
 }
 
-// 快照版本逻辑：mod_version 含 -SNAPSHOT 时，文件名追加 snapshotyyyyMMddHHmm
 if (mod_version.contains('SNAPSHOT')) {
     def baseVersion = mod_version.replace('-SNAPSHOT', '').replace('SNAPSHOT', '')
     def snapshotSuffix = 'snapshot' + new Date().format('yyyyMMddHHmm')
@@ -45,8 +44,13 @@ neoForge {
             programArgument '--nogui'
         }
 
+        clientData {
+            clientData()
+            programArguments.addAll '--mod', mod_id, '--all', '--output', file('src/generated/resources/').absolutePath, '--existing', file('src/main/resources/').absolutePath
+        }
+
         data {
-            data()
+            serverData()
             programArguments.addAll '--mod', mod_id, '--all', '--output', file('src/generated/resources/').absolutePath, '--existing', file('src/main/resources/').absolutePath
         }
     }
@@ -58,7 +62,14 @@ neoForge {
     }
 }
 
-sourceSets.main.resources { srcDir 'src/generated/resources' }
+sourceSets.main.resources {
+    srcDir 'src/generated/resources'
+    exclude '.cache', '.cache/**'
+}
+
+tasks.named('runData').configure {
+    dependsOn tasks.named('runClientData')
+}
 
 repositories {
     maven { url = 'https://mirrors.cloud.tencent.com/nexus/repository/maven-public/' }
@@ -68,13 +79,15 @@ repositories {
 }
 
 dependencies {
-
     // Testing
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.named('processResources', ProcessResources).configure {
+    exclude '.cache', '.cache/**'
+    includeEmptyDirs = false
+
     var replaceProperties = [
             minecraft_version   : minecraft_version,
             minecraft_version_range: minecraft_version_range,
@@ -96,6 +109,8 @@ tasks.named('processResources', ProcessResources).configure {
 }
 
 tasks.named('jar', Jar).configure {
+    exclude '.cache', '.cache/**'
+
     manifest {
         attributes([
                 'Specification-Title'     : mod_id,
@@ -140,4 +155,3 @@ tasks.withType(JavaCompile).configureEach {
 tasks.named('test', Test) {
     useJUnitPlatform()
 }
-
